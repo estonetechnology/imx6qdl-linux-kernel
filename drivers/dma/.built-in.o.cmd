@@ -1,1 +1,0 @@
-cmd_drivers/dma/built-in.o :=  /home/mqddb/Documents/kafeiji/compile_opt/arm-eabi-4.6/bin/arm-eabi-ld -EL    -r -o drivers/dma/built-in.o drivers/dma/dmaengine.o drivers/dma/of-dma.o drivers/dma/ipu/built-in.o drivers/dma/pxp/built-in.o drivers/dma/imx-sdma.o drivers/dma/mxs-dma.o 

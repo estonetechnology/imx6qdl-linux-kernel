@@ -1,1 +1,0 @@
-cmd_arch/arm/boot/uImage := /bin/bash /media/SDK/workspace/kafeiji/code/kernel_imx_2_core/scripts/mkuboot.sh -A arm -O linux -C none  -T kernel -a 0x10008000 -e 0x10008000 -n 'Linux-3.10.17-1.0.0_ga-gfb16989-dirty' -d arch/arm/boot/zImage arch/arm/boot/uImage

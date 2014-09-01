@@ -1,1 +1,0 @@
-cmd_drivers/mfd/si476x-core.o := /home/mqddb/Documents/kafeiji/compile_opt/arm-eabi-4.6/bin/arm-eabi-ld -EL    -r -o drivers/mfd/si476x-core.o drivers/mfd/si476x-cmd.o drivers/mfd/si476x-prop.o drivers/mfd/si476x-i2c.o 

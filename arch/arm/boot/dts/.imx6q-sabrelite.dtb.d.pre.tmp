@@ -1,4 +1,0 @@
-imx6q-sabrelite.o: arch/arm/boot/dts/imx6q-sabrelite.dts \
- arch/arm/boot/dts/imx6q.dtsi arch/arm/boot/dts/imx6q-pinfunc.h \
- arch/arm/boot/dts/imx6qdl.dtsi arch/arm/boot/dts/skeleton.dtsi \
- /media/SDK/workspace/kafeiji/code/kernel_imx_2_core/arch/arm/boot/dts/include/dt-bindings/gpio/gpio.h

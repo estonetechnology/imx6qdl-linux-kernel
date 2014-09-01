@@ -1,1 +1,0 @@
-cmd_drivers/media/usb/gspca/gspca_main.ko := /home/mqddb/Documents/kafeiji/compile_opt/arm-eabi-4.6/bin/arm-eabi-ld -EL -r  -T /media/SDK/workspace/kafeiji/code/kernel_imx_2_core/scripts/module-common.lds --build-id  -o drivers/media/usb/gspca/gspca_main.ko drivers/media/usb/gspca/gspca_main.o drivers/media/usb/gspca/gspca_main.mod.o

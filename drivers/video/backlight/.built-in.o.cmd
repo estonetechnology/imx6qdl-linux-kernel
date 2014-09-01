@@ -1,1 +1,0 @@
-cmd_drivers/video/backlight/built-in.o :=  /home/mqddb/Documents/kafeiji/compile_opt/arm-eabi-4.6/bin/arm-eabi-ld -EL    -r -o drivers/video/backlight/built-in.o drivers/video/backlight/lcd.o drivers/video/backlight/l4f00242t03.o drivers/video/backlight/platform_lcd.o drivers/video/backlight/backlight.o drivers/video/backlight/generic_bl.o drivers/video/backlight/pwm_bl.o 

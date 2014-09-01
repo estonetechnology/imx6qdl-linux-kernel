@@ -1,1 +1,0 @@
-cmd_drivers/dma/ipu/built-in.o :=  /home/mqddb/Documents/kafeiji/compile_opt/arm-eabi-4.6/bin/arm-eabi-ld -EL    -r -o drivers/dma/ipu/built-in.o drivers/dma/ipu/ipu_irq.o drivers/dma/ipu/ipu_idmac.o 

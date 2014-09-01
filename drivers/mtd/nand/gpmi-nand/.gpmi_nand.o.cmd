@@ -1,1 +1,0 @@
-cmd_drivers/mtd/nand/gpmi-nand/gpmi_nand.o := /home/mqddb/Documents/kafeiji/compile_opt/arm-eabi-4.6/bin/arm-eabi-ld -EL    -r -o drivers/mtd/nand/gpmi-nand/gpmi_nand.o drivers/mtd/nand/gpmi-nand/gpmi-nand.o drivers/mtd/nand/gpmi-nand/gpmi-lib.o 

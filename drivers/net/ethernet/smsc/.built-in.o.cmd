@@ -1,1 +1,0 @@
-cmd_drivers/net/ethernet/smsc/built-in.o :=  /home/mqddb/Documents/kafeiji/compile_opt/arm-eabi-4.6/bin/arm-eabi-ld -EL    -r -o drivers/net/ethernet/smsc/built-in.o drivers/net/ethernet/smsc/smsc911x.o 

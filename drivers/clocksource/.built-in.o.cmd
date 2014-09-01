@@ -1,1 +1,0 @@
-cmd_drivers/clocksource/built-in.o :=  /home/mqddb/Documents/kafeiji/compile_opt/arm-eabi-4.6/bin/arm-eabi-ld -EL    -r -o drivers/clocksource/built-in.o drivers/clocksource/clksrc-of.o drivers/clocksource/mmio.o drivers/clocksource/vf_pit_timer.o 

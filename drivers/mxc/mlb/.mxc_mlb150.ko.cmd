@@ -1,1 +1,0 @@
-cmd_drivers/mxc/mlb/mxc_mlb150.ko := /home/mqddb/Documents/kafeiji/compile_opt/arm-eabi-4.6/bin/arm-eabi-ld -EL -r  -T /media/SDK/workspace/kafeiji/code/kernel_imx_2_core/scripts/module-common.lds --build-id  -o drivers/mxc/mlb/mxc_mlb150.ko drivers/mxc/mlb/mxc_mlb150.o drivers/mxc/mlb/mxc_mlb150.mod.o

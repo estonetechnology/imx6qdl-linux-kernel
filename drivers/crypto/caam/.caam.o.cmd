@@ -1,1 +1,0 @@
-cmd_drivers/crypto/caam/caam.o := /home/mqddb/Documents/kafeiji/compile_opt/arm-eabi-4.6/bin/arm-eabi-ld -EL    -r -o drivers/crypto/caam/caam.o drivers/crypto/caam/ctrl.o drivers/crypto/caam/jr.o drivers/crypto/caam/error.o drivers/crypto/caam/key_gen.o 
