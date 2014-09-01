@@ -1,3 +1,0 @@
-kernel/drivers/char/fsl_otp.ko
-kernel/drivers/char/mxs_viim.ko
-kernel/drivers/char/hw_random/rng-core.ko

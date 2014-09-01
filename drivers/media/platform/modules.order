@@ -1,9 +1,0 @@
-kernel/drivers/media/platform/mxc/capture/fsl_csi.ko
-kernel/drivers/media/platform/mxc/capture/csi_v4l2_capture.ko
-kernel/drivers/media/platform/mxc/capture/mxc_v4l2_capture.ko
-kernel/drivers/media/platform/mxc/capture/ipu_fg_overlay_sdc.ko
-kernel/drivers/media/platform/mxc/capture/ipu_bg_overlay_sdc.ko
-kernel/drivers/media/platform/mxc/capture/ipu_prp_enc.ko
-kernel/drivers/media/platform/mxc/capture/ipu_still.ko
-kernel/drivers/media/platform/mxc/capture/ipu_csi_enc.ko
-kernel/drivers/media/platform/mxc/capture/ipu_still.ko
