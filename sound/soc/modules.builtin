@@ -1,0 +1,11 @@
+kernel/sound/soc/snd-soc-core.ko
+kernel/sound/soc/codecs/snd-soc-omap-hdmi-codec.ko
+kernel/sound/soc/codecs/snd-soc-rt5631.ko
+kernel/sound/soc/fsl/snd-soc-fsl-ssi.ko
+kernel/sound/soc/fsl/snd-soc-fsl-asrc-pcm.ko
+kernel/sound/soc/fsl/snd-soc-fsl-asrc.ko
+kernel/sound/soc/fsl/snd-soc-fsl-hdmi.ko
+kernel/sound/soc/fsl/snd-soc-fsl-utils.ko
+kernel/sound/soc/fsl/snd-soc-imx-audmux.ko
+kernel/sound/soc/fsl/snd-soc-imx-rt5631.ko
+kernel/sound/soc/fsl/snd-soc-imx-hdmi.ko

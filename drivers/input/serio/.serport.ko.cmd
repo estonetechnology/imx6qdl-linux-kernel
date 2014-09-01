@@ -1,0 +1,1 @@
+cmd_drivers/input/serio/serport.ko := /home/mqddb/Documents/kafeiji/compile_opt/arm-eabi-4.6/bin/arm-eabi-ld -EL -r  -T /media/SDK/workspace/kafeiji/code/kernel_imx_2_core/scripts/module-common.lds --build-id  -o drivers/input/serio/serport.ko drivers/input/serio/serport.o drivers/input/serio/serport.mod.o

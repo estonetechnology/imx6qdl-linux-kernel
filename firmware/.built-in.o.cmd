@@ -1,0 +1,1 @@
+cmd_firmware/built-in.o :=  /home/mqddb/Documents/kafeiji/compile_opt/arm-eabi-4.6/bin/arm-eabi-ld -EL    -r -o firmware/built-in.o firmware/imx/sdma/sdma-imx6q.bin.gen.o firmware/imx/epdc_E60_V110.fw.gen.o firmware/imx/epdc_E60_V220.fw.gen.o firmware/imx/epdc_E97_V110.fw.gen.o firmware/imx/epdc_E060SCM.fw.gen.o 

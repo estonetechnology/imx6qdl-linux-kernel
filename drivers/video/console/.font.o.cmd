@@ -1,0 +1,1 @@
+cmd_drivers/video/console/font.o := /home/mqddb/Documents/kafeiji/compile_opt/arm-eabi-4.6/bin/arm-eabi-ld -EL    -r -o drivers/video/console/font.o drivers/video/console/fonts.o drivers/video/console/font_8x8.o drivers/video/console/font_8x16.o 

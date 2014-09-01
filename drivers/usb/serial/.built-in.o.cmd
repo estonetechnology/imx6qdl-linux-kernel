@@ -1,0 +1,1 @@
+cmd_drivers/usb/serial/built-in.o :=  /home/mqddb/Documents/kafeiji/compile_opt/arm-eabi-4.6/bin/arm-eabi-ld -EL    -r -o drivers/usb/serial/built-in.o drivers/usb/serial/usbserial.o drivers/usb/serial/option.o drivers/usb/serial/pl2303.o drivers/usb/serial/qcserial.o drivers/usb/serial/usb_wwan.o 

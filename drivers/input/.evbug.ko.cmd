@@ -1,0 +1,1 @@
+cmd_drivers/input/evbug.ko := /home/mqddb/Documents/kafeiji/compile_opt/arm-eabi-4.6/bin/arm-eabi-ld -EL -r  -T /media/SDK/workspace/kafeiji/code/kernel_imx_2_core/scripts/module-common.lds --build-id  -o drivers/input/evbug.ko drivers/input/evbug.o drivers/input/evbug.mod.o

@@ -1,0 +1,1 @@
+cmd_drivers/input/serio/built-in.o :=  /home/mqddb/Documents/kafeiji/compile_opt/arm-eabi-4.6/bin/arm-eabi-ld -EL    -r -o drivers/input/serio/built-in.o drivers/input/serio/serio.o drivers/input/serio/libps2.o 

@@ -1,0 +1,1 @@
+cmd_drivers/media/v4l2-core/videobuf2-vmalloc.ko := /home/mqddb/Documents/kafeiji/compile_opt/arm-eabi-4.6/bin/arm-eabi-ld -EL -r  -T /media/SDK/workspace/kafeiji/code/kernel_imx_2_core/scripts/module-common.lds --build-id  -o drivers/media/v4l2-core/videobuf2-vmalloc.ko drivers/media/v4l2-core/videobuf2-vmalloc.o drivers/media/v4l2-core/videobuf2-vmalloc.mod.o

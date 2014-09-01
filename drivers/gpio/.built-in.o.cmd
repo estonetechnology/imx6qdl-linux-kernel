@@ -1,0 +1,1 @@
+cmd_drivers/gpio/built-in.o :=  /home/mqddb/Documents/kafeiji/compile_opt/arm-eabi-4.6/bin/arm-eabi-ld -EL    -r -o drivers/gpio/built-in.o drivers/gpio/devres.o drivers/gpio/gpiolib.o drivers/gpio/gpiolib-of.o drivers/gpio/gpio-generic.o drivers/gpio/gpio-mxc.o drivers/gpio/gpio-pca953x.o 

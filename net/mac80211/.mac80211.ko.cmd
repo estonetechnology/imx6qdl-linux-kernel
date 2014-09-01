@@ -1,0 +1,1 @@
+cmd_net/mac80211/mac80211.ko := /home/mqddb/Documents/kafeiji/compile_opt/arm-eabi-4.6/bin/arm-eabi-ld -EL -r  -T /media/SDK/workspace/kafeiji/code/kernel_imx_2_core/scripts/module-common.lds --build-id  -o net/mac80211/mac80211.ko net/mac80211/mac80211.o net/mac80211/mac80211.mod.o

@@ -1,0 +1,1 @@
+make imx_v7_defconfig

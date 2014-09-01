@@ -1,0 +1,1 @@
+cmd_drivers/media/platform/built-in.o :=  /home/mqddb/Documents/kafeiji/compile_opt/arm-eabi-4.6/bin/arm-eabi-ld -EL    -r -o drivers/media/platform/built-in.o drivers/media/platform/soc_camera/built-in.o drivers/media/platform/davinci/built-in.o drivers/media/platform/mxc/output/built-in.o 
