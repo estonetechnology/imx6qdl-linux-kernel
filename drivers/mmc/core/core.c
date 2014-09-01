@@ -2420,7 +2420,13 @@ void mmc_start_host(struct mmc_host *host)
 		mmc_power_off(host);
 	else
 		mmc_power_up(host);
-	mmc_detect_change(host, 0);
+	//+++MQ
+	if (strcmp(mmc_hostname(host), "mmc0") == 0) {
+		mmc_detect_change(host, msecs_to_jiffies(200));
+	} else {
+		mmc_detect_change(host, 0);
+	}
+	//+++MQ
 }
 
 void mmc_stop_host(struct mmc_host *host)
