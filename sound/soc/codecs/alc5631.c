@@ -1063,8 +1063,14 @@ printk("%s ready open hp 0x04 = 0x%x \n",__func__, snd_soc_read(codec, 0x04));
 	//	/*spk mute */
 	//	snd_soc_update_bits(codec, ALC5631_SPK_OUT_VOL,
 	//		ALC5631_L_MUTE | ALC5631_R_MUTE, 0);
+	//+++MQ
+		alc5631_reg_set(1);
+	//+++MQ
 		msleep(160);
 	} else {
+	//+++MQ
+	alc5631_reg_set(0);
+	//+++MQ
 		/* config depop sequence parameter */
 		alc5631_index_write(codec, ALC5631_SPK_INTL_CTRL, 0x302f);
 		snd_soc_write(codec, ALC5631_DEPOP_FUN_CTRL_1,
@@ -2084,6 +2090,8 @@ static int alc5631_hifi_codec_set_dai_fmt(struct snd_soc_dai *codec_dai,
 	unsigned int iface = 0;
 
 	dev_dbg(codec->dev, "enter %s\n", __func__);
+	printk("MQ=======reg02:%x\n", snd_soc_read(pcodec, 0x02));	
+	//snd_soc_write(pcodec, 0x02, 0xc8c8);	
 #ifdef ALC5631_DEBUG
 	printk(" %s \n", __func__);
 #endif
@@ -2488,6 +2496,7 @@ void alc5631_reg_set(int if_play)
 	} else {
 		snd_soc_write(pcodec, 0x6e, 0x4000);	
 		snd_soc_write(pcodec, 0x66, 0x2000);	
+		snd_soc_write(pcodec, 0x02, 0xc8c8);	
 	
 	}
 }

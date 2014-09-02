@@ -233,7 +233,6 @@ static int imx_hifi_hw_params(struct snd_pcm_substream *substream,
 		dev_err(dev, "failed to set SYSCLK: %d\n", ret);
 		return ret;
 	}
-	alc5631_reg_set(1);
 
 	return 0;
 }
@@ -246,8 +245,6 @@ static int imx_hifi_hw_free(struct snd_pcm_substream *substream)
 	struct device *dev = &priv->pdev->dev;
 	int ret;
 
-	printk("MQ=====%s \n", __FUNCTION__);
-	alc5631_reg_set(0);
 
 	/* We don't need to handle anything if there's no substream running */
 	if (!priv->first_stream)
