@@ -2091,7 +2091,7 @@ static int alc5631_hifi_codec_set_dai_fmt(struct snd_soc_dai *codec_dai,
 
 	dev_dbg(codec->dev, "enter %s\n", __func__);
 	printk("MQ=======reg02:%x\n", snd_soc_read(pcodec, 0x02));	
-	//snd_soc_write(pcodec, 0x02, 0xc8c8);	
+	snd_soc_write(pcodec, 0x02, 0xc8c8);	
 #ifdef ALC5631_DEBUG
 	printk(" %s \n", __func__);
 #endif
