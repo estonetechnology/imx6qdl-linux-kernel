@@ -295,7 +295,7 @@ static void vtl_ts_report_xy_coord(struct ts_info *ts)
 			
 			input_mt_sync(input_dev);
 		#else
-			//input_report_key(input_dev,BTN_TOUCH,1);
+			input_report_key(input_dev,BTN_TOUCH,1);
 			
 			input_report_abs(input_dev, ABS_MT_TOUCH_MAJOR, 10);
 			input_report_abs(input_dev, ABS_PRESSURE, 10);
@@ -319,7 +319,7 @@ static void vtl_ts_report_xy_coord(struct ts_info *ts)
 		if ( release & (0x01<<id) ) 
 		{
 				//	input_mt_slot(input_dev, id);
-				//input_report_key(input_dev,BTN_TOUCH,0);
+				input_report_key(input_dev,BTN_TOUCH,0);
 				//input_report_abs(input_dev, ABS_MT_TRACKING_ID, -1);
 				//input_mt_sync(input_dev);	
 			sync = 1;
@@ -356,7 +356,7 @@ int vtl_ts_suspend(struct i2c_client *client, pm_message_t mesg)
 		}
 		#else
 		{
-			//input_report_key(ts->driver->input_dev,BTN_TOUCH,0);
+			input_report_key(ts->driver->input_dev,BTN_TOUCH,0);
 		}
 		#endif
 		input_sync(ts->driver->input_dev);
@@ -387,7 +387,7 @@ int vtl_ts_resume(struct i2c_client *client)
 		}
 		#else
 		{
-			//input_report_key(ts->driver->input_dev,BTN_TOUCH,0);
+			input_report_key(ts->driver->input_dev,BTN_TOUCH,0);
 		}
     	#endif
 		input_sync(ts->driver->input_dev);
@@ -489,7 +489,7 @@ static int vtl_ts_init_input_dev(struct ts_info *ts)
 	__set_bit(EV_ABS, input_dev->evbit);
 
 	
-	//set_bit(BTN_TOUCH, input_dev->keybit);//20130923 wwj
+	set_bit(BTN_TOUCH, input_dev->keybit);//20130923
 	set_bit(ABS_X, input_dev->absbit);//20130923
     set_bit(ABS_Y, input_dev->absbit);//20130923
 	set_bit(ABS_PRESSURE, input_dev->absbit);//20130923

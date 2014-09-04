@@ -25,7 +25,8 @@ static struct chip_cmd (*chip) = NULL;
 
 
 static unsigned char binary_data[] = {
-#include "0701.dat"
+//#include "0701.dat"
+#include "wgj10206_CT363_01_V03_E1BD_140818.dat"
 };
 
 
