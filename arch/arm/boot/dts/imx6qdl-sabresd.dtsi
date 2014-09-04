@@ -103,27 +103,29 @@
 		};
 	};
 
+	/*MQ remove
 	gpio-keys {
 		compatible = "gpio-keys";
 		power {
 			label = "Power Button";
 			gpios = <&gpio3 29 1>;
-			linux,code = <116>; /* KEY_POWER */
+			linux,code = <116>; // KEY_POWER
 			gpio-key,wakeup;
 		};
 
 		volume-up {
 			label = "Volume Up";
-			/*gpios = <&gpio1 4 1>;*/
-			linux,code = <115>; /* KEY_VOLUMEUP */
+			//gpios = <&gpio1 4 1>;
+			linux,code = <115>; // KEY_VOLUMEUP
 		};
 
 		volume-down {
 			label = "Volume Down";
 			gpios = <&gpio1 5 1>;
-			linux,code = <114>; /* KEY_VOLUMEDOWN */
+			linux,code = <114>; // KEY_VOLUMEDOWN
 		};
 	};
+	*/
 
 	/*MQ remove
 	sound {
@@ -171,7 +173,7 @@
 		disp_dev = "hdmi";
 		interface_pix_fmt = "RGB24";
 		//mode_str ="1920x1080M@60";
-		mode_str ="1920x1080M@60_";
+		mode_str ="1920x1080M@60";
 		default_bpp = <24>;
 		int_clk = <0>;
 		late_init = <0>;
@@ -308,10 +310,10 @@
 };
 
 &hdmi_core {
-/*
+	/*
 	ipu_id = <0>;
 	disp_id = <0>;
-*/
+	*/
 	ipu_id = <1>;
 	disp_id = <1>;
 	status = "okay";

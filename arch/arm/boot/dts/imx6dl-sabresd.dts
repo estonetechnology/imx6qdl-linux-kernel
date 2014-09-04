@@ -85,8 +85,6 @@
         pinctrl-0 = <&pinctrl_audmux_1>;
 };
 
-
-
 &mxcfb1 {
         status = "okay";
 };
@@ -255,10 +253,11 @@
         fsl,phy_reg_vlev = <0x0294>;
         fsl,phy_reg_cksymtx = <0x800d>;
         status = "okay";
-/*
+/*pinctrl already defined in i2c2 pinctrl
         pinctrl-names = "default";
         pinctrl-0 = <&pinctrl_hdmi_hdcp_1>;
-        fsl,hdcp; */
+        fsl,hdcp; 
+*/
 };
 &hdmi_audio {
         status = "okay";
