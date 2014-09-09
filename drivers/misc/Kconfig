@@ -404,6 +404,15 @@ config DS1682
 	  This driver can also be built as a module.  If so, the module
 	  will be called ds1682.
 
+#+++MQ
+config DS28E10
+	tristate "for shencloud tech"
+	default y
+	help
+		for shencloud tech
+#+++MQ
+
+
 config SPEAR13XX_PCIE_GADGET
 	bool "PCIe gadget support for SPEAr13XX platform"
 	depends on ARCH_SPEAR13XX && BROKEN

@@ -77,6 +77,14 @@
 		brightness-levels = <0 4 8 16 32 64 128 255>;
 		default-brightness-level = <7>;
 	};
+
+//+++MQ
+    ds28e10 {
+        compatible = "fsl,imx_ds28e10";
+        status = "okay";
+        ds28e10_io = <&gpio1 2 0>;
+    };
+//+++MQ
 };
 
 &audmux {
