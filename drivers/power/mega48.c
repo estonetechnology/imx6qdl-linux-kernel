@@ -53,7 +53,7 @@ unsigned long ddr3_calibration_default[][2] = {
 
 void calibration_mmc (void)
 {
-	printk("MQ==%s\n", __FUNCTION__);
+	printk("MQ==%s====in\n", __FUNCTION__);
    int ret = 0, i, j;
    unsigned long data = 0;
    int size = ARRAY_SIZE(ddr3_calibration_default);
@@ -69,8 +69,8 @@ void calibration_mmc (void)
    		ret=0;
 		while(ret<=0)
 		{
-			mcu_cmd[0]= mcu_cmd[0] + j;
-			printk("send mcu command:%02x\n",mcu_cmd[0]);
+			mcu_cmd[0]= mcu_cmd[0]++;
+			printk("send mcu command:%d\n",mcu_cmd[0]);
 			ret = i2c_master_send(&m_client, (unsigned char *)mcu_cmd, 1);
 			if (ret>0)
 			{
@@ -78,7 +78,8 @@ void calibration_mmc (void)
 				msleep(50);
 				i2c_master_recv(&m_client, mac_buf, 1);
 				printk("get one byte:%x\n", mac_buf[0]);
-				data = data | mac_buf[0] << j;
+				data = data | mac_buf[0] << j*8;
+				printk("data is:%x\n", data);
 			}
 			else
 			{
@@ -92,14 +93,16 @@ void calibration_mmc (void)
    	if (data == 0xffffffff)
    	{
    		/* code */
-   		printk("write default ddr calibration value\n");
-   		__raw_writel(ddr3_calibration_default[i][1], ioremap(ddr3_calibration_default[i][0], 4));
+   		printk("write default ddr calibration reg:%x value:%x\n", ddr3_calibration_default[i][0], ddr3_calibration_default[i][1]);
+   		//__raw_writel(ddr3_calibration_default[i][1], ioremap(ddr3_calibration_default[i][0], 4));
    	} else {
-   		printk("write new ddr calibration value:%x\n", data);
-   		__raw_writel(data, ioremap(ddr3_calibration_default[i][0], 4));
+   		printk("write new ddr calibration reg:%x value:%x\n",ddr3_calibration_default[i][0], data);
+   		printk("  default ddr calibration reg:%x value:%x\n", ddr3_calibration_default[i][0], ddr3_calibration_default[i][1]);
+   		//__raw_writel(data, ioremap(ddr3_calibration_default[i][0], 4));
    	}
 
    }
+	printk("MQ==%s====out\n", __FUNCTION__);
 
 }
 
@@ -217,7 +220,7 @@ static int mega48_probe(struct i2c_client *client,
 	}
 	memcpy(&m_client,client,sizeof(*client));
 	read_ethnet_mac_addr();
-	//calibration_mmc(); not use first
+	calibration_mmc(); //not use first
 	pm_power_off = board_poweroff;
 
 	return 0;
