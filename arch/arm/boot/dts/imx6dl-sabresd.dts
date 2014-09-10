@@ -101,6 +101,7 @@
         status = "okay";
 };
 
+/*+++MQ
 &mxcfb3 {
         status = "okay";
 };
@@ -108,6 +109,8 @@
 &mxcfb4 {
         status = "okay";
 };
++++MQ*/
+
 &ecspi1 {
 	fsl,spi-num-chipselects = <1>;
 	cs-gpios = <&gpio3 19 0>;
