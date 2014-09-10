@@ -13,8 +13,8 @@
 
 #define DRIVER_NAME "ds28e10"
 #define EdbgOutputDebugString printk
-#define DEBUG printk
-//#define DEBUG(...)
+//#define DEBUG printk
+#define DEBUG(...)
 
 //#define	SETGPG11_OUTPUT	(rGPGCON |= (1<<22))
 //#define	SETGPG11_OUTPUT2	(rGPGCON &= ~(1<<23))

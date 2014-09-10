@@ -14,6 +14,9 @@
 #include <linux/input/mt.h>
 #include <linux/io.h>
 
+//#define DEBUG printk
+#define DEBUG(...)
+
 #define MCU_CMD_POWEROFF 0xaa
 #define MCU_CMD_READ_ETHNET_MAC_ADDR 0xab
 #define MCU_CMD_READ_WIFI_MAC_ADDR 0xac
@@ -53,7 +56,7 @@ unsigned long ddr3_calibration_default[][2] = {
 
 void calibration_mmc (void)
 {
-	printk("MQ==%s====in\n", __FUNCTION__);
+	DEBUG("MQ==%s====in\n", __FUNCTION__);
    int ret = 0, i, j;
    unsigned long data = 0;
    int size = ARRAY_SIZE(ddr3_calibration_default);
@@ -70,39 +73,39 @@ void calibration_mmc (void)
 		while(ret<=0)
 		{
 			mcu_cmd[0]= mcu_cmd[0]++;
-			printk("send mcu command:%d\n",mcu_cmd[0]);
+			DEBUG("send mcu command:%d\n",mcu_cmd[0]);
 			ret = i2c_master_send(&m_client, (unsigned char *)mcu_cmd, 1);
 			if (ret>0)
 			{
-				printk("send mcu command ok...\n");
+				DEBUG("send mcu command ok...\n");
 				msleep(50);
 				i2c_master_recv(&m_client, mac_buf, 1);
-				printk("get one byte:%x\n", mac_buf[0]);
+				DEBUG("get one byte:%x\n", mac_buf[0]);
 				data = data | mac_buf[0] << j*8;
-				printk("data is:%x\n", data);
+				DEBUG("data is:%x\n", data);
 			}
 			else
 			{
-				printk("send mcu command failed...\n");
+				DEBUG("send mcu command failed...\n");
 				msleep(500);
 			}
 		}
    	}
 
-   	printk("get data:0x%x \n", data);
+   	DEBUG("get data:0x%x \n", data);
    	if (data == 0xffffffff)
    	{
    		/* code */
-   		printk("write default ddr calibration reg:%x value:%x\n", ddr3_calibration_default[i][0], ddr3_calibration_default[i][1]);
+   		DEBUG("write default ddr calibration reg:%x value:%x\n", ddr3_calibration_default[i][0], ddr3_calibration_default[i][1]);
    		//__raw_writel(ddr3_calibration_default[i][1], ioremap(ddr3_calibration_default[i][0], 4));
    	} else {
-   		printk("write new ddr calibration reg:%x value:%x\n",ddr3_calibration_default[i][0], data);
-   		printk("  default ddr calibration reg:%x value:%x\n", ddr3_calibration_default[i][0], ddr3_calibration_default[i][1]);
+   		DEBUG("write new ddr calibration reg:%x value:%x\n",ddr3_calibration_default[i][0], data);
+   		DEBUG("  default ddr calibration reg:%x value:%x\n", ddr3_calibration_default[i][0], ddr3_calibration_default[i][1]);
    		//__raw_writel(data, ioremap(ddr3_calibration_default[i][0], 4));
    	}
 
    }
-	printk("MQ==%s====out\n", __FUNCTION__);
+	DEBUG("MQ==%s====out\n", __FUNCTION__);
 
 }
 
@@ -118,23 +121,23 @@ int read_ethnet_mac_addr(void)
 		while(ret<=0)
 		{
 			mcu_cmd[0]=i;
-			printk("send command:%02x\n",mcu_cmd[0]);
+			DEBUG("send command:%02x\n",mcu_cmd[0]);
 			ret = i2c_master_send(&m_client, (unsigned char *)mcu_cmd, 1);
 			if (ret>0)
 			{
-				printk("send ethnet command ok...\n");
+				DEBUG("send ethnet command ok...\n");
 				msleep(50);
 				i2c_master_recv(&m_client, mac_buf, 1);
 				mac_addr[i]=mac_buf[0];
 			}
 			else
 			{
-				printk("send ethnet command failed...\n");
+				DEBUG("send ethnet command failed...\n");
 				msleep(500);
 			}
 		}
 	}
-	printk("ethnet address mac address:%02x:%02x:%02x:%02x:%02x:%02x\n",mac_addr[0],mac_addr[1],mac_addr[2],mac_addr[3],mac_addr[4],mac_addr[5]);
+	DEBUG("ethnet address mac address:%02x:%02x:%02x:%02x:%02x:%02x\n",mac_addr[0],mac_addr[1],mac_addr[2],mac_addr[3],mac_addr[4],mac_addr[5]);
 	return 0;
 }
 //read wifi mac address 
@@ -148,19 +151,19 @@ int read_wifi_mac_addr(void)
 		ret = i2c_master_recv(&m_client,mac_buf , 6);
 		if (ret>=6)
 		{
-			printk("********i2c(2) recv wifi address ok**************\n");
-			printk("wifi mac address:%02x:%02x:%02x:%02x:%02x:%02x\n",mac_buf[0],mac_buf[1],mac_buf[2],mac_buf[3],mac_buf[4],mac_buf[5]);
+			DEBUG("********i2c(2) recv wifi address ok**************\n");
+			DEBUG("wifi mac address:%02x:%02x:%02x:%02x:%02x:%02x\n",mac_buf[0],mac_buf[1],mac_buf[2],mac_buf[3],mac_buf[4],mac_buf[5]);
 			break;
 		}
 		else
-			printk("********i2c(2) receive wifi address failed***********\n");
+			DEBUG("********i2c(2) receive wifi address failed***********\n");
 	}
 	return 0;
 }
 
 static int board_poweroff(void)
 {
-	printk("MQ===================%s==============================\n", __FUNCTION__);
+	DEBUG("MQ===================%s==============================\n", __FUNCTION__);
 	//ret = i2c_smbus_wirte_byte_data(client, 0x00, 0xaa);
 	int ret=0;
 	int i=0;
@@ -170,11 +173,11 @@ static int board_poweroff(void)
 		ret = i2c_master_send(&m_client, (unsigned char *)mcu_cmd, 1);
 		if (ret>0)
 		{
-			printk("********i2c(2) send data:%0x**************\n",mcu_cmd[0]);
+			DEBUG("********i2c(2) send data:%0x**************\n",mcu_cmd[0]);
 			break;
 		}
 		else
-			printk("********i2c(2) send data failed***********\n");
+			DEBUG("********i2c(2) send data failed***********\n");
 	}
 	return ret;
 
@@ -195,17 +198,17 @@ static void mac_id_sys_init(void)
 {
 	int ret;
 
-	printk(KERN_INFO "mac_id_sys_init: start ********************************\n");
+	DEBUG(KERN_INFO "mac_id_sys_init: start ********************************\n");
 	mac_id_kobj1 = kobject_create_and_add("mac_id", NULL);
 	if( mac_id_kobj1 == NULL )
 	{
-		printk(KERN_ERR "mac_id: kobject_create_and_add failed\n");
+		DEBUG(KERN_ERR "mac_id: kobject_create_and_add failed\n");
 		return;
 	}
 
 	ret = sysfs_create_file(mac_id_kobj1, &dev_attr_mac_id.attr);
 	if (ret) {
-		printk(KERN_ERR "%s: sysfs_create_version_file failed\n", __func__);
+		DEBUG(KERN_ERR "%s: sysfs_create_version_file failed\n", __func__);
 		return;
 	}
 }
@@ -213,10 +216,10 @@ static void mac_id_sys_init(void)
 static int mega48_probe(struct i2c_client *client,
 						       const struct i2c_device_id *id)
 {
-	printk("MQ===================%s==============================\n", __FUNCTION__);
+	DEBUG("MQ===================%s==============================\n", __FUNCTION__);
 	mac_id_sys_init();
 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_BYTE_DATA)) {
-		printk("mega48 i2c fail ---%s\n", __FUNCTION__);	
+		DEBUG("mega48 i2c fail ---%s\n", __FUNCTION__);	
 	}
 	memcpy(&m_client,client,sizeof(*client));
 	read_ethnet_mac_addr();
@@ -228,7 +231,7 @@ static int mega48_probe(struct i2c_client *client,
 
 static int mega48_remove(struct i2c_client *client)
 {
-	printk("MQ===================%s==============================\n", __FUNCTION__);
+	DEBUG("MQ===================%s==============================\n", __FUNCTION__);
 	return 0;
 }
 
