@@ -20,10 +20,10 @@
 #define MCU_CMD_POWEROFF 0xaa
 #define MCU_CMD_READ_ETHNET_MAC_ADDR 0xab
 #define MCU_CMD_READ_WIFI_MAC_ADDR 0xac
-unsigned char mcu_cmd[1] ;
-unsigned char mac_buf[6];
-struct i2c_client m_client;
-unsigned char mac_addr[6];
+static unsigned char mcu_cmd[1] ;
+static unsigned char mac_buf[6];
+static struct i2c_client m_client;
+static unsigned char mac_addr[6];
 
 /*
  * calibration default value
@@ -43,7 +43,7 @@ unsigned char mac_addr[6];
 
    __raw_writel(0x10E0180, ioremap(0x020c4060, 4));
  */
-unsigned long ddr3_calibration_default[][2] = {
+static unsigned long ddr3_calibration_default[][2] = {
   {0x021b083c, 0x42480248},
   {0x021b0840, 0x021C0230},
   {0x021b483c, 0x42300238},
@@ -54,7 +54,7 @@ unsigned long ddr3_calibration_default[][2] = {
   {0x021b4850, 0x3A36362C},
 };
 
-void calibration_mmc (void)
+static void calibration_mmc (void)
 {
 	DEBUG("MQ==%s====in\n", __FUNCTION__);
    int ret = 0, i, j;
@@ -72,7 +72,6 @@ void calibration_mmc (void)
    		ret=0;
 		while(ret<=0)
 		{
-			mcu_cmd[0]= mcu_cmd[0]++;
 			DEBUG("send mcu command:%d\n",mcu_cmd[0]);
 			ret = i2c_master_send(&m_client, (unsigned char *)mcu_cmd, 1);
 			if (ret>0)
@@ -83,6 +82,7 @@ void calibration_mmc (void)
 				DEBUG("get one byte:%x\n", mac_buf[0]);
 				data = data | mac_buf[0] << j*8;
 				DEBUG("data is:%x\n", data);
+				mcu_cmd[0]= mcu_cmd[0]++;
 			}
 			else
 			{
@@ -102,6 +102,7 @@ void calibration_mmc (void)
    		DEBUG("write new ddr calibration reg:%x value:%x\n",ddr3_calibration_default[i][0], data);
    		DEBUG("  default ddr calibration reg:%x value:%x\n", ddr3_calibration_default[i][0], ddr3_calibration_default[i][1]);
    		//__raw_writel(data, ioremap(ddr3_calibration_default[i][0], 4));
+		printk("check-- %x:%x\n", data,  __raw_readl(ioremap(ddr3_calibration_default[i][0], 4)));
    	}
 
    }
@@ -109,7 +110,7 @@ void calibration_mmc (void)
 
 }
 
-int read_ethnet_mac_addr(void)
+static int read_ethnet_mac_addr(void)
 {
 
 	unsigned char mac_buf[1];
@@ -141,7 +142,7 @@ int read_ethnet_mac_addr(void)
 	return 0;
 }
 //read wifi mac address 
-int read_wifi_mac_addr(void)
+static int read_wifi_mac_addr(void)
 {
 	int ret=0;
 	int i=0;
@@ -216,17 +217,19 @@ static void mac_id_sys_init(void)
 static int mega48_probe(struct i2c_client *client,
 						       const struct i2c_device_id *id)
 {
+	int rc=0;
 	DEBUG("MQ===================%s==============================\n", __FUNCTION__);
 	mac_id_sys_init();
 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_BYTE_DATA)) {
-		DEBUG("mega48 i2c fail ---%s\n", __FUNCTION__);	
+		dev_err(&client->dev, "i2c bus does not support the powermcu\n");
+		rc = -ENODEV;
 	}
 	memcpy(&m_client,client,sizeof(*client));
 	read_ethnet_mac_addr();
 	calibration_mmc(); //not use first
 	pm_power_off = board_poweroff;
 
-	return 0;
+	return rc;
 }
 
 static int mega48_remove(struct i2c_client *client)

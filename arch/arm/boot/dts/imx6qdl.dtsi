@@ -264,8 +264,8 @@
 					interrupts = <0 46 0x04>;
 					clocks = <&clks 178>, <&clks 157>;
 					clock-names = "ipg", "baud";
-					dmas = <&sdma 35 1 0>,
-					       <&sdma 36 1 0>;
+					dmas = <&sdma 37 1 0>,
+					       <&sdma 38 1 0>;
 					dma-names = "rx", "tx";
 					status = "disabled";
 				};
@@ -1050,7 +1050,7 @@
 				MX6QDL_PAD_SD2_DAT3__AUD4_TXC  0x130b0
 				MX6QDL_PAD_SD2_DAT2__AUD4_TXD  0x110b0
 				MX6QDL_PAD_SD2_DAT1__AUD4_TXFS 0x130b0
-				MX6QDL_PAD_GPIO_0__CCM_CLKO1  0x1f0b0 //MQ added
+				MX6QDL_PAD_GPIO_0__CCM_CLKO1  0x1f0b0 //MQ +++
 			>;
 		};
 
