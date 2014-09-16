@@ -31,7 +31,7 @@
 
 #include "alc5631.h"
 
-#define ALC5631_DEBUG
+//#define ALC5631_DEBUG
 #define ALC5631_DEMO 0 /* only for demo; please remove it */
 #if 1// ALC5631_DEMO
 
@@ -1064,12 +1064,14 @@ printk("%s ready open hp 0x04 = 0x%x \n",__func__, snd_soc_read(codec, 0x04));
 	//	snd_soc_update_bits(codec, ALC5631_SPK_OUT_VOL,
 	//		ALC5631_L_MUTE | ALC5631_R_MUTE, 0);
 	//+++MQ
-		alc5631_reg_set(1);
+		//alc5631_reg_set(1);
+		//snd_soc_write(pcodec, 0x02, 0x4848);	
 	//+++MQ
 		msleep(160);
+		printk("MQ---test sleep over");
 	} else {
 	//+++MQ
-	alc5631_reg_set(0);
+	//alc5631_reg_set(0);
 	//+++MQ
 		/* config depop sequence parameter */
 		alc5631_index_write(codec, ALC5631_SPK_INTL_CTRL, 0x302f);
@@ -1122,6 +1124,7 @@ static int hp_event(struct snd_soc_dapm_widget *w,
 {
 	struct snd_soc_codec *codec = w->codec;
 	struct alc5631_priv *alc5631 = snd_soc_codec_get_drvdata(codec);
+	printk(" %s in------- \n", __func__ );
 	/*
 	   static int once = 0;
 
@@ -1136,6 +1139,7 @@ static int hp_event(struct snd_soc_dapm_widget *w,
 #ifdef ALC5631_DEBUG
 			printk(" %s , power down \n", __func__ );
 #endif
+			printk(" %s---version:%d , power down \n", __func__, alc5631->codec_version);
 			if (alc5631->codec_version) {
 				onebit_depop_mute_stage(codec, 0);
 				onebit_depop_power_stage(codec, 0);
@@ -1149,6 +1153,7 @@ static int hp_event(struct snd_soc_dapm_widget *w,
 #ifdef ALC5631_DEBUG
 			printk(" %s , power up \n", __func__ );
 #endif
+			printk(" %s---version:%d , power up \n", __func__ , alc5631->codec_version);
 			if (alc5631->codec_version) {
 				onebit_depop_power_stage(codec, 1);
 				onebit_depop_mute_stage(codec, 1);
@@ -1162,6 +1167,7 @@ static int hp_event(struct snd_soc_dapm_widget *w,
 			break;
 	}
 
+	printk(" %s out------- \n", __func__ );
 	return 0;
 }
 
