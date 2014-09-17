@@ -2173,7 +2173,9 @@ CONFIG_MEDIA_TUNER_MC44S803=y
 # Graphics support
 #
 CONFIG_DRM=y
-# CONFIG_DRM_VIVANTE is not set
+#+++MQ add for solve fb problem
+CONFIG_DRM_VIVANTE=y
+#+++MQ
 # CONFIG_DRM_EXYNOS is not set
 # CONFIG_DRM_UDL is not set
 # CONFIG_DRM_TILCDC is not set
