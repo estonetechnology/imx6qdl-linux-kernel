@@ -517,7 +517,7 @@ static int fsl_ssi_trigger(struct snd_pcm_substream *substream, int cmd,
 	struct fsl_ssi_private *ssi_private = snd_soc_dai_get_drvdata(rtd->cpu_dai);
 	struct ccsr_ssi __iomem *ssi = ssi_private->ssi;
 	unsigned long flags;
-	printk("MQ===%s\n",__FUNCTION__);
+	//printk("MQ===%s\n",__FUNCTION__);
 
 	switch (cmd) {
 	case SNDRV_PCM_TRIGGER_START:

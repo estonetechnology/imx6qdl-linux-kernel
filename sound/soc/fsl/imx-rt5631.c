@@ -428,7 +428,7 @@ static int imx_alc5631_probe(struct platform_device *pdev)
 	 */
 	int_port--;
 	ext_port--;
-	printk("MQ=config int-port=%s \n", __FUNCTION__);
+	//printk("MQ=config int-port=%s \n", __FUNCTION__);
 	ret = imx_audmux_v2_configure_port(int_port,
 			IMX_AUDMUX_V2_PTCR_SYN |
 			IMX_AUDMUX_V2_PTCR_TFSEL(ext_port) |
@@ -440,7 +440,7 @@ static int imx_alc5631_probe(struct platform_device *pdev)
 		dev_err(&pdev->dev, "audmux internal port setup failed\n");
 		return ret;
 	}
-	printk("MQ=config ext_port=%s \n", __FUNCTION__);
+	//printk("MQ=config ext_port=%s \n", __FUNCTION__);
 	ret = imx_audmux_v2_configure_port(ext_port,
 			IMX_AUDMUX_V2_PTCR_SYN,
 			IMX_AUDMUX_V2_PDCR_RXDSEL(int_port));

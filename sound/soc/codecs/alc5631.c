@@ -561,13 +561,17 @@ static int check_i2s_power(struct snd_soc_dapm_widget *source,
 //	snd_soc_update_bits(source->codec, ALC5631_PWR_MANAG_ADD4,
 //			ALC5631_PWR_HP_R_OUT_VOL|ALC5631_PWR_HP_L_OUT_VOL,
 //			0);
+#ifdef ALC5631_DEBUG
 	printk(" %s \n", __func__);
+#endif
 	return 1;
 }
 static int check_voice_dac_power(struct snd_soc_dapm_widget *source, 
 		struct snd_soc_dapm_widget *sink)
 {
+#ifdef ALC5631_DEBUG
 	printk(" %s \n", __func__);
+#endif
 	return 1;
 }
 static int check_dac_ref_power(struct snd_soc_dapm_widget *source, 
@@ -576,121 +580,161 @@ static int check_dac_ref_power(struct snd_soc_dapm_widget *source,
 //	snd_soc_update_bits(source->codec, ALC5631_PWR_MANAG_ADD4,
 //			ALC5631_PWR_HP_R_OUT_VOL|ALC5631_PWR_HP_L_OUT_VOL,
 //			0);
+#ifdef ALC5631_DEBUG
 	printk(" %s \n", __func__);
+#endif
 	return 1;
 }
 static int check_outmixr_mixer_power(struct snd_soc_dapm_widget *source, 
 		struct snd_soc_dapm_widget *sink)
 {
+#ifdef ALC5631_DEBUG
 	printk(" %s \n", __func__);
+#endif
 	return 1;
 }
 static int check_outmixl_mixer_power(struct snd_soc_dapm_widget *source, 
 		struct snd_soc_dapm_widget *sink)
 {
+#ifdef ALC5631_DEBUG
 	printk(" %s \n", __func__);
+#endif
 	return 1;
 }
 static int check_spkmixl_mixer_power(struct snd_soc_dapm_widget *source, 
 		struct snd_soc_dapm_widget *sink)
 {
+#ifdef ALC5631_DEBUG
 	printk(" %s \n", __func__);
+#endif
 	return 1;
 }
 static int check_spkmixr_mixer_power(struct snd_soc_dapm_widget *source, 
 		struct snd_soc_dapm_widget *sink)
 {
+#ifdef ALC5631_DEBUG
 	printk(" %s \n", __func__);
+#endif
 	return 1;
 }
 static int check_vmic_power(struct snd_soc_dapm_widget *source, 
 		struct snd_soc_dapm_widget *sink)
 {
+#ifdef ALC5631_DEBUG
 	printk(" %s \n", __func__);
+#endif
 	return 1;
 }
 static int check_left_spkvol_mux_power(struct snd_soc_dapm_widget *source, 
 		struct snd_soc_dapm_widget *sink)
 {
+#ifdef ALC5631_DEBUG
 	printk(" %s \n", __func__);
+#endif
 	return 1;
 }
 static int check_right_spkvol_mux_power(struct snd_soc_dapm_widget *source, 
 		struct snd_soc_dapm_widget *sink)
 {
+#ifdef ALC5631_DEBUG
 	printk(" %s \n", __func__);
+#endif
 	return 1;
 }
 static int check_right_outvol_mux_power(struct snd_soc_dapm_widget *source, 
 		struct snd_soc_dapm_widget *sink)
 {
+#ifdef ALC5631_DEBUG
 	printk(" %s \n", __func__);
+#endif
 	return 1;
 }
 static int check_left_outvol_mux_power(struct snd_soc_dapm_widget *source, 
 		struct snd_soc_dapm_widget *sink)
 {
+#ifdef ALC5631_DEBUG
 	printk(" %s \n", __func__);
+#endif
 	return 1;
 }
 static int check_spolmix_mixer_power(struct snd_soc_dapm_widget *source, 
 		struct snd_soc_dapm_widget *sink)
 {
+#ifdef ALC5631_DEBUG
 	printk(" %s \n", __func__);
+#endif
 	return 1;
 }
 static int check_spormix_mixer_power(struct snd_soc_dapm_widget *source, 
 		struct snd_soc_dapm_widget *sink)
 {
+#ifdef ALC5631_DEBUG
 	printk(" %s \n", __func__);
+#endif
 	return 1;
 }
 static int check_recmixr_mixer_power(struct snd_soc_dapm_widget *source, 
 		struct snd_soc_dapm_widget *sink)
 {
+#ifdef ALC5631_DEBUG
 	printk(" %s \n", __func__);
+#endif
 	return 1;
 }
 static int check_recmixl_mixer_power(struct snd_soc_dapm_widget *source, 
 		struct snd_soc_dapm_widget *sink)
 {
+#ifdef ALC5631_DEBUG
 	printk(" %s \n", __func__);
+#endif
 	return 1;
 }
 static int check_voice_dac_boost_power(struct snd_soc_dapm_widget *source, 
 		struct snd_soc_dapm_widget *sink)
 {
+#ifdef ALC5631_DEBUG
 	printk(" %s \n", __func__);
+#endif
 	return 1;
 }
 static int check_left_dac_power(struct snd_soc_dapm_widget *source, 
 		struct snd_soc_dapm_widget *sink)
 {
+#ifdef ALC5631_DEBUG
 	printk(" %s \n", __func__);
+#endif
 	return 1;
 }
 static int check_right_dac_power(struct snd_soc_dapm_widget *source, 
 		struct snd_soc_dapm_widget *sink)
 {
+#ifdef ALC5631_DEBUG
 	printk(" %s \n", __func__);
+#endif
 	return 1;
 }
 static int check_spor_mux_power(struct snd_soc_dapm_widget *source, 
 		struct snd_soc_dapm_widget *sink)
 {
+#ifdef ALC5631_DEBUG
 	printk(" %s \n", __func__);
+#endif
 	return 1;
 }
 static int check_spol_mux_power(struct snd_soc_dapm_widget *source, 
 		struct snd_soc_dapm_widget *sink)
 {
+#ifdef ALC5631_DEBUG
 	printk(" %s \n", __func__);
+#endif
 	return 1;
 }
 static int check_class_d_power(struct snd_soc_dapm_widget *source,
 		struct snd_soc_dapm_widget *sink)
 {
+#ifdef ALC5631_DEBUG
 	printk(" %s \n", __func__);
+#endif
 //	unsigned int reg;
 //	reg  = snd_soc_read(source->codec, ALC5631_PWR_MANAG_ADD1);
 
@@ -1068,7 +1112,6 @@ printk("%s ready open hp 0x04 = 0x%x \n",__func__, snd_soc_read(codec, 0x04));
 		//snd_soc_write(pcodec, 0x02, 0x4848);	
 	//+++MQ
 		msleep(160);
-		printk("MQ---test sleep over");
 	} else {
 	//+++MQ
 	//alc5631_reg_set(0);
@@ -1124,7 +1167,6 @@ static int hp_event(struct snd_soc_dapm_widget *w,
 {
 	struct snd_soc_codec *codec = w->codec;
 	struct alc5631_priv *alc5631 = snd_soc_codec_get_drvdata(codec);
-	printk(" %s in------- \n", __func__ );
 	/*
 	   static int once = 0;
 
@@ -1139,7 +1181,6 @@ static int hp_event(struct snd_soc_dapm_widget *w,
 #ifdef ALC5631_DEBUG
 			printk(" %s , power down \n", __func__ );
 #endif
-			printk(" %s---version:%d , power down \n", __func__, alc5631->codec_version);
 			if (alc5631->codec_version) {
 				onebit_depop_mute_stage(codec, 0);
 				onebit_depop_power_stage(codec, 0);
@@ -1153,7 +1194,6 @@ static int hp_event(struct snd_soc_dapm_widget *w,
 #ifdef ALC5631_DEBUG
 			printk(" %s , power up \n", __func__ );
 #endif
-			printk(" %s---version:%d , power up \n", __func__ , alc5631->codec_version);
 			if (alc5631->codec_version) {
 				onebit_depop_power_stage(codec, 1);
 				onebit_depop_mute_stage(codec, 1);
@@ -1167,7 +1207,6 @@ static int hp_event(struct snd_soc_dapm_widget *w,
 			break;
 	}
 
-	printk(" %s out------- \n", __func__ );
 	return 0;
 }
 
@@ -2045,7 +2084,6 @@ static int alc5631_hifi_pcm_params(struct snd_pcm_substream *substream,
 		return alc5631->bclk_rate;
 	}
 	alc5631->rx_rate = params_rate(params);
-	printk("****************blc5631->sysclk =%d,lc5631->master = %d,clk_rate = %d, rx_rate = %d, coeff = %d \n",alc5631->sysclk, alc5631->master,alc5631->bclk_rate, alc5631->rx_rate, coeff);
 
 	if (alc5631->master)
 		coeff = get_coeff(alc5631->sysclk, alc5631->rx_rate,
@@ -2096,7 +2134,6 @@ static int alc5631_hifi_codec_set_dai_fmt(struct snd_soc_dai *codec_dai,
 	unsigned int iface = 0;
 
 	dev_dbg(codec->dev, "enter %s\n", __func__);
-	printk("MQ=======reg02:%x\n", snd_soc_read(pcodec, 0x02));	
 	snd_soc_write(pcodec, 0x02, 0xc8c8);	
 #ifdef ALC5631_DEBUG
 	printk(" %s \n", __func__);
@@ -2331,7 +2368,6 @@ static int alc5631_set_bias_level(struct snd_soc_codec *codec,
 			break;
 
 		case SND_SOC_BIAS_OFF:
-			printk("MQ====== %s snd_soc_bias_off \n", __func__);
 /*			
 #ifdef ALC5631_DEBUG
 			printk(" %s snd_soc_bias_off \n", __func__);
@@ -2359,7 +2395,6 @@ static int alc5631_probe(struct snd_soc_codec *codec)
 	struct alc5631_priv *alc5631 = snd_soc_codec_get_drvdata(codec);
 	unsigned int val;
 	int ret;
-	printk("MQ=%s==CCOSR reg2:%x\n",__FUNCTION__,  __raw_readl(ioremap(0x020c4060, 4)));
 
 #ifdef ALC5631_DEBUG
 	printk("codec %s ....\n", __func__);
@@ -2487,8 +2522,9 @@ static int alc5631_remove(struct snd_soc_codec *codec)
 
 void alc5631_reg_set(int if_play) 
 {
-
+#ifdef ALC5631_DEBUG
 	printk("MQ===%s===if_play:%d\n", __FUNCTION__, if_play);
+#endif
 	if (if_play) {
 		alc5631_index_write(pcodec, 0x0b, 0x1bbc);
 		alc5631_index_write(pcodec, 0x11, 0x8007);
@@ -2511,7 +2547,6 @@ EXPORT_SYMBOL(alc5631_reg_set);
 //power down
 void alc5631_power_down(void)
 {
-	printk("MQ====%s enter\n", __FUNCTION__);
 	alc5631_set_bias_level(pcodec, SND_SOC_BIAS_OFF);
 }
 EXPORT_SYMBOL(alc5631_power_down);
@@ -2619,7 +2654,6 @@ static	int alc5631_i2c_probe(struct i2c_client *i2c,
 {
 	struct alc5631_priv *alc5631;
 	int ret;
-	printk("MQ=%s==CCOSR reg2:%x\n",__FUNCTION__,  __raw_readl(ioremap(0x020c4060, 4)));
 
 #ifdef ALC5631_DEBUG
 	printk("codec %s ....\n", __func__);
@@ -2648,7 +2682,6 @@ static	int alc5631_i2c_probe(struct i2c_client *i2c,
 #endif
 		kfree(alc5631);
 	}
-	printk("MQ=%s==CCOSR reg2:%x\n",__FUNCTION__,  __raw_readl(ioremap(0x020c4060, 4)));
 
 #ifdef ALC5631_DEBUG
 	printk("codec %s .... ok \n", __func__);
