@@ -149,6 +149,18 @@
 		compatible = "fsl,imx6-hdmi-i2c";
 		reg = <0x50>;
 	};
+	
+	/*+++MQ for 7 inch
+    gt801_ts@55 {
+        compatible = "eeti,gt801_ts";
+        reg = <0x55>;
+        interrupt-parent = <&gpio1>;
+        interrupts = <1 3>;//falling edge
+        //wakeup-gpios = <&gpio6 7 0>;
+		gpio_int = <&gpio1 1 3>;
+		gpio_rst = <&gpio1 4 0>;
+    };
+	MQ+++*/
 
 	mega48@60 {
 		compatible = "fsl,mega48-i2c";
