@@ -155,11 +155,15 @@ static struct fb_videomode ldb_modedb[] = {
           FB_MODE_IS_DETAILED,},	
 //auo A070STNO1.1	
          {    
-	  "A070STNO1.1", 60, 1024, 600, 19531,
-	  80, 80,
-	  10, 10,
-          160, 15,
-          0,   
+	  //"A070STNO1.1", 60, 1024, 600, 19531,
+	  "A070STNO1.1", 55, 1024, 600, 17094,
+	  //80, 80,
+	  180, 178,
+	  //10, 10,
+	  100, 78,
+      //160, 15,
+      2, 2,
+      0,   
           FB_VMODE_NONINTERLACED,
           FB_MODE_IS_DETAILED,}, 	  
 

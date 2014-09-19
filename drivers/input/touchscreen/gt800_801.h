@@ -35,6 +35,7 @@
 #include <linux/interrupt.h>
 #include <linux/io.h>
 #include <linux/gpio.h>
+#include <linux/of_gpio.h>
 //#include <linux/earlysuspend.h>
 
 
@@ -94,17 +95,17 @@ a sample config, send this config should cause the chip cannot work normally*/
     }
 
 //STEP_2(REQUIRED):Change I/O define & I/O operation mode.
-#define GTP_RST_PORT    S5PV210_GPJ3(6)
-#define GTP_INT_PORT    S5PV210_GPH1(3)
+//#define GTP_RST_PORT    S5PV210_GPJ3(6)
+//#define GTP_INT_PORT    S5PV210_GPH1(3)
+int GTP_RST_PORT;
+int GTP_INT_PORT;
 #define GTP_INT_IRQ     gpio_to_irq(GTP_INT_PORT)
-#define GTP_INT_CFG     S3C_GPIO_SFN(0xF)
+//#define GTP_INT_CFG     S3C_GPIO_SFN(0xF)
 
 #define GTP_GPIO_AS_INPUT(pin)          gpio_direction_input(pin)
-#define GTP_GPIO_AS_INT(pin)            do{\
-                                            gpio_direction_input(pin);\
-                                            s3c_gpio_setpull(pin, S3C_GPIO_PULL_NONE);\
-                                            s3c_gpio_cfgpin(pin, GTP_INT_CFG);\
-                                        }while(0)
+
+#define GTP_GPIO_AS_INT(pin)            gpio_direction_input(pin)
+                                      
 #define GTP_GPIO_GET_VALUE(pin)         gpio_get_value(pin)
 #define GTP_GPIO_OUTPUT(pin,level)      gpio_direction_output(pin,level)
 #define GTP_GPIO_REQUEST(pin, label)    gpio_request(pin, label)
