@@ -96,6 +96,7 @@ static int hpjack_status_check(void)
 		return 0;
 
 	hp_status = gpio_get_value(priv->hp_gpio) ? 1 : 0;
+	printk("%s<<<hp_status:%d \n", __func__, hp_status);
 
 	buf = kmalloc(32, GFP_ATOMIC);
 	if (!buf) {
@@ -103,15 +104,27 @@ static int hpjack_status_check(void)
 		return -ENOMEM;
 	}
 
-	//if (hp_status != priv->hp_active_low) {
-	//	snprintf(buf, 32, "STATE=%d", 2);
-	//	snd_soc_dapm_disable_pin(&priv->codec->dapm, "Ext Spk");
-	//	ret = imx_hp_jack_gpio.report;
-	//} else {
+	if (hp_status != priv->hp_active_low) {
+		snprintf(buf, 32, "STATE=%d", 2);
+		snd_soc_dapm_disable_pin(&priv->codec->dapm, "Ext Spk");
+		ret = imx_hp_jack_gpio.report;
+		/*
+		if(&priv && &priv->codec)
+        snd_soc_update_bits(&priv->codec , ALC5631_SPK_OUT_VOL,
+                         ALC5631_L_MUTE | ALC5631_R_MUTE,
+                         ALC5631_L_MUTE | ALC5631_R_MUTE);
+						 */
+	} else {
 		snprintf(buf, 32, "STATE=%d", 0);
 		snd_soc_dapm_enable_pin(&priv->codec->dapm, "Ext Spk");
 		ret = 0;
-	//}
+		/*
+		if(&priv && &priv->codec)
+        snd_soc_update_bits(&priv->codec , ALC5631_SPK_OUT_VOL,
+	                     ALC5631_L_MUTE | ALC5631_R_MUTE,
+				                                0);
+												*/
+	}
 
 	envp[0] = "NAME=headphone";
 	envp[1] = buf;
@@ -234,7 +247,7 @@ static int imx_hifi_hw_params(struct snd_pcm_substream *substream,
 		return ret;
 	}
 	//+++
-	alc5631_reg_set(1);
+	//alc5631_reg_set(1);
 	//+++
 
 	return 0;
@@ -250,7 +263,7 @@ static int imx_hifi_hw_free(struct snd_pcm_substream *substream)
 
 
 	//+++
-	alc5631_reg_set(0);
+	//alc5631_reg_set(0);
 	//+++
 	/* We don't need to handle anything if there's no substream running */
 	if (!priv->first_stream)
@@ -300,6 +313,7 @@ static int imx_alc5631_gpio_init(struct snd_soc_pcm_runtime *rtd)
 {
 	struct snd_soc_codec *codec = rtd->codec;
 	struct imx_priv *priv = &card_priv;
+	printk("%s<<<hp_gpio:%d mic_gpio:%d\n", __func__, priv->hp_gpio, priv->mic_gpio);
 
 	priv->codec = codec;
 
@@ -497,7 +511,7 @@ static int imx_alc5631_probe(struct platform_device *pdev)
 
 	data->dai.name = "HiFi";
 	data->dai.stream_name = "HiFi";
-	data->dai.codec_dai_name = "alc5631-hifi";
+	data->dai.codec_dai_name = "rt5631-hifi";
 	data->dai.codec_of_node = codec_np;
 	data->dai.cpu_dai_name = dev_name(&ssi_pdev->dev);
 	data->dai.platform_of_node = ssi_np;

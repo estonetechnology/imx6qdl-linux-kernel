@@ -729,6 +729,15 @@ static int check_spol_mux_power(struct snd_soc_dapm_widget *source,
 #endif
 	return 1;
 }
+
+static int check_hp_depop_power(struct snd_soc_dapm_widget *source,
+		struct snd_soc_dapm_widget *sink)
+{
+#ifdef ALC5631_DEBUG
+	printk(" %s \n", __func__);
+#endif
+}
+
 static int check_class_d_power(struct snd_soc_dapm_widget *source,
 		struct snd_soc_dapm_widget *sink)
 {
@@ -1857,8 +1866,13 @@ static const struct snd_soc_dapm_route alc5631_dapm_routes[] = {
 	{"SPOR", NULL, "SPOR Mux"},
 #endif
 
+#ifdef ALC5631_DEBUG
+	{"HPOL", NULL, "HP Depop", check_hp_depop_power},
+	{"HPOR", NULL, "HP Depop", check_hp_depop_power},
+#else
 	{"HPOL", NULL, "HP Depop"},
 	{"HPOR", NULL, "HP Depop"},
+#endif
 
 	{"MONO", NULL, "MONO Depop"},
 	{"MONO", NULL, "MONO Mux"},
@@ -2055,6 +2069,7 @@ struct coeff_clk_div coeff_div[] = {
 static int get_coeff(int mclk, int rate, int timesofbclk)
 {
 	int i;
+	printk("%s----%d, %d, %d\n", __func__, mclk, rate, timesofbclk);
 
 	for (i = 0; i < ARRAY_SIZE(coeff_div); i++) {
 		if (coeff_div[i].mclk == mclk && coeff_div[i].rate == rate &&
@@ -2091,6 +2106,7 @@ static int alc5631_hifi_pcm_params(struct snd_pcm_substream *substream,
 	else
 		coeff = get_coeff(alc5631->sysclk, alc5631->rx_rate,
 				timesofbclk);
+	printk("bclk_rate = %d, rx_rate = %d, coeff = %d master:%d \n", alc5631->bclk_rate, alc5631->rx_rate, coeff, alc5631->master);
 	if (coeff < 0) {
 		dev_err(codec->dev, "Fail to get coeff\n");
 		return -EINVAL;
@@ -2192,6 +2208,9 @@ static int alc5631_hifi_codec_set_dai_sysclk(struct snd_soc_dai *codec_dai,
 	struct alc5631_priv *alc5631 = snd_soc_codec_get_drvdata(codec);
 
 	dev_dbg(codec->dev, "enter %s, syclk=%d\n", __func__, freq);
+	printk("enter %s, syclk=%d\n", __func__, freq);
+	freq = 11289600;
+	printk("enter %s, syclk=%d\n", __func__, freq);
 #ifdef ALC5631_DEBUG
 	printk("enter %s, syclk=%d\n", __func__, freq);
 #endif

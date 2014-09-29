@@ -1,7 +1,9 @@
 #ifndef __RTCODEC5631_H__
 #define __RTCODEC5631_H__
 
-
+//+++MQ
+#define RT5631_SYSCLK				0x00
+//+++MQ
 #define RT5631_RESET				0x00
 #define RT5631_SPK_OUT_VOL			0x02
 #define RT5631_HP_OUT_VOL			0x04

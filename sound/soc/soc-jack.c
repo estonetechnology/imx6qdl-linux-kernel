@@ -255,6 +255,7 @@ static void snd_soc_jack_gpio_detect(struct snd_soc_jack_gpio *gpio)
 /* irq handler for gpio pin */
 static irqreturn_t gpio_handler(int irq, void *data)
 {
+	//printk("%s<<<\n", __func__);
 	struct snd_soc_jack_gpio *gpio = data;
 	struct device *dev = gpio->jack->codec->card->dev;
 

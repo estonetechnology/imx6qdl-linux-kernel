@@ -1350,6 +1350,7 @@ static struct coeff_clk_div coeff_div[] = {
 static int get_coeff(int mclk, int rate, int timesofbclk)
 {
 	int i;
+	printk("%s----%d, %d, %d\n", __func__, mclk, rate, timesofbclk);
 
 	for (i = 0; i < ARRAY_SIZE(coeff_div); i++) {
 		if (coeff_div[i].mclk == mclk && coeff_div[i].rate == rate &&
@@ -1382,6 +1383,7 @@ static int rt5631_hifi_pcm_params(struct snd_pcm_substream *substream,
 	else
 		coeff = get_coeff(rt5631->sysclk, rt5631->rx_rate,
 					timesofbclk);
+	printk("bclk_rate = %d, rx_rate = %d, coeff = %d master:%d\n", rt5631->bclk_rate, rt5631->rx_rate, coeff, rt5631->master);
 	if (coeff < 0) {
 		dev_err(codec->dev, "Fail to get coeff\n");
 		return coeff;
@@ -1400,6 +1402,7 @@ static int rt5631_hifi_pcm_params(struct snd_pcm_substream *substream,
 		iface |= RT5631_SDP_I2S_DL_8;
 		break;
 	default:
+		printk("MQ----is here!---data:%x\n", params_format(params));
 		return -EINVAL;
 	}
 
@@ -1470,6 +1473,9 @@ static int rt5631_hifi_codec_set_dai_sysclk(struct snd_soc_dai *codec_dai,
 	struct rt5631_priv *rt5631 = snd_soc_codec_get_drvdata(codec);
 
 	dev_dbg(codec->dev, "enter %s, syclk=%d\n", __func__, freq);
+	printk("enter %s, syclk=%d\n", __func__, freq);
+	//freq = 11289600;
+	printk("enter %s, syclk=%d\n", __func__, freq);
 
 	if ((freq >= (256 * 8000)) && (freq <= (512 * 96000))) {
 		rt5631->sysclk = freq;
@@ -1548,6 +1554,7 @@ static int rt5631_set_bias_level(struct snd_soc_codec *codec,
 
 	switch (level) {
 	case SND_SOC_BIAS_ON:
+		  snd_soc_write(codec, RT5631_PWR_MANAG_ADD2, 0xffff);//FAE
 	case SND_SOC_BIAS_PREPARE:
 		snd_soc_update_bits(codec, RT5631_PWR_MANAG_ADD2,
 			RT5631_PWR_MICBIAS1_VOL | RT5631_PWR_MICBIAS2_VOL,
@@ -1612,6 +1619,11 @@ static int rt5631_probe(struct snd_soc_codec *codec)
 		RT5631_PWR_FAST_VREF_CTRL, RT5631_PWR_FAST_VREF_CTRL);
 	/* enable HP zero cross */
 	snd_soc_write(codec, RT5631_INT_ST_IRQ_CTRL_2, 0x0f18);
+//FAE
+	snd_soc_write(codec, RT5631_SPK_OUT_VOL, 0xc8c8);
+	snd_soc_write(codec, RT5631_GEN_PUR_CTRL_REG, 0x3e00);
+//FAE
+
 	/* power off ClassD auto Recovery */
 	if (rt5631->codec_version)
 		snd_soc_update_bits(codec, RT5631_INT_ST_IRQ_CTRL_2,

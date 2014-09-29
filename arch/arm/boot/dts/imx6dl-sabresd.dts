@@ -63,9 +63,29 @@
 			"Headphone Jack", "HPOR",
 			"Ext Spk", "SPOL",
 			"Ext Spk", "SPOR";
+			//"MICBIAS", "AMIC",
+			//"IN3R", "MICBIAS",
+			//"DMIC", "MICBIAS",
+			//"DMICDAT", "DMIC";
+		mux-int-port = <1>;
+		mux-ext-port = <4>;
+		//hp-det-gpios = <&gpio7 8 1>;
+	};
+	/*
+	sound {
+		compatible = "fsl,imx6q-sabrelite-sgtl5000",
+			     "fsl,imx-audio-sgtl5000";
+		model = "imx6q-sabrelite-sgtl5000";
+		ssi-controller = <&ssi1>;
+		audio-codec = <&codec>;
+		audio-routing =
+			"MIC_IN", "Mic Jack",
+			"Mic Jack", "Mic Bias",
+			"Headphone Jack", "HP_OUT";
 		mux-int-port = <1>;
 		mux-ext-port = <4>;
 	};
+	*/
 	v4l2_out {
 		compatible = "fsl,mxc_v4l2_output";
 		status = "okay";
@@ -169,11 +189,20 @@
 
 
 	codec: rt5631@1a {
-		  //compatible = "realtek,rt5631";
-		  compatible = "realtek,alc5631";
+		  compatible = "realtek,rt5631";
+		  //compatible = "realtek,alc5631";
 		  reg = <0x1a>;
 		  clocks = <&clks 201>;
 	};
+	/*
+	codec: sgtl5000@0a {
+		compatible = "fsl,sgtl5000";
+		reg = <0x0a>;
+		clocks = <&clks 201>;
+		VDDA-supply = <&reg_2p5v>;
+		VDDIO-supply = <&reg_3p3v>;
+	};
+	*/
 };
 
 
