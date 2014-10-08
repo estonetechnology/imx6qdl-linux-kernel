@@ -29,6 +29,7 @@
 
 #include "rt5631.h"
 
+static struct snd_soc_codec *pcodec;
 struct rt5631_priv {
 	struct regmap *regmap;
 	int codec_version;
@@ -1347,6 +1348,20 @@ static struct coeff_clk_div coeff_div[] = {
 	{22579200,  22050 * 64,  22050,  0x4000},
 };
 
+void rt5631_reg_set(int if_play) 
+{
+#ifdef ALC5631_DEBUG
+	printk("MQ===%s===if_play:%d\n", __FUNCTION__, if_play);
+#endif
+	if (if_play) {	
+		snd_soc_write(pcodec, 0x02, 0x4848);	
+	
+	} else {	
+		snd_soc_write(pcodec, 0x02, 0xc8c8);	
+	}
+}
+EXPORT_SYMBOL(rt5631_reg_set);
+
 static int get_coeff(int mclk, int rate, int timesofbclk)
 {
 	int i;
@@ -1597,6 +1612,7 @@ static int rt5631_probe(struct snd_soc_codec *codec)
 	int ret;
 
 	codec->control_data = rt5631->regmap;
+	pcodec = codec;
 
 	ret = snd_soc_codec_set_cache_io(codec, 8, 16, SND_SOC_REGMAP);
 	if (ret != 0) {

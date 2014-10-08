@@ -189,7 +189,7 @@ static const struct snd_soc_dapm_widget imx_alc5631_dapm_widgets[] = {
 	SND_SOC_DAPM_MIC("DMIC", NULL),
 };
 
-extern void alc5631_reg_set(int if_play);
+extern void rt5631_reg_set(int if_play);
 
 static int imx_hifi_hw_params(struct snd_pcm_substream *substream,
 				     struct snd_pcm_hw_params *params)
@@ -247,7 +247,7 @@ static int imx_hifi_hw_params(struct snd_pcm_substream *substream,
 		return ret;
 	}
 	//+++
-	//alc5631_reg_set(1);
+	rt5631_reg_set(1);
 	//+++
 
 	return 0;
@@ -263,7 +263,7 @@ static int imx_hifi_hw_free(struct snd_pcm_substream *substream)
 
 
 	//+++
-	//alc5631_reg_set(0);
+	rt5631_reg_set(0);
 	//+++
 	/* We don't need to handle anything if there's no substream running */
 	if (!priv->first_stream)
