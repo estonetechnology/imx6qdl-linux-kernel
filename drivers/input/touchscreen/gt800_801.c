@@ -696,10 +696,10 @@ Output:
 static void gtp_reset_guitar(s32 ms)
 {
 //johncao	
-//    GTP_GPIO_OUTPUT(GTP_RST_PORT, 1);
+    GTP_GPIO_OUTPUT(GTP_RST_PORT, 1);
     msleep(ms);
 
-//    GTP_GPIO_OUTPUT(GTP_RST_PORT, 0);
+    GTP_GPIO_OUTPUT(GTP_RST_PORT, 0);
     msleep(50);
 }
 
@@ -716,7 +716,7 @@ Output:
 static s8 gtp_enter_sleep(struct goodix_ts_data * ts)
 {
 //johncao	
-//    GTP_GPIO_OUTPUT(GTP_RST_PORT, 1);
+    GTP_GPIO_OUTPUT(GTP_RST_PORT, 1);
     msleep(20);
 //    GTP_DEBUG("GTP enter sleep.");
     return 1;
@@ -737,7 +737,7 @@ static s8 gtp_wakeup_sleep(struct goodix_ts_data * ts)
     s32 ret = -1;
     s32 retry = 0; 
 //johncao    
-//    GTP_GPIO_OUTPUT(GTP_RST_PORT, 0);
+    GTP_GPIO_OUTPUT(GTP_RST_PORT, 0);
     msleep(50);
     
 
@@ -774,32 +774,32 @@ static s8 gtp_request_io_port(struct goodix_ts_data *ts)
 {
     s32 ret = 0;
 //johncao
-//    ret = GTP_GPIO_REQUEST(GTP_INT_PORT, "GTP_INT_IRQ");
+    ret = GTP_GPIO_REQUEST(GTP_INT_PORT, "gpio_int");
     if (ret < 0) 
     {
-//        GTP_ERROR("Failed to request GPIO:%d, ERRNO:%d", (s32)GTP_INT_PORT, ret);
+        GTP_ERROR("Failed to request GPIO:%d, ERRNO:%d", (s32)GTP_INT_PORT, ret);
         ret = -ENODEV;
     }
     else
     {
-  //      GTP_GPIO_AS_INT(GTP_INT_PORT);	
-  //      ts->client->irq = GTP_INT_IRQ;
+        GTP_GPIO_AS_INT(GTP_INT_PORT);	
+        ts->client->irq = GTP_INT_IRQ;
     }
 
-//    ret = GTP_GPIO_REQUEST(GTP_RST_PORT, "GTP_RST_PORT");
+    ret = GTP_GPIO_REQUEST(GTP_RST_PORT, "gpio_rst");
     if (ret < 0) 
     {
-//        GTP_ERROR("Failed to request GPIO:%d, ERRNO:%d",(s32)GTP_RST_PORT,ret);
+        GTP_ERROR("Failed to request GPIO:%d, ERRNO:%d",(s32)GTP_RST_PORT,ret);
         ret = -ENODEV;
     }
 
-//    GTP_GPIO_AS_INPUT(GTP_RST_PORT);
+    GTP_GPIO_AS_INPUT(GTP_RST_PORT);
     gtp_reset_guitar(20);
     
     if(ret < 0)
     {
-  //      GTP_GPIO_FREE(GTP_RST_PORT);
-//        GTP_GPIO_FREE(GTP_INT_PORT);
+       GTP_GPIO_FREE(GTP_RST_PORT);
+       GTP_GPIO_FREE(GTP_INT_PORT);
     }
 
     return ret;
@@ -837,8 +837,8 @@ static s8 gtp_request_irq(struct goodix_ts_data *ts)
     {
         GTP_ERROR("Request IRQ failed!ERRNO:%d.", ret);
 //johncao	
-//        GTP_GPIO_AS_INPUT(GTP_INT_PORT);
-//        GTP_GPIO_FREE(GTP_INT_PORT);
+        GTP_GPIO_AS_INPUT(GTP_INT_PORT);
+        GTP_GPIO_FREE(GTP_INT_PORT);
 
         hrtimer_init(&ts->timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
         ts->timer.function = goodix_ts_timer_handler;
@@ -962,39 +962,43 @@ static int goodix_ts_probe(struct i2c_client *client, const struct i2c_device_id
     }
 //return gpio_int
 #if 1
-    gpio_int = of_get_named_gpio(np, "gpio_int", 0);
-	printk("*******************gpio_int:%d\n",gpio_int);
+    GTP_INT_PORT = of_get_named_gpio(np, "gpio_int", 0);
+	printk("*******************gpio_int:%d\n",GTP_INT_PORT);
 	printk("*******************irq_num = :%d\n",client->irq);
-    if (!gpio_is_valid(gpio_int))
+    if (!gpio_is_valid(GTP_INT_PORT))
     {
 				printk("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
         return -ENODEV;
     }
 #endif    
 //return gpio_rst
-    gpio_rst = of_get_named_gpio(np, "gpio_rst", 0);
-		printk("*******************gpio_rst:%d\n",gpio_rst);
-    if (!gpio_is_valid(gpio_rst))
+    GTP_RST_PORT = of_get_named_gpio(np, "gpio_rst", 0);
+		printk("*******************gpio_rst:%d\n", GTP_RST_PORT);
+    if (!gpio_is_valid(GTP_RST_PORT))
     {
 				printk("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
         return -ENODEV;
     }
-    ret = gpio_request_one(gpio_rst, GPIOF_OUT_INIT_LOW,"gpio_rst");
+    //ret = gpio_request_one(GTP_RST_PORT, GPIOF_OUT_INIT_LOW,"gpio_rst");
+	/*
     if (ret < 0)
     {
  				printk("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 			  return ret;
     }
-    gpio_set_value(gpio_rst, 0);
+	*/
+    //gpio_set_value(GTP_RST_PORT, 0);
  
-    ret = gpio_request_one(gpio_int, GPIOF_OUT_INIT_LOW,"gpio_int");
+    //ret = gpio_request_one(GTP_INT_PORT, GPIOF_OUT_INIT_LOW,"gpio_int");
+	/*
     if (ret<0)
 	    return -1;
+		*/
 //while(1)
 {
-    gpio_set_value(gpio_int, 0);
+    //gpio_set_value(GTP_INT_PORT, 0);
     msleep(1);
-    gpio_set_value(gpio_int, 1);
+    //gpio_set_value(GTP_INT_PORT, 1);
     msleep(1);
     printk("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
@@ -1069,7 +1073,7 @@ static int goodix_ts_probe(struct i2c_client *client, const struct i2c_device_id
 
     flush_workqueue(goodix_wq);
 //johncao    
-//    gtp_irq_enable(ts);
+    gtp_irq_enable(ts);
 
 #if GTP_CREATE_WR_NODE
     init_wr_node(client);
@@ -1108,8 +1112,8 @@ static int goodix_ts_remove(struct i2c_client *client)
         if (ts->use_irq)
         {
 //johncao		
-//            GTP_GPIO_AS_INPUT(GTP_INT_PORT);
-//            GTP_GPIO_FREE(GTP_INT_PORT);
+            GTP_GPIO_AS_INPUT(GTP_INT_PORT);
+            GTP_GPIO_FREE(GTP_INT_PORT);
             free_irq(client->irq, ts);
         }
         else
