@@ -35,6 +35,9 @@
 #define IMX_ALC5631_DEBUG
 #define DAI_NAME_SIZE	32
 
+//#define USE_RT5631
+
+
 struct imx_alc5631_data {
 	struct snd_soc_dai_link dai;
 	struct snd_soc_card card;
@@ -189,7 +192,11 @@ static const struct snd_soc_dapm_widget imx_alc5631_dapm_widgets[] = {
 	SND_SOC_DAPM_MIC("DMIC", NULL),
 };
 
+#ifdef USE_RT5631
 extern void rt5631_reg_set(int if_play);
+#else
+extern void alc5631_reg_set(int if_play);
+#endif
 
 static int imx_hifi_hw_params(struct snd_pcm_substream *substream,
 				     struct snd_pcm_hw_params *params)
@@ -247,7 +254,11 @@ static int imx_hifi_hw_params(struct snd_pcm_substream *substream,
 		return ret;
 	}
 	//+++
+#ifdef USE_RT5631
 	rt5631_reg_set(1);
+#else
+	alc5631_reg_set(1);
+#endif
 	//+++
 
 	return 0;
@@ -263,7 +274,11 @@ static int imx_hifi_hw_free(struct snd_pcm_substream *substream)
 
 
 	//+++
+#ifdef USE_RT5631
 	rt5631_reg_set(0);
+#else
+	alc5631_reg_set(0);
+#endif
 	//+++
 	/* We don't need to handle anything if there's no substream running */
 	if (!priv->first_stream)
@@ -511,7 +526,11 @@ static int imx_alc5631_probe(struct platform_device *pdev)
 
 	data->dai.name = "HiFi";
 	data->dai.stream_name = "HiFi";
+#ifdef USE_RT5631
 	data->dai.codec_dai_name = "rt5631-hifi";
+#else
+	data->dai.codec_dai_name = "alc5631-hifi";
+#endif
 	data->dai.codec_of_node = codec_np;
 	data->dai.cpu_dai_name = dev_name(&ssi_pdev->dev);
 	data->dai.platform_of_node = ssi_np;

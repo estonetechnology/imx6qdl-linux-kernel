@@ -1109,8 +1109,8 @@ static void depop_seq_mute_stage(struct snd_soc_codec *codec, int enable)
 #ifdef ALC5631_DEBUG
 printk("%s ready open hp 0x04 = 0x%x \n",__func__, snd_soc_read(codec, 0x04));
 #endif
-	//0906	snd_soc_update_bits(codec, ALC5631_HP_OUT_VOL,
-	//0906			ALC5631_L_MUTE | ALC5631_R_MUTE,0);
+		snd_soc_update_bits(codec, ALC5631_HP_OUT_VOL,
+				ALC5631_L_MUTE | ALC5631_R_MUTE,0);
 
 
 	//	/*spk mute */
@@ -1148,7 +1148,7 @@ printk("%s ready open hp 0x04 = 0x%x \n",__func__, snd_soc_read(codec, 0x04));
 		//snd_soc_update_bits(codec, ALC5631_HP_OUT_VOL,
 		//		(0x01 << 14) | (0x01 << 6),
 		//		0);
-		//msleep(150);
+		msleep(150);
 	}
 
 	/* recover soft volume and zero crossing setting */
@@ -2208,9 +2208,6 @@ static int alc5631_hifi_codec_set_dai_sysclk(struct snd_soc_dai *codec_dai,
 	struct alc5631_priv *alc5631 = snd_soc_codec_get_drvdata(codec);
 
 	dev_dbg(codec->dev, "enter %s, syclk=%d\n", __func__, freq);
-	printk("enter %s, syclk=%d\n", __func__, freq);
-	freq = 11289600;
-	printk("enter %s, syclk=%d\n", __func__, freq);
 #ifdef ALC5631_DEBUG
 	printk("enter %s, syclk=%d\n", __func__, freq);
 #endif
@@ -2311,8 +2308,8 @@ static int alc5631_set_bias_level(struct snd_soc_codec *codec,
 #ifdef ALC5631_DEBUG
 			printk(" %s snd_soc_bias_on \n", __func__);
 #endif
-		snd_soc_write(codec, 0x2c, 0xcc40);	
-		snd_soc_write(codec, 0x40, 0x4e00);	
+		snd_soc_write(codec, ALC5631_SPK_MONO_HP_OUT_CTRL, 0xcc4c);	
+		snd_soc_write(codec, ALC5631_GEN_PUR_CTRL_REG, 0x4e00);	
 #if ALC5631_DEMO
 
 			snd_soc_update_bits(codec, ALC5631_SPK_OUT_VOL,
@@ -2545,19 +2542,19 @@ void alc5631_reg_set(int if_play)
 	printk("MQ===%s===if_play:%d\n", __FUNCTION__, if_play);
 #endif
 	if (if_play) {
-		alc5631_index_write(pcodec, 0x0b, 0x1bbc);
-		alc5631_index_write(pcodec, 0x11, 0x8007);
-		alc5631_index_write(pcodec, 0x12, 0x000f);
-		snd_soc_write(pcodec, 0x6e, 0x4090);	
-		snd_soc_write(pcodec, 0x64, 0x0a0f);	
-		snd_soc_write(pcodec, 0x0c, 0x0020);	
-		snd_soc_write(pcodec, 0x66, 0x6000);	
-		snd_soc_write(pcodec, 0x02, 0x4848);	
+		alc5631_index_write(pcodec, ALC5631_EQ_BW_HIP, 0x1bbc);
+		alc5631_index_write(pcodec, ALC5631_EQ_PRE_VOL_CTRL, 0x8007);
+		alc5631_index_write(pcodec, ALC5631_EQ_POST_VOL_CTRL, 0x000f);
+		snd_soc_write(pcodec, ALC5631_EQ_CTRL, 0x4090);	
+		snd_soc_write(pcodec, ALC5631_ALC_CTRL_1, 0x0a0f);	
+		snd_soc_write(pcodec, ALC5631_STEREO_DAC_VOL_1, 0x0020);	
+		snd_soc_write(pcodec, ALC5631_ALC_CTRL_3, 0x6000);	
+		snd_soc_write(pcodec, ALC5631_SPK_OUT_VOL, 0x4848);	
 	
 	} else {
-		snd_soc_write(pcodec, 0x6e, 0x4000);	
-		snd_soc_write(pcodec, 0x66, 0x2000);	
-		snd_soc_write(pcodec, 0x02, 0xc8c8);	
+		snd_soc_write(pcodec, ALC5631_EQ_CTRL, 0x4000);	
+		snd_soc_write(pcodec, ALC5631_ALC_CTRL_3, 0x2000);	
+		snd_soc_write(pcodec, ALC5631_SPK_OUT_VOL, 0xc8c8);	
 	
 	}
 }

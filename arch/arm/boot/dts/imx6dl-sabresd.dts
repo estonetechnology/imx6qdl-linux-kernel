@@ -189,8 +189,8 @@
 
 
 	codec: rt5631@1a {
-		  compatible = "realtek,rt5631";
-		  //compatible = "realtek,alc5631";
+		  //compatible = "realtek,rt5631";
+		  compatible = "realtek,alc5631";
 		  reg = <0x1a>;
 		  clocks = <&clks 201>;
 	};
