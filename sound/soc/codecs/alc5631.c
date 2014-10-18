@@ -31,7 +31,7 @@
 
 #include "alc5631.h"
 
-//#define ALC5631_DEBUG
+#define ALC5631_DEBUG
 #define ALC5631_DEMO 0 /* only for demo; please remove it */
 #if 1// ALC5631_DEMO
 
@@ -563,6 +563,8 @@ static int check_i2s_power(struct snd_soc_dapm_widget *source,
 //			0);
 #ifdef ALC5631_DEBUG
 	printk(" %s \n", __func__);
+	printk("%s<<<REG-02:%x\n", __func__, snd_soc_read(source->codec, ALC5631_SPK_OUT_VOL));
+	//snd_soc_write(pcodec, ALC5631_SPK_OUT_VOL, 0x4848);	
 #endif
 	return 1;
 }
@@ -582,6 +584,7 @@ static int check_dac_ref_power(struct snd_soc_dapm_widget *source,
 //			0);
 #ifdef ALC5631_DEBUG
 	printk(" %s \n", __func__);
+	printk("%s<<<REG-02:%x\n", __func__, snd_soc_read(source->codec, ALC5631_SPK_OUT_VOL));
 #endif
 	return 1;
 }
@@ -743,6 +746,8 @@ static int check_class_d_power(struct snd_soc_dapm_widget *source,
 {
 #ifdef ALC5631_DEBUG
 	printk(" %s \n", __func__);
+	printk("%s<<<REG-02:%x\n", __func__, snd_soc_read(source->codec, ALC5631_SPK_OUT_VOL));
+	//snd_soc_write(pcodec, ALC5631_SPK_OUT_VOL, 0x4848);	
 #endif
 //	unsigned int reg;
 //	reg  = snd_soc_read(source->codec, ALC5631_PWR_MANAG_ADD1);
@@ -996,6 +1001,7 @@ static void depop_seq_power_stage(struct snd_soc_codec *codec, int enable)
 	hp_zc = snd_soc_read(codec, ALC5631_INT_ST_IRQ_CTRL_2);
 #ifdef ALC5631_DEBUG
 	printk(" %s soft_vol = %d, hp_zc = %d \n", __func__, soft_vol, hp_zc);
+	printk("%s REG-02 = 0x%x \n",__func__, snd_soc_read(codec, 0x02));
 #endif
 	snd_soc_write(codec, ALC5631_INT_ST_IRQ_CTRL_2, hp_zc & 0xf7ff);
 	if (enable) {
@@ -1108,6 +1114,7 @@ static void depop_seq_mute_stage(struct snd_soc_codec *codec, int enable)
 //		msleep(160);
 #ifdef ALC5631_DEBUG
 printk("%s ready open hp 0x04 = 0x%x \n",__func__, snd_soc_read(codec, 0x04));
+printk("%s REG-02 = 0x%x \n",__func__, snd_soc_read(codec, 0x02));
 #endif
 		snd_soc_update_bits(codec, ALC5631_HP_OUT_VOL,
 				ALC5631_L_MUTE | ALC5631_R_MUTE,0);
@@ -1116,6 +1123,7 @@ printk("%s ready open hp 0x04 = 0x%x \n",__func__, snd_soc_read(codec, 0x04));
 	//	/*spk mute */
 	//	snd_soc_update_bits(codec, ALC5631_SPK_OUT_VOL,
 	//		ALC5631_L_MUTE | ALC5631_R_MUTE, 0);
+printk("%s REG-02 = 0x%x \n",__func__, snd_soc_read(codec, 0x02));
 	//+++MQ
 		//alc5631_reg_set(1);
 		//snd_soc_write(pcodec, 0x02, 0x4848);	
@@ -1176,6 +1184,9 @@ static int hp_event(struct snd_soc_dapm_widget *w,
 {
 	struct snd_soc_codec *codec = w->codec;
 	struct alc5631_priv *alc5631 = snd_soc_codec_get_drvdata(codec);
+	unsigned int reg_02;
+	reg_02 = snd_soc_read(codec, 0x02);
+	snd_soc_write(codec, 0x02, 0xc8c8);
 	/*
 	   static int once = 0;
 
@@ -1216,6 +1227,7 @@ static int hp_event(struct snd_soc_dapm_widget *w,
 			break;
 	}
 
+	snd_soc_write(codec, 0x02, reg_02);
 	return 0;
 }
 
@@ -2194,7 +2206,7 @@ static int alc5631_hifi_codec_set_dai_fmt(struct snd_soc_dai *codec_dai,
 	}
 
 #ifdef ALC5631_DEBUG
-	printk(" %s iface = %d\n", __func__, iface);
+	printk(" %s iface = %d REG-02:%x\n", __func__, iface, snd_soc_read(codec, ALC5631_SPK_OUT_VOL));
 #endif
 	snd_soc_write(codec, ALC5631_SDP_CTRL, iface);
 
@@ -2209,7 +2221,7 @@ static int alc5631_hifi_codec_set_dai_sysclk(struct snd_soc_dai *codec_dai,
 
 	dev_dbg(codec->dev, "enter %s, syclk=%d\n", __func__, freq);
 #ifdef ALC5631_DEBUG
-	printk("enter %s, syclk=%d\n", __func__, freq);
+	printk("enter %s, syclk=%d REG-02:%x\n", __func__, freq, snd_soc_read(codec, ALC5631_SPK_OUT_VOL));
 #endif
 
 	if ((freq >= (256 * 8000)) && (freq <= (512 * 96000))) {
@@ -2233,7 +2245,7 @@ static int alc5631_codec_set_dai_pll(struct snd_soc_dai *codec_dai, int pll_id,
 	dev_dbg(codec->dev, "enter %s\n", __func__);
 
 #ifdef ALC5631_DEBUG
-	printk("===============================================================================================%s freq_in = %d , freq_out = %d \n", __func__, freq_in, freq_out);
+	printk("==%s freq_in = %d , freq_out = %d REG-02:%x\n", __func__, freq_in, freq_out, snd_soc_read(codec, ALC5631_SPK_OUT_VOL));
 #endif
 
 	if (!freq_in || !freq_out) {
@@ -2499,6 +2511,7 @@ static int alc5631_probe(struct snd_soc_codec *codec)
                                 ALC5631_PWR_MICBIAS1_VOL | ALC5631_PWR_MICBIAS2_VOL,
                                 ALC5631_PWR_MICBIAS1_VOL | ALC5631_PWR_MICBIAS2_VOL);								
 							
+/*
 //pll enable
 
         snd_soc_write(codec, ALC5631_PLL_CTRL,0x0622);											
@@ -2507,6 +2520,7 @@ static int alc5631_probe(struct snd_soc_codec *codec)
         snd_soc_update_bits(codec, ALC5631_GLOBAL_CLK_CTRL,
                                 ALC5631_SYSCLK_SOUR_SEL_MASK|ALC5631_PLLCLK_SOUR_SEL_MASK,
                                 ALC5631_SYSCLK_SOUR_SEL_PLL|ALC5631_PLLCLK_SOUR_SEL_BCLK);		
+*/
 
 
 //johncao
@@ -2539,7 +2553,7 @@ static int alc5631_remove(struct snd_soc_codec *codec)
 void alc5631_reg_set(int if_play) 
 {
 #ifdef ALC5631_DEBUG
-	printk("MQ===%s===if_play:%d\n", __FUNCTION__, if_play);
+	printk("MQ===%s===if_play:%d REG-02:%x\n", __FUNCTION__, if_play, snd_soc_read(pcodec, ALC5631_SPK_OUT_VOL));
 #endif
 	if (if_play) {
 		alc5631_index_write(pcodec, ALC5631_EQ_BW_HIP, 0x1bbc);
