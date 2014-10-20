@@ -158,7 +158,6 @@
 	};
 
 	//video=mxcfb0:dev=ldb,AUOG101,if=RGB666
-	/*
 	mxcfb1: fb@0 {
 		compatible = "fsl,mxc_sdc_fb";
 		disp_dev = "ldb";
@@ -169,8 +168,8 @@
 		late_init = <0>;
 		status = "disabled";
 	};
-	*/
 
+	/*For yocto 070
 	mxcfb1: fb@0 {
 		compatible = "fsl,mxc_sdc_fb";
 		disp_dev = "ldb";
@@ -181,6 +180,7 @@
 		late_init = <0>;
 		status = "disabled";
 	};
+	*/
 
 	//video=mxcfb0:dev=hdmi,1280x720M@60,if=RGB24
 	mxcfb2: fb@1 {
