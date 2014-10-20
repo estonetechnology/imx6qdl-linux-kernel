@@ -1,5 +1,5 @@
 /*
- * imx-alc5631.c
+ * imx-rt5631.c
  *
  * Copyright (C) 2012 Freescale Semiconductor, Inc. All Rights Reserved.
  */
@@ -30,7 +30,7 @@
 #include <linux/pinctrl/consumer.h>
 
 #include "imx-audmux.h"
-#include "../codecs/alc5631.h"
+#include "../codecs/rt5631.h"
 
 #define IMX_ALC5631_DEBUG
 #define DAI_NAME_SIZE	32
@@ -38,7 +38,7 @@
 #define USE_RT5631
 
 
-struct imx_alc5631_data {
+struct imx_rt5631_data {
 	struct snd_soc_dai_link dai;
 	struct snd_soc_card card;
 	char codec_dai_name[DAI_NAME_SIZE];
@@ -109,7 +109,7 @@ static int hpjack_status_check(void)
 
 	if (hp_status != priv->hp_active_low) {
 		snprintf(buf, 32, "STATE=%d", 2);
-		snd_soc_dapm_disable_pin(&priv->codec->dapm, "Ext Spk");
+		//snd_soc_dapm_disable_pin(&priv->codec->dapm, "Ext Spk");
 		ret = imx_hp_jack_gpio.report;
 		/*
 		if(&priv && &priv->codec)
@@ -119,7 +119,7 @@ static int hpjack_status_check(void)
 						 */
 	} else {
 		snprintf(buf, 32, "STATE=%d", 0);
-		snd_soc_dapm_enable_pin(&priv->codec->dapm, "Ext Spk");
+		//snd_soc_dapm_enable_pin(&priv->codec->dapm, "Ext Spk");
 		ret = 0;
 		/*
 		if(&priv && &priv->codec)
@@ -184,7 +184,7 @@ static int micjack_status_check(void)
 }
 
 
-static const struct snd_soc_dapm_widget imx_alc5631_dapm_widgets[] = {
+static const struct snd_soc_dapm_widget imx_rt5631_dapm_widgets[] = {
 
 	SND_SOC_DAPM_HP("Headphone Jack", NULL),
 	SND_SOC_DAPM_SPK("Ext Spk", NULL),
@@ -206,7 +206,7 @@ static int imx_hifi_hw_params(struct snd_pcm_substream *substream,
 	struct imx_priv *priv = &card_priv;
 	struct device *dev = &priv->pdev->dev;
 	struct snd_soc_card *card = codec_dai->codec->card;
-	struct imx_alc5631_data *data = snd_soc_card_get_drvdata(card);
+	struct imx_rt5631_data *data = snd_soc_card_get_drvdata(card);
 	unsigned int sample_rate = params_rate(params);
 	snd_pcm_format_t sample_format = params_format(params);
 	u32 dai_format, pll_out;
@@ -324,7 +324,7 @@ static struct snd_soc_ops imx_hifi_ops = {
 	.hw_free = imx_hifi_hw_free,
 };
 
-static int imx_alc5631_gpio_init(struct snd_soc_pcm_runtime *rtd)
+static int imx_rt5631_gpio_init(struct snd_soc_pcm_runtime *rtd)
 {
 	struct snd_soc_codec *codec = rtd->codec;
 	struct imx_priv *priv = &card_priv;
@@ -408,11 +408,11 @@ static ssize_t show_mic(struct device_driver *dev, char *buf)
 
 static DRIVER_ATTR(microphone, S_IRUGO | S_IWUSR, show_mic, NULL);
 
-static int imx_alc5631_late_probe(struct snd_soc_card *card)
+static int imx_rt5631_late_probe(struct snd_soc_card *card)
 {
 	struct snd_soc_dai *codec_dai = card->rtd[0].codec_dai;
 	struct imx_priv *priv = &card_priv;
-	struct imx_alc5631_data *data = snd_soc_card_get_drvdata(card);
+	struct imx_rt5631_data *data = snd_soc_card_get_drvdata(card);
 	struct device *dev = &priv->pdev->dev;
 	int ret;
 
@@ -426,14 +426,14 @@ static int imx_alc5631_late_probe(struct snd_soc_card *card)
 	return ret;
 }
 
-static int imx_alc5631_probe(struct platform_device *pdev)
+static int imx_rt5631_probe(struct platform_device *pdev)
 {
 	struct device_node *np = pdev->dev.of_node;
 	struct device_node *ssi_np, *codec_np;
 	struct platform_device *ssi_pdev;
 	struct imx_priv *priv = &card_priv;
 	struct i2c_client *codec_dev;
-	struct imx_alc5631_data *data;
+	struct imx_rt5631_data *data;
 	struct clk *codec_clk = NULL;
 	int int_port, ext_port;
 	int ret;
@@ -529,13 +529,13 @@ static int imx_alc5631_probe(struct platform_device *pdev)
 #ifdef USE_RT5631
 	data->dai.codec_dai_name = "rt5631-hifi";
 #else
-	data->dai.codec_dai_name = "alc5631-hifi";
+	data->dai.codec_dai_name = "rt5631-hifi";
 #endif
 	data->dai.codec_of_node = codec_np;
 	data->dai.cpu_dai_name = dev_name(&ssi_pdev->dev);
 	data->dai.platform_of_node = ssi_np;
 	data->dai.ops = &imx_hifi_ops;
-	data->dai.init = &imx_alc5631_gpio_init;
+	data->dai.init = &imx_rt5631_gpio_init;
 	data->dai.dai_fmt = SND_SOC_DAIFMT_I2S | SND_SOC_DAIFMT_NB_NF |
 			    SND_SOC_DAIFMT_CBM_CFM;
 
@@ -548,10 +548,10 @@ static int imx_alc5631_probe(struct platform_device *pdev)
 		goto fail;
 	data->card.num_links = 1;
 	data->card.dai_link = &data->dai;
-	data->card.dapm_widgets = imx_alc5631_dapm_widgets;
-	data->card.num_dapm_widgets = ARRAY_SIZE(imx_alc5631_dapm_widgets);
+	data->card.dapm_widgets = imx_rt5631_dapm_widgets;
+	data->card.num_dapm_widgets = ARRAY_SIZE(imx_rt5631_dapm_widgets);
 
-	data->card.late_probe = imx_alc5631_late_probe;
+	data->card.late_probe = imx_rt5631_late_probe;
 
 	platform_set_drvdata(pdev, &data->card);
 	snd_soc_card_set_drvdata(&data->card, data);
@@ -594,7 +594,7 @@ fail:
 	return ret;
 }
 
-static int imx_alc5631_remove(struct platform_device *pdev)
+static int imx_rt5631_remove(struct platform_device *pdev)
 {
 	struct snd_soc_card *card = platform_get_drvdata(pdev);
 
@@ -606,25 +606,25 @@ static int imx_alc5631_remove(struct platform_device *pdev)
 	return 0;
 }
 
-static const struct of_device_id imx_alc5631_dt_ids[] = {
+static const struct of_device_id imx_rt5631_dt_ids[] = {
 	{ .compatible = "fsl,imx-audio-rt5631", },
 	{ /* sentinel */ }
 };
-MODULE_DEVICE_TABLE(of, imx_alc5631_dt_ids);
+MODULE_DEVICE_TABLE(of, imx_rt5631_dt_ids);
 
-static struct platform_driver imx_alc5631_driver = {
+static struct platform_driver imx_rt5631_driver = {
 	.driver = {
-		.name = "imx-alc5631",
+		.name = "imx-rt5631",
 		.owner = THIS_MODULE,
 		.pm = &snd_soc_pm_ops,
-		.of_match_table = imx_alc5631_dt_ids,
+		.of_match_table = imx_rt5631_dt_ids,
 	},
-	.probe = imx_alc5631_probe,
-	.remove = imx_alc5631_remove,
+	.probe = imx_rt5631_probe,
+	.remove = imx_rt5631_remove,
 };
-module_platform_driver(imx_alc5631_driver);
+module_platform_driver(imx_rt5631_driver);
 
 MODULE_AUTHOR("Freescale Semiconductor, Inc.");
-MODULE_DESCRIPTION("Freescale i.MX alc5631 ASoC machine driver");
+MODULE_DESCRIPTION("Freescale i.MX rt5631 ASoC machine driver");
 MODULE_LICENSE("GPL v2");
-MODULE_ALIAS("platform:imx-alc5631");
+MODULE_ALIAS("platform:imx-rt5631");
