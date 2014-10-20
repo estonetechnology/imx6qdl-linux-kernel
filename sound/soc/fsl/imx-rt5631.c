@@ -193,7 +193,7 @@ static const struct snd_soc_dapm_widget imx_alc5631_dapm_widgets[] = {
 };
 
 #ifdef USE_RT5631
-//extern void rt5631_reg_set(int if_play);
+extern void rt5631_reg_set(int if_play);
 #else
 extern void alc5631_reg_set(int if_play);
 #endif
@@ -255,7 +255,7 @@ static int imx_hifi_hw_params(struct snd_pcm_substream *substream,
 	}
 	//+++
 #ifdef USE_RT5631
-	//rt5631_reg_set(1);
+	rt5631_reg_set(1);
 #else
 	alc5631_reg_set(1);
 #endif
@@ -275,7 +275,7 @@ static int imx_hifi_hw_free(struct snd_pcm_substream *substream)
 
 	//+++
 #ifdef USE_RT5631
-	//rt5631_reg_set(0);
+	rt5631_reg_set(0);
 #else
 	alc5631_reg_set(0);
 #endif

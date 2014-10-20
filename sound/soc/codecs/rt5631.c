@@ -32,6 +32,7 @@
 
 #define VERSION "0.1.0 alsa 1.0.25"
 
+static struct snd_soc_codec *pcodec;
 struct rt5631_init_reg {
 	u8 reg;
 	u16 val;
@@ -542,6 +543,7 @@ static int check_vdac_pll1(struct snd_soc_dapm_widget *source,
 			 struct snd_soc_dapm_widget *sink)
 {
 	unsigned int reg = snd_soc_read(source->codec, RT5631_GLOBAL_CLK_CTRL);
+	printk("MQ--%s<<<<<\n", __func__);
 
 	if (reg & RT5631_VDAC_CLK_SOUR_SCLK2)
 		return 0;
@@ -553,11 +555,20 @@ static int check_vdac_pll2(struct snd_soc_dapm_widget *source,
 			 struct snd_soc_dapm_widget *sink)
 {
 	unsigned int reg = snd_soc_read(source->codec, RT5631_GLOBAL_CLK_CTRL);
+	printk("MQ--%s<<<<<\n", __func__);
 
 	if (reg & RT5631_VDAC_CLK_SOUR_SCLK2)
 		return (reg & RT5631_SYSCLK2_SOUR_SEL_PLL2);
 	else
 		return 0;
+}
+
+static int check_dac_power(struct snd_soc_dapm_widget *source,
+			 struct snd_soc_dapm_widget *sink)
+{
+	printk("MQ--%s<<<<<\n", __func__);
+
+	return 0;
 }
 
 static int check_dmic_used(struct snd_soc_dapm_widget *source,
@@ -845,6 +856,10 @@ static int hp_event(struct snd_soc_dapm_widget *w,
 {
 	struct snd_soc_codec *codec = w->codec;
 	struct rt5631_priv *rt5631 = snd_soc_codec_get_drvdata(codec);
+	unsigned int reg_02;
+	reg_02 = snd_soc_read(codec, 0x02);
+	snd_soc_write(codec, 0x02, 0xc8c8);
+	printk("%s<<<<<<<REG-02:%x\n",__func__, reg_02);
 
 	switch (event) {
 	case SND_SOC_DAPM_PRE_PMD:
@@ -871,6 +886,7 @@ static int hp_event(struct snd_soc_dapm_widget *w,
 		break;
 	}
 
+	snd_soc_write(codec, 0x02, reg_02);
 	return 0;
 }
 
@@ -1414,7 +1430,7 @@ static const struct snd_soc_dapm_route rt5631_dapm_routes[] = {
 	{"Voice DAC", NULL, "DAC REF"},
 	{"Voice DAC", NULL, "Voice DAC To Mixer"},
 
-	{"Voice DAC Boost", NULL, "Voice DAC"},
+	{"Voice DAC Boost", NULL, "Voice DAC", check_dac_power},
 
 	{"SPKMIXL Mixer", "RECMIXL Playback Switch", "RECMIXL Mixer"},
 	{"SPKMIXL Mixer", "MIC1_P Playback Switch", "MIC1"},
@@ -1677,6 +1693,29 @@ struct coeff_clk_div coeff_div_voice[] = {
 	{22579200,  11025 * 64,  11025,  0x0030},
 };
 
+void rt5631_reg_set(int if_play) 
+{
+//#ifdef RT5631_DEBUG
+	printk("MQ===%s===if_play:%d REG-02:%x\n", __FUNCTION__, if_play, snd_soc_read(pcodec, RT5631_SPK_OUT_VOL));
+//#endif
+	if (if_play) {	
+		rt5631_index_write(pcodec, RT5631_EQ_BW_HIP, 0x1bbc);
+		rt5631_index_write(pcodec, RT5631_EQ_PRE_VOL_CTRL, 0x8007);
+		rt5631_index_write(pcodec, RT5631_EQ_POST_VOL_CTRL, 0x000f);
+		snd_soc_write(pcodec, RT5631_EQ_CTRL, 0x4090);	
+		snd_soc_write(pcodec, RT5631_ALC_CTRL_1, 0x0a0f);	
+		snd_soc_write(pcodec, RT5631_STEREO_DAC_VOL_1, 0x0020);	
+		snd_soc_write(pcodec, RT5631_ALC_CTRL_3, 0x6000);	
+		//snd_soc_write(pcodec, RT5631_SPK_OUT_VOL, 0x4848);
+	
+	} else {	
+		snd_soc_write(pcodec, RT5631_EQ_CTRL, 0x4000);	
+		snd_soc_write(pcodec, RT5631_ALC_CTRL_3, 0x2000);	
+		//snd_soc_write(pcodec, RT5631_SPK_OUT_VOL, 0xc8c8);
+	}
+}
+EXPORT_SYMBOL(rt5631_reg_set);
+
 static int get_coeff(int dai_id, int mclk, int rate, int timesofbclk)
 {
 	struct coeff_clk_div *tabp;
@@ -1937,6 +1976,7 @@ static int rt5631_set_bias_level(struct snd_soc_codec *codec,
 {
 	switch (level) {
 	case SND_SOC_BIAS_ON:
+		snd_soc_write(codec, RT5631_SPK_MONO_HP_OUT_CTRL, 0xcc40);	
 		break;
 
 	case SND_SOC_BIAS_PREPARE:
@@ -2025,6 +2065,7 @@ static int rt5631_probe(struct snd_soc_codec *codec)
 	int ret;
 
 	pr_info("Codec driver version %s\n", VERSION);
+	pcodec = codec;
 
 	ret = snd_soc_codec_set_cache_io(codec, 8, 16, SND_SOC_I2C);
 	if (ret != 0) {

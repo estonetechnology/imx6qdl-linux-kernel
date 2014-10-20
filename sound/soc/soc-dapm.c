@@ -2184,6 +2184,7 @@ static int snd_soc_dapm_set_pin(struct snd_soc_dapm_context *dapm,
 int snd_soc_dapm_sync(struct snd_soc_dapm_context *dapm)
 {
 	int ret;
+	printk("%s<<<<\n", __func__);
 
 	/*
 	 * Suppress early reports (eg, jacks syncing their state) to avoid
@@ -3560,6 +3561,7 @@ void snd_soc_dapm_stream_event(struct snd_soc_pcm_runtime *rtd, int stream,
  */
 int snd_soc_dapm_enable_pin(struct snd_soc_dapm_context *dapm, const char *pin)
 {
+	printk("%s<<<<\n", __func__);
 	return snd_soc_dapm_set_pin(dapm, pin, 1);
 }
 EXPORT_SYMBOL_GPL(snd_soc_dapm_enable_pin);
