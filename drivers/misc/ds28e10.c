@@ -99,20 +99,20 @@ unsigned char     ExtensionSecret[28] =    //OTP memory data 0x00~0x1B can be as
 
 //define basic 64-bit secret for DS28E10
 //unsigned char	DeviceSecret[8] = {0x12,0x29,0xfd,0x23,0x43,0x22,0x44,0x52};
-#if 1
-unsigned char   DeviceSecret1[8] = {0x20,0x12,0x41,0xd0,0x40,0x22,0x41,0x51};
-unsigned char	DeviceSecret3[8] = {0x12,0x29,0xfd,0x23,0x43,0x22,0x44,0x52};
-unsigned char   DeviceSecret2[8] = {0x11,0x04,0x48,0x0a,0x1a,0x02,0x32,0x14};
-unsigned char	DeviceSecret4[8] = {0x12,0x29,0xfd,0x23,0x43,0x22,0x44,0x52};
-unsigned char   DeviceSecret[8]; //  = {0x31,0x16,0x89,0xda,0x5a,0x24,0x73,0x65};
-#else
+//#if 0
+unsigned char   DeviceSecret1_android[8] = {0x20,0x12,0x41,0xd0,0x40,0x22,0x41,0x51};
+//unsigned char	DeviceSecret3[8] = {0x12,0x29,0xfd,0x23,0x43,0x22,0x44,0x52};
+unsigned char   DeviceSecret2_android[8] = {0x11,0x04,0x48,0x0a,0x1a,0x02,0x32,0x14};
+//unsigned char	DeviceSecret4[8] = {0x12,0x29,0xfd,0x23,0x43,0x22,0x44,0x52};
+//unsigned char   DeviceSecret[8]; //  = {0x31,0x16,0x89,0xda,0x5a,0x24,0x73,0x65};
+//#else
 
-unsigned char   DeviceSecret1[8] = {0x20,0x12,0x41,0xc9,0x40,0x22,0x41,0x51};
-unsigned char   DeviceSecret3[8] = {0x12,0x29,0xfd,0x23,0x43,0x22,0x44,0x52};
-unsigned char   DeviceSecret2[8] = {0x22,0x07,0x37,0x00,0x08,0x14,0x21,0x03};
-unsigned char   DeviceSecret4[8] = {0x12,0x29,0xfd,0x23,0x43,0x22,0x44,0x52};
+unsigned char   DeviceSecret1_ubuntu[8] = {0x20,0x12,0x41,0xc9,0x40,0x22,0x41,0x51};
+//unsigned char   DeviceSecret3[8] = {0x12,0x29,0xfd,0x23,0x43,0x22,0x44,0x52};
+unsigned char   DeviceSecret2_ubuntu[8] = {0x22,0x07,0x37,0x00,0x08,0x14,0x21,0x03};
+//unsigned char   DeviceSecret4[8] = {0x12,0x29,0xfd,0x23,0x43,0x22,0x44,0x52};
 unsigned char   DeviceSecret[8]; //  = {0x42,0x19,0x78,0xc9,0x48,0x36,0x62,0x54};
-#endif
+//#endif
 
 //define for opening I/O
 //int fd;
@@ -120,6 +120,20 @@ unsigned int get;
 
 //#define delay_ow udelay
 
+//+++MQ
+static void getInfo(int id) {
+	int i;
+
+	for(i=0; i<8; i++)
+	{
+		if (id == 0) {
+			DeviceSecret[i] = DeviceSecret1_android[i] + DeviceSecret2_android[i];
+		} else if (id == 1) {
+			DeviceSecret[i] = DeviceSecret1_ubuntu[i] + DeviceSecret2_ubuntu[i];
+		}
+	}
+}
+//+++MQ
 
 static void delay_ow(int len)
 {
@@ -441,6 +455,7 @@ static void SHAVM_Compute(void)
 //the result in DeviceBasicSecret
 static void ComputeBasicSecret_ds28e10(unsigned char *DeviceBasicSecret)
 {
+	printk("%s<<<<<<<\n", __func__);
    if( BasicSecretOption )
    {
 //calculate unique 64-bit secret in the DS28E10-100
@@ -638,6 +653,7 @@ static int Authenticate_DS28E10_By_64bitSecret(unsigned char *Challenge, unsigne
    int i,j1;
 
    unsigned char pbuf[40], PageData[32], cnt;
+	printk("%s<<<<<<<\n", __func__);
 
 // read rom id
 	if ( (ow_reset())!=0 ) return No_Device;
@@ -816,12 +832,24 @@ static int ds28e10_probe(struct platform_device* device)
 		msleep(100);
 
 		PowerOnResetDS28E10();    //must execute the subroutine at least one time to gurrantee the DS28E10 to perform power-on reset
+//+++MQ
+		getInfo(0);
+//+++MQ
 		if((ret=Authenticate_DS28E10_By_64bitSecret(Challenge, BasicSecretOption, 0))==Match_MAC) 
 		{
 			EdbgOutputDebugString ("IT is very tumultuous here, let's move forward!\n" 
 					/*"Pass the authentication based on Page 0\r\n"*/);
 			break;
 		}
+//+++MQ
+		getInfo(1);
+		if((ret=Authenticate_DS28E10_By_64bitSecret(Challenge, BasicSecretOption, 0))==Match_MAC) 
+		{
+			EdbgOutputDebugString ("IT is very tumultuous here, let's move forward!\n" 
+					/*"Pass the authentication based on Page 0\r\n"*/);
+			break;
+		}
+//+++MQ
 	}
 	if( i >= 300)	
 	{
@@ -890,12 +918,17 @@ static struct platform_driver ds28e10_driver =
 
 static int __init ds28e10_init(void)
 {
+/*
 	int i;
 
 	for(i=0; i<8; i++)
 	{
 		DeviceSecret[i] = DeviceSecret1[i] + DeviceSecret2[i];
 	}
+*/
+//+++MQ
+	//getInfo(1);
+//+++MQ
 	DEBUG("\n\n\ninit ds28e10 driver 2011 Sybay tec %d \n", __LINE__);
 	//mac_id_sys_init();
 	return platform_driver_register(&ds28e10_driver);	
