@@ -32,7 +32,9 @@
 
 &usbotg {
 	pinctrl-names = "default";
+/*---WWJ 
 	pinctrl-0 = <&pinctrl_usbotg_1>;
+*/
 	disable-over-current;
 	status = "okay";
 };

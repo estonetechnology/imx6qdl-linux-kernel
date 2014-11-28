@@ -122,7 +122,9 @@
 &usbotg {
 	vbus-supply = <&reg_usb_otg_vbus>;
 	pinctrl-names = "default";
+/*---WWJ
 	pinctrl-0 = <&pinctrl_usbotg_1>;
+*/
 	disable-over-current;
 	status = "okay";
 };

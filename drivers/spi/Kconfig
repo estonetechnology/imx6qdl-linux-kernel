@@ -538,5 +538,9 @@ config SPI_TLE62X0
 endif # SPI_MASTER
 
 # (slave support would go here)
-
+config IST3020_LCD
+	tristate "IST3020 LCD driver"
+        depends on SPI
+        help
+	   IST3020 controler controls the LCD panel display as spi slave.
 endif # SPI
