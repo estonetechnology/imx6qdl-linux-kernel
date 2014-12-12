@@ -37,6 +37,7 @@
 #include <linux/vmalloc.h>
 
 #include <linux/spi/spi.h>
+#include <linux/shenonmxc.h>
 #include <asm/io.h>
 #include "ist3020.h"
 
@@ -52,7 +53,12 @@ static struct spi_device* this_spi;
 static uint8_t *lcd_buf;
 static uint8_t contrast;
 static unsigned int IST3020_CTL_A0;
+
+#ifdef CONFIG_RII_USBHUB_STAT_PWR
 static unsigned int IST3020_nRST;
+static unsigned int SATA_PWR;
+#endif
+static unsigned int IST3020_backlight;
 static unsigned int key7;
 static unsigned int key1;
 static unsigned int key2;
@@ -304,8 +310,10 @@ static long ist3020_ioctl(struct file *filp, unsigned int cmd, unsigned long arg
             *(uint8_t*)arg = contrast; 
             break;
         case IST3020LCD_IOCTL_BACKLIGHT_ON:
+	    gpio_direction_output(IST3020_backlight, 0);
             break;
         case IST3020LCD_IOCTL_BACKLIGHT_OFF:
+	    gpio_direction_output(IST3020_backlight, 1);
             break;
         default:
             printk("illegal command\n");
@@ -466,6 +474,9 @@ static int ist3020lcd_probe(struct spi_device *spi)
 {
     printk("WWJ========%s start\n", __func__);
     int ret;
+#ifdef CONFIG_RII_USBHUB_STAT_PWR
+    int usb_hub, bt_rst;
+#endif
 
     unsigned long str[] = {0x0c, 0x0d, 0x06, 0x07, 0x08, 0x09, 0xa, 0x0b, 0x00};
 
@@ -475,19 +486,62 @@ static int ist3020lcd_probe(struct spi_device *spi)
         printk("spi->dev.node is unavailable\n");
         return -ENODEV;
     }
-
+#ifdef CONFIG_RII_USBHUB_STAT_PWR	
+    usb_hub = of_get_named_gpio(np, "usb-hub", 0);
+    if (!gpio_is_valid(usb_hub)){
+         printk("can not find usb_hub gpio pins\n");
+         return -ENODEV;
+    }
+/*
+    bt_rst = of_get_named_gpio(np, "bt_rst", 0);
+     if (!gpio_is_valid(bt_rst)){
+         printk("can not find bt_rst gpio pins\n");
+         return -ENODEV;
+    }
+*/
+    ret = gpio_request(usb_hub, "usb-hub");
+    if(ret){
+        printk("request gpio usb-hub failed\n");
+        return ret;
+    }
+/*
+      ret = gpio_request(bt_rst, "bt_rst");
+    if(ret){
+        printk("request gpio bt_rst failed\n");
+        return ret;
+    }
+*/
+    gpio_direction_output(usb_hub, 0);
+    msleep(50);
+    gpio_direction_output(usb_hub, 1);
+ /* 
+   gpio_direction_output(bt_rst, 0);
+    msleep(50);
+    gpio_direction_output(bt_rst, 1);
+   */ 
+#endif
     IST3020_nRST = of_get_named_gpio(np, "ist3020-nRst", 0);
     if (!gpio_is_valid(IST3020_nRST)){
          printk("can not find ist3020-nRst gpio pins\n");
          return -ENODEV;
     }
-    ret = gpio_export(IST3020_nRST, true);
-    if(ret)
-        printk("gpio_export nRST failed ret = %d\n", ret);
-               
+
+#ifdef CONFIG_RII_USBHUB_STAT_PWR
+    SATA_PWR = of_get_named_gpio(np, "sata-power", 0);
+    if (!gpio_is_valid(SATA_PWR)){
+         printk("can not find stat_power gpio pins\n");
+         return -ENODEV;
+    }
+#endif
+           
     IST3020_CTL_A0 = of_get_named_gpio(np, "ist3020-A0", 0);
     if(!gpio_is_valid(IST3020_CTL_A0)){
         printk("can not find ist3020-A0 gpio pin\n");
+        return -ENODEV;
+    }
+    IST3020_backlight = of_get_named_gpio(np, "ist3020-backlight", 0);
+    if(!gpio_is_valid(IST3020_backlight)){
+        printk("can not find ist3020-backlight gpio pin\n");
         return -ENODEV;
     }
 
@@ -498,12 +552,29 @@ static int ist3020lcd_probe(struct spi_device *spi)
     }
     gpio_direction_output(IST3020_nRST, 1);
 
+#ifdef CONFIG_RII_USBHUB_STAT_PWR 
+    ret = gpio_request(SATA_PWR, "stat_power");
+      if(ret){
+        printk("request gpio stat_power failed\n");
+        return ret;
+    }
+    gpio_direction_output(SATA_PWR, 1);
+#endif
+
     ret = gpio_request(IST3020_CTL_A0, "ist3020_a0");
     if(ret){
         printk("request gpio ist3020_a0 failed\n");
         return ret;
     }
     gpio_direction_output(IST3020_CTL_A0, 1);
+
+    ret = gpio_request(IST3020_backlight, "ist3020-backlight");
+    if(ret){
+        printk("request gpio ist3020-backlight failed\n");
+        return ret;
+    }
+    gpio_direction_output(IST3020_backlight, 0);
+
 
     lcd_buf = (uint8_t*)vmalloc(IST3020_WIDTH * IST3020_HEIGHT);
     if(!lcd_buf){

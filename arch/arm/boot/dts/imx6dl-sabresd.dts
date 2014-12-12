@@ -172,11 +172,13 @@
 		reg = <0x50>;
 	};
 
+#ifdef CONFIG_RII
+#else
 	mega48@60 {
 		compatible = "fsl,mega48-i2c";
 		reg = <0x60>;
 	};
-
+#endif
 
 	codec: rt5631@1a {
 		  compatible = "realtek,rt5631";
@@ -264,6 +266,8 @@
 	status = "okay";
 };
 
+#ifdef CONFIG_RII
+#else
 &flexcan1 {
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_flexcan1_1>;
@@ -272,6 +276,7 @@
 		trx-stby-gpio = <&max7310_b 5 GPIO_ACTIVE_HIGH>;
 		status = "okay"; /* pin conflict with fec */
 };
+#endif
 
 &uart2 {
 	status = "okay";
@@ -288,15 +293,20 @@
 &usbh1 {
 	status = "okay";
 };
-/*
+
+#ifdef CONFIG_RII
 &usbotg {
 	vbus-supply = <&reg_usb_otg_vbus>;
 	pinctrl-names = "default";
+/*---WWJ
 	pinctrl-0 = <&pinctrl_usbotg_1>;
+*/
+//+++WWJ
+	pinctrl-0 = <&pinctrl_usbotg_2>;
 	disable-over-current;
 	status = "okay";
 };
-*/
+#endif
 
 &hdmi_core {
         ipu_id = <0>;
