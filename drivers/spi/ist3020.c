@@ -470,6 +470,21 @@ static int ist3020lcd_init()
     return 0;
 }
 
+#ifdef CONFIG_RII_USBHUB_STAT_PWR
+static ssize_t sata_pwr_rst(struct device* dev, struct device_attribute* attr, const char* buf, size_t count)
+{
+    unsigned long long value;
+    value = simple_strtoul(buf, NULL, 0);
+    if(1 == value){
+        gpio_direction_output(SATA_PWR, 0);
+        msleep(20);
+        gpio_direction_output(SATA_PWR, 1);
+    }
+    return count;
+}
+static DEVICE_ATTR(sata_rst, 0222, NULL, sata_pwr_rst);
+#endif
+
 static int ist3020lcd_probe(struct spi_device *spi)
 {
     printk("WWJ========%s start\n", __func__);
@@ -559,6 +574,10 @@ static int ist3020lcd_probe(struct spi_device *spi)
         return ret;
     }
     gpio_direction_output(SATA_PWR, 1);
+
+    ret = sysfs_create_file(&spi->dev.kobj, &dev_attr_sata_rst.attr);
+    if(ret)
+        printk("------------sysfs_create_file failed---------\n");
 #endif
 
     ret = gpio_request(IST3020_CTL_A0, "ist3020_a0");
@@ -626,6 +645,7 @@ static int ist3020lcd_probe(struct spi_device *spi)
         gpio_set_value(IST3020_nRST, 0);
         msleep(50);
     }
+
     //showBmp(0, 0, 192, 8, Logo);
     //printGB(4, 3, str);
     //while(1);
