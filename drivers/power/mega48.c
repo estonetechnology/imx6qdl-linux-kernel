@@ -114,7 +114,7 @@ static int read_ethnet_mac_addr(void)
 {
 
 	unsigned char mac_buf[1];
-	int ret=0,ret1;
+	int ret=0,ret1, count=1;
 	int i=0;
 	for (i=0;i<6;i++)
 	{
@@ -136,10 +136,19 @@ static int read_ethnet_mac_addr(void)
 				DEBUG("send ethnet command failed...\n");
 				msleep(500);
 			}
+                        count--;
+                        if (count == 0) {
+                                count = 1;
+                                if (ret < 0)
+                                        goto no_mcu;
+                        }
 		}
 	}
 	DEBUG("ethnet address mac address:%02x:%02x:%02x:%02x:%02x:%02x\n",mac_addr[0],mac_addr[1],mac_addr[2],mac_addr[3],mac_addr[4],mac_addr[5]);
-	return 0;
+	return ret;
+no_mcu:
+	DEBUG("%s   no mcu!!!!\n", __FUNCTION__);
+	return ret;
 }
 //read wifi mac address 
 static int read_wifi_mac_addr(void)
@@ -223,11 +232,16 @@ static int mega48_probe(struct i2c_client *client,
 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_BYTE_DATA)) {
 		dev_err(&client->dev, "i2c bus does not support the powermcu\n");
 		rc = -ENODEV;
+	} else {
+		memcpy(&m_client,client,sizeof(*client));
+		rc = read_ethnet_mac_addr();
+		if ( rc < 0)  {
+			DEBUG("%s   no mcu!!!!\n", __FUNCTION__);
+			return rc;
+		}
+		calibration_mmc(); //not use first
+		pm_power_off = board_poweroff;
 	}
-	memcpy(&m_client,client,sizeof(*client));
-	read_ethnet_mac_addr();
-	calibration_mmc(); //not use first
-	pm_power_off = board_poweroff;
 
 	return rc;
 }

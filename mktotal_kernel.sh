@@ -64,9 +64,9 @@ then
 	echo [Done]
 	echo "----------------------------------------------------------------"
 	echo "New image files md5sum:"
-	md5sum  arch/arm/boot/uImage_$1_$(date +"%Y%m%d%H") > ./uImage_$1_$(date +"%Y%m%d%H")_md5
-	md5sum  dts/imx6dl-sabresd_$1_$(date +"%Y%m%d%H").dtb > ./imx6dl-sabresd_$1_$(date +"%Y%m%d%H").dtb_md5
 	mv arch/arm/boot/uImage_$1_$(date +"%Y%m%d%H") ./
 	mv dts/imx6dl-sabresd_$1_$(date +"%Y%m%d%H").dtb ./
+	md5sum  ./uImage_$1_$(date +"%Y%m%d%H") > ./uImage_$1_$(date +"%Y%m%d%H")_md5
+	md5sum  ./imx6dl-sabresd_$1_$(date +"%Y%m%d%H").dtb > ./imx6dl-sabresd_$1_$(date +"%Y%m%d%H").dtb_md5
 	echo [Done]
 fi
