@@ -133,6 +133,7 @@
 	};
 	*/
 	//+++WWJ begin
+#ifdef CONFIG_RII
 	gpio-keys {
 		compatible = "gpio-keys";
  			key_up {
@@ -172,6 +173,7 @@
 				gpio-key,wakeup;
 			};
 	};
+#endif
 	//+++WWJ end
 
 	/*MQ remove

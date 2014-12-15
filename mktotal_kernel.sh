@@ -30,7 +30,7 @@ then
 	
 	if [ "$1" == "VKI" ]
 	then
-		make ARCH=arm CROSS_COMPILE=arm-eabi- imx_v7_defconfig
+		make ARCH=arm CROSS_COMPILE=arm-eabi- imx_v7_vki_defconfig
 	elif [ "$1" == "RII" ]
 	then
 		make ARCH=arm CROSS_COMPILE=arm-eabi- imx_v7_defconfig
