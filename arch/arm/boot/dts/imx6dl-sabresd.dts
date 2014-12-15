@@ -172,13 +172,10 @@
 		reg = <0x50>;
 	};
 
-#ifdef CONFIG_RII
-#else
 	mega48@60 {
 		compatible = "fsl,mega48-i2c";
 		reg = <0x60>;
 	};
-#endif
 
 	codec: rt5631@1a {
 		  compatible = "realtek,rt5631";
