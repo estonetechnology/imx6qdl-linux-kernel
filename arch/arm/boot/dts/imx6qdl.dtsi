@@ -1242,7 +1242,7 @@
 			>;
 		};
 	};
-#endif
+
 	gpmi-nand {
 		pinctrl_gpmi_nand_1: gpmi-nand-1 {
 			fsl,pins = <
@@ -1266,7 +1266,7 @@
 			>;
 		};
 	};
-
+#endif
 	hdmi_hdcp {
 		pinctrl_hdmi_hdcp_1: hdmihdcpgrp-1 {
 			fsl,pins = <
@@ -1626,6 +1626,8 @@
 	};
 
 	usdhc2 {
+#ifdef CONFIG_RII
+#else
 		pinctrl_usdhc2_1: usdhc2grp-1 {
 			fsl,pins = <
 				MX6QDL_PAD_SD2_CMD__SD2_CMD    0x17059
@@ -1640,7 +1642,7 @@
 				MX6QDL_PAD_NANDF_D7__SD2_DATA7 0x17059
 			>;
 		};
-
+#endif
 		pinctrl_usdhc2_2: usdhc2grp-2 {
 			fsl,pins = <
 				MX6QDL_PAD_SD2_CMD__SD2_CMD    0x17059
@@ -1735,6 +1737,9 @@
 				MX6QDL_PAD_SD4_DAT1__SD4_DATA1 0x17059
 				MX6QDL_PAD_SD4_DAT2__SD4_DATA2 0x17059
 				MX6QDL_PAD_SD4_DAT3__SD4_DATA3 0x17059
+		#ifdef CONFIG_RII
+				MX6QDL_PAD_NANDF_D6__GPIO2_IO06 0x80000000
+		#endif
 			>;
 		};
 	};

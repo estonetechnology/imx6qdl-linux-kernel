@@ -702,6 +702,7 @@
 				MX6QDL_PAD_KEY_COL1__GPIO4_IO08 0x80000000
 				MX6QDL_PAD_KEY_ROW1__GPIO4_IO09 0x80000000
 				MX6QDL_PAD_GPIO_16__GPIO7_IO11 0x80000000
+				MX6QDL_PAD_NANDF_D6__GPIO2_IO06 0x80000000
 				/*MX6QDL_PAD_KEY_COL0__ECSPI1_SCLK 0x100b1*/
 #endif
 			>;
@@ -808,16 +809,16 @@
 //+++WWJ begin
 #ifdef CONFIG_RII
 		pinctrl-0 = <&pinctrl_usdhc4_2>;
+		cd-gpios = <&gpio2 6 0>;
         bus-width = <4>;
 #else
-		pinctrl-0 = <&pinctrl_usdhc4_1>;
-        bus-width = <8>;
-#endif
-//+++WWJ end
-
         non-removable;
-        no-1-8-v;
-	keep-power-in-suspend;
+		no-1-8-v;
+		keep-power-in-suspend;
+		pinctrl-0 = <&pinctrl_usdhc4_1>;
+		bus-width = <8>;
+#endif	
+//+++WWJ end	
         status = "okay";
 };
 
