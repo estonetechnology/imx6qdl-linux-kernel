@@ -183,6 +183,12 @@
 		  reg = <0x1a>;
 		  clocks = <&clks 201>;
 	};
+#ifdef CONFIG_RII
+	ac24xx@54{
+		compatible = "ac24cxx";
+		reg = <0x54>;
+	};
+#endif
 	/*
 	codec: sgtl5000@0a {
 		compatible = "fsl,sgtl5000";

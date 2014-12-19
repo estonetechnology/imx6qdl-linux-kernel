@@ -536,6 +536,14 @@ config SRAM
 	  the genalloc API. It is supposed to be used for small on-chip SRAM
 	  areas found on many SoCs.
 
+#+++WWJ
+config AC24CXX
+	bool "Generic EEPROM to store MAC addr and MEM parameters"
+	depends on I2C
+	help 
+	   this is EEPROM on i2c bus is to store MAC addr and Memory parameters
+#+++WWJ
+
 source "drivers/misc/c2port/Kconfig"
 source "drivers/misc/eeprom/Kconfig"
 source "drivers/misc/cb710/Kconfig"
