@@ -32,7 +32,6 @@ static ssize_t set_macid(struct device* dev, struct device_attribute* attr, cons
 
     while(mac = strsep(&p, ":")){
     	//printk("WWJ======mac = %s\n", mac);
-
     	mac_addr[i] = simple_strtoul(mac, NULL, 16);
     	i++;
     }
@@ -40,7 +39,7 @@ static ssize_t set_macid(struct device* dev, struct device_attribute* attr, cons
     i = 0;
     for(addr = MAC_ID_ADDR_START; addr < (MAC_ID_ADDR_START + MAC_ID_SIZE); addr++){
     	//printk("WWJ======== set MAC[%d]:0x%x\n", i, mac_addr[i]);
-    	ret = i2c_smbus_write_byte_data(ac24cxx_client, addr, mac_addr[i]);
+    	ret = i2c_smbus_write_word_data(ac24cxx_client, addr, mac_addr[i]);
     	i++;
     }
 
@@ -57,10 +56,10 @@ static DEVICE_ATTR(MAC_ADDR, 0600, show_macid, set_macid);
 
 static int read_macid(struct i2c_client* client)
 {
-	int index = 0, i;
+	u32 index = 0, i;
 	for(i = MAC_ID_ADDR_START; i < (MAC_ID_ADDR_START+MAC_ID_SIZE); i++){
-			mac_addr[index] = i2c_smbus_read_byte_data(client, i);
-			printk("WWJ=======addr 0x%x = 0x%x\n", i, mac_addr[index]);
+			mac_addr[index] = i2c_smbus_read_word_data(client, i);
+			//printk("WWJ=======addr 0x%x = 0x%x\n", i, mac_addr[index]);
 			index++;
 	}
 }
