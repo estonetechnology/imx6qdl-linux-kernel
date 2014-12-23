@@ -17,12 +17,14 @@
 static struct i2c_client* ac24cxx_client;
 static unsigned char mac_addr[6];
 
+static int read_macid(struct i2c_client* client);
 static ssize_t set_macid(struct device* dev, struct device_attribute* attr, const char* buf, size_t count)
 {
     char macid[18];
     char* p = macid;
     char* mac;
-    int i = 0, ret;
+    int i = 0;
+    s32 ret;
     u8 addr;
     char tmp[5];
 
@@ -39,7 +41,10 @@ static ssize_t set_macid(struct device* dev, struct device_attribute* attr, cons
     i = 0;
     for(addr = MAC_ID_ADDR_START; addr < (MAC_ID_ADDR_START + MAC_ID_SIZE); addr++){
     	//printk("WWJ======== set MAC[%d]:0x%x\n", i, mac_addr[i]);
-    	ret = i2c_smbus_write_word_data(ac24cxx_client, addr, mac_addr[i]);
+    	ret = i2c_smbus_write_byte_data(ac24cxx_client, addr, mac_addr[i]);
+    	if(ret < 0)
+    		printk("i2c_smbus_write_byte_data failed ret = %d dev addr = 0x%x\n", ret, ac24cxx_client->addr);
+    	msleep(10);
     	i++;
     }
 
@@ -48,6 +53,7 @@ static ssize_t set_macid(struct device* dev, struct device_attribute* attr, cons
 
 static ssize_t show_macid(struct device *dev, struct device_attribute *attr, char *buf)
 {
+		read_macid(ac24cxx_client);
         return sprintf(buf, "%02x:%02x:%02x:%02x:%02x:%02x", mac_addr[0], mac_addr[1],
         	mac_addr[2], mac_addr[3], mac_addr[4], mac_addr[5]);
 }
@@ -58,7 +64,8 @@ static int read_macid(struct i2c_client* client)
 {
 	u32 index = 0, i;
 	for(i = MAC_ID_ADDR_START; i < (MAC_ID_ADDR_START+MAC_ID_SIZE); i++){
-			mac_addr[index] = i2c_smbus_read_word_data(client, i);
+			mac_addr[index] = i2c_smbus_read_byte_data(client, i);
+			msleep(10);
 			//printk("WWJ=======addr 0x%x = 0x%x\n", i, mac_addr[index]);
 			index++;
 	}
