@@ -368,7 +368,8 @@
         sata-power = <&gpio4 15 0>;
         usb-hub = <&gpio4 14 0>;
         bt_rst = <&gpio4 6 0>;
-        pw_cd = <&gpio7 13 0>;
+        pwr_cd = <&gpio7 13 0>;
+        pwr_hold = <&gpio4 11 0>;
         reg = <0>;
     };
 #endif

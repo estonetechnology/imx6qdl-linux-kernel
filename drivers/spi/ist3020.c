@@ -39,6 +39,9 @@
 #include <linux/spi/spi.h>
 #include <linux/shenonmxc.h>
 #include <asm/io.h>
+#ifdef CONFIG_PWR_CD
+#include <linux/proc_fs.h>
+#endif
 #include "ist3020.h"
 
 #define IST3020_COUNT 1
@@ -58,6 +61,16 @@ static unsigned int IST3020_CTL_A0;
 static unsigned int IST3020_nRST;
 static unsigned int SATA_PWR;
 #endif
+
+#ifdef CONFIG_PWR_CD
+static unsigned int PWR_CD;
+static int PWR_IRQ;
+static DEFINE_MUTEX(irq_lock);
+struct proc_dir_entry *pwr_root_dir;
+static int PWR_OFF = 0;
+static unsigned int pwr_hold;
+#endif
+
 static unsigned int IST3020_backlight;
 static unsigned int key7;
 static unsigned int key1;
@@ -202,6 +215,13 @@ static int ist3020_write_reg(struct spi_device *spi, uint8_t dat)
     return status;
 }
 
+#ifdef CONFIG_PWR_CD
+int rii_pwr_off(void)
+{
+    gpio_direction_output(pwr_hold, 0);
+}
+EXPORT_SYMBOL(rii_pwr_off);
+#endif
 
 static int ist3020_write_data(struct spi_device *spi, uint8_t dat)
 {
@@ -328,6 +348,24 @@ static const struct file_operations ist3020_user_fops={
         .open   = NULL,
         .unlocked_ioctl = ist3020_ioctl,
 };
+
+#ifdef CONFIG_PWR_CD
+ssize_t pwr_status(struct file * fp, char __user * buf, size_t count, loff_t * offset)
+{
+    int ret;
+    ret = copy_to_user(buf, PWR_OFF, 4);
+    if(ret){
+        printk("%s:copy_to_user failed\n", __func__);
+        return -EFAULT;
+    }
+    return ret;
+}
+
+static const struct file_operations pwr_status_fops={
+    .owner = THIS_MODULE,
+    .read = pwr_status,
+};
+#endif
 
 static void clearRam()
 {
@@ -485,6 +523,28 @@ static ssize_t sata_pwr_rst(struct device* dev, struct device_attribute* attr, c
 static DEVICE_ATTR(sata_rst, 0222, NULL, sata_pwr_rst);
 #endif
 
+#ifdef CONFIG_PWR_CD
+static irqreturn_t pwr_irq_handler(int irq, void *data){
+    printk("WWJ======%s start\n", __func__);
+    mutex_lock(&irq_lock);
+    disable_irq_nosync(irq);
+    mutex_unlock(&irq_lock);
+    return IRQ_WAKE_THREAD; //trigger the pwr_irq_fun func
+}
+
+static irqreturn_t pwr_irq_fun(int irq, void* data){
+
+    int value;
+    printk("WWJ========%s start\n", __func__);
+    msleep(10);
+    value = gpio_get_value(PWR_CD);
+    printk("value = %d\n", value);
+    if(value)
+        PWR_OFF = 1;
+    enable_irq(irq);
+}
+#endif
+
 static int ist3020lcd_probe(struct spi_device *spi)
 {
     printk("WWJ========%s start\n", __func__);
@@ -493,6 +553,10 @@ static int ist3020lcd_probe(struct spi_device *spi)
     int usb_hub, bt_rst;
 #endif
 
+#ifdef CONFIG_PWR_CD
+    int irq_registered = 0;
+    pwr_root_dir = proc_mkdir("power", NULL);
+#endif
     unsigned long str[] = {0x0c, 0x0d, 0x06, 0x07, 0x08, 0x09, 0xa, 0x0b, 0x00};
 
     this_spi = spi;
@@ -535,6 +599,46 @@ static int ist3020lcd_probe(struct spi_device *spi)
     gpio_direction_output(bt_rst, 1);
    */ 
 #endif
+
+#ifdef CONFIG_PWR_CD
+
+    pwr_hold = of_get_named_gpio(np, "pwr_hold", 0);
+    if(!gpio_is_valid(pwr_hold)){
+        printk("can't find pwr_hold gpio pin\n");
+        return -ENODEV;
+    }
+    ret = gpio_request(pwr_hold, "pwr_hold");
+    if(ret){
+        printk("request gpio pwr_hold failed\n");
+        return ret;
+    }
+
+    PWR_CD = of_get_named_gpio(np, "pwr_cd", 0);
+    if(!gpio_is_valid(PWR_CD)){
+        printk("can't find pwr_cd gpio pin\n");
+        return -ENODEV;
+    }
+
+    ret = gpio_request(PWR_CD, "pwr_cd");
+    if(ret){
+        printk("request gpio pwr_cd failed\n");
+        return ret;
+    }
+    PWR_IRQ = gpio_to_irq(PWR_CD);
+    if(PWR_IRQ < 0){
+        printk("gpio pwr_cd to irq failed \n");
+        return -EINVAL;
+    }
+    ret = request_threaded_irq(PWR_IRQ, pwr_irq_handler, pwr_irq_fun, IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING, "pwr_cd", &spi->dev);
+    if(ret){
+        printk(KERN_WARNING "WWJ======%s:request_irq failed\n", __func__);
+        goto irq_fail;
+    }else
+        irq_registered = 1;
+
+    proc_create("power_off", 0440, pwr_root_dir, &pwr_status_fops);
+#endif
+
     IST3020_nRST = of_get_named_gpio(np, "ist3020-nRst", 0);
     if (!gpio_is_valid(IST3020_nRST)){
          printk("can not find ist3020-nRst gpio pins\n");
@@ -634,7 +738,7 @@ static int ist3020lcd_probe(struct spi_device *spi)
     printASCII(17, 6, "Version1.0.0");
     msleep(1000);
     clearRam();
-    //printk("gpio8_mux_ctrl = %d\n", __raw_readl(ioremap(0x20e023c, 4)));
+    //printk("KEY_ROW2 = 0x%x\n", __raw_readl(ioremap(0x20e0260, 4)));
 
     while(0){
         gpio_set_value(IST3020_CTL_A0, 1);
@@ -670,6 +774,11 @@ static int ist3020lcd_probe(struct spi_device *spi)
     }
 #endif
     return 0;
+#ifdef CONFIG_PWR_CD
+irq_fail:
+    if(irq_registered)
+        free_irq(PWR_IRQ, &spi->dev);
+#endif
 }
 
 

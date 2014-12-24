@@ -55,6 +55,7 @@
 #include <linux/cred.h>
 
 #include <linux/kmsg_dump.h>
+#include <linux/shenonmxc.h>
 /* Move somewhere else to avoid recompiling? */
 #include <generated/utsrelease.h>
 
@@ -93,6 +94,10 @@
 # define SET_TSC_CTL(a)		(-EINVAL)
 #endif
 
+
+#ifdef CONFIG_PWR_CD
+extern int rii_pwr_off(void);
+#endif
 /*
  * this is where the system-wide overflow UID and GID are defined, for
  * architectures that now have 32-bit UID/GID but didn't in the past
@@ -122,6 +127,7 @@ EXPORT_SYMBOL(fs_overflowgid);
 int C_A_D = 1;
 struct pid *cad_pid;
 EXPORT_SYMBOL(cad_pid);
+
 
 /*
  * If set, this is used for preparing the system to power off.
@@ -443,6 +449,9 @@ void kernel_power_off(void)
 	if (pm_power_off_prepare)
 		pm_power_off_prepare();
 	migrate_to_reboot_cpu();
+#ifdef CONFIG_PWR_CD
+	rii_pwr_off();
+#endif
 	syscore_shutdown();
 	printk(KERN_EMERG "Power down.\n");
 	kmsg_dump(KMSG_DUMP_POWEROFF);
