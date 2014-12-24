@@ -109,9 +109,6 @@
 	/*MQ remove
 	gpio-keys {
 		compatible = "gpio-keys";
-		#address-cells = <1>;
-        #size-cells = <0>;
-        autorepeat;
 		power {
 			label = "Power Button";
 			gpios = <&gpio3 29 1>;
@@ -328,19 +325,28 @@
 
 &ecspi1 {
 	fsl,spi-num-chipselects = <1>;
-/*---WWJ
-	cs-gpios = <&gpio4 9 0>;
-*/
-	//+++WWJ
-	cs-gpios = <&gpio3 19 0>;
-	pinctrl-names = "default";
-/*---WWJ
-	pinctrl-0 = <&pinctrl_ecspi1_2>;
-*/
 //+++WWJ
+#ifdef CONFIG_RII
+	cs-gpios = <&gpio3 19 0>;
+#else
+	cs-gpios = <&gpio4 9 0>;
+#endif
+	
+	
+	pinctrl-names = "default";
+
+//+++WWJ
+#ifdef CONFIG_RII
 	pinctrl-0 = <&pinctrl_ecspi1_1>;
+#else
+	pinctrl-0 = <&pinctrl_ecspi1_2>;
+#endif
+//+++WWJ
+	
 	status = "okay";
-/*---WWJ
+
+#ifdef CONFIG_RII
+#else
 	flash: m25p80@0 {
 		#address-cells = <1>;
 		#size-cells = <1>;
@@ -348,7 +354,7 @@
 		spi-max-frequency = <20000000>;
 		reg = <0>;
 	};
-*/
+#endif
 //+++WWJ
 #ifdef CONFIG_RII
 	ist3020: ist3020lcd@0{
@@ -596,7 +602,8 @@
         };
 };
 
-/*---WWJ
+#ifdef CONFIG_RII
+#else
 &i2c3 {
         clock-frequency = <100000>;
         pinctrl-names = "default";
@@ -641,7 +648,7 @@
 		interrupts = <9 2>;
 	};
 };
-*/
+#endif
 
 &iomuxc {
 	pinctrl-names = "default";
@@ -671,16 +678,18 @@
 				MX6QDL_PAD_NANDF_CS0__GPIO6_IO11 0x80000000
 				MX6QDL_PAD_NANDF_CS1__GPIO6_IO14 0x80000000
 				MX6QDL_PAD_EIM_EB3__GPIO2_IO31 0x80000000
-				/*---WWJ
+		#ifdef CONFIG_RII
+		#else
 				MX6QDL_PAD_EIM_D16__GPIO3_IO16 0x80000000
-				*/
+		#endif
 				MX6QDL_PAD_EIM_DA9__GPIO3_IO09 0x80000000
 				MX6QDL_PAD_GPIO_4__GPIO1_IO04 0x80000000
 				/*MX6QDL_PAD_GPIO_5__GPIO1_IO05 0x80000000 */
 				MX6QDL_PAD_EIM_D29__GPIO3_IO29 0x80000000
 				MX6QDL_PAD_SD3_RST__GPIO7_IO08 0x80000000
 				MX6QDL_PAD_GPIO_9__GPIO1_IO09 0x80000000
-				/*+++WWJ begin*/
+		/*+++WWJ begin*/
+		#ifdef CONFIG_RII
 				MX6QDL_PAD_GPIO_8__GPIO1_IO08 0x80000000
 				MX6QDL_PAD_GPIO_1__GPIO1_IO01 0x80008000
 				MX6QDL_PAD_GPIO_3__GPIO1_IO03 0x80008000
@@ -688,7 +697,8 @@
 				MX6QDL_PAD_GPIO_5__GPIO1_IO05 0x80008000
 				MX6QDL_PAD_GPIO_6__GPIO1_IO06 0x80008000
 				MX6QDL_PAD_GPIO_7__GPIO1_IO07 0x80008000
-				/*+++WWJ end*/
+		#endif
+		/*+++WWJ end*/
 				/*MX6QDL_PAD_GPIO_1__WDOG2_B 0x80000000*/			
 				MX6QDL_PAD_GPIO_2__GPIO1_IO02 0x80000000
 				/*MX6QDL_PAD_EIM_D24__UART3_TX_DATA 0x80000000*/
@@ -745,13 +755,14 @@
 	status = "okay";
 };
 
-/*---WWJ
+#ifdef CONFIG_RII
+#else
 &pwm1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_pwm1_1>;
 	status = "okay";
 };
-*/
+#endif
 &ssi2 {
 	fsl,mode = "i2s-slave";
 	status = "okay";
@@ -780,9 +791,10 @@
 &usdhc1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_usdhc1_1>;
-/*---WWJ
+#ifdef CONFIG_RII
+#else
 	cd-gpios = <&gpio1 7 0>;
-*/
+#endif
 	bus-width = <4>;
 /*
 	no-1-8-v;
