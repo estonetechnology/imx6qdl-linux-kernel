@@ -66,6 +66,7 @@ static unsigned int SATA_PWR;
 static unsigned int PWR_CD;
 static int PWR_IRQ;
 static DEFINE_MUTEX(irq_lock);
+static DEFINE_MUTEX(pwr_lock);
 struct proc_dir_entry *pwr_root_dir;
 static int PWR_OFF = 0;
 static unsigned int pwr_hold;
@@ -350,20 +351,24 @@ static const struct file_operations ist3020_user_fops={
 };
 
 #ifdef CONFIG_PWR_CD
-ssize_t pwr_status(struct file * fp, char __user * buf, size_t count, loff_t * offset)
+
+static int show_powr_off(struct seq_file* seq, void* data)
 {
-    int ret;
-    ret = copy_to_user(buf, PWR_OFF, 4);
-    if(ret){
-        printk("%s:copy_to_user failed\n", __func__);
-        return -EFAULT;
-    }
-    return ret;
+    char status[3] = {0};
+    sprintf(status, "%d\n", PWR_OFF);
+    seq_puts(seq, status);
+}
+
+static int pwr_open(struct inode* inode, struct file* file)
+{
+    return single_open(file, show_powr_off, inode->i_private);
 }
 
 static const struct file_operations pwr_status_fops={
     .owner = THIS_MODULE,
-    .read = pwr_status,
+    .open = pwr_open,
+    .read = seq_read,
+    .write = NULL,
 };
 #endif
 
@@ -536,11 +541,14 @@ static irqreturn_t pwr_irq_fun(int irq, void* data){
 
     int value;
     printk("WWJ========%s start\n", __func__);
-    msleep(10);
+    msleep(50);
+    mutex_lock(&pwr_lock);
     value = gpio_get_value(PWR_CD);
-    printk("value = %d\n", value);
     if(value)
         PWR_OFF = 1;
+    else
+        PWR_OFF = 0;
+    mutex_unlock(&pwr_lock);
     enable_irq(irq);
 }
 #endif
@@ -556,6 +564,7 @@ static int ist3020lcd_probe(struct spi_device *spi)
 #ifdef CONFIG_PWR_CD
     int irq_registered = 0;
     pwr_root_dir = proc_mkdir("power", NULL);
+    //struct proc_dir_entry* power_off;
 #endif
     unsigned long str[] = {0x0c, 0x0d, 0x06, 0x07, 0x08, 0x09, 0xa, 0x0b, 0x00};
 
@@ -637,6 +646,12 @@ static int ist3020lcd_probe(struct spi_device *spi)
         irq_registered = 1;
 
     proc_create("power_off", 0440, pwr_root_dir, &pwr_status_fops);
+    /*
+    if(!power_off){
+        printk("%s:proc_create power_off failed\n", __func__);
+    }else{
+        proc_set_size(power_off, sizeof(PWR_OFF));
+    }*/
 #endif
 
     IST3020_nRST = of_get_named_gpio(np, "ist3020-nRst", 0);
