@@ -12,6 +12,7 @@
 #define CONFIG_RII_USBHUB_STAT_PWR
 #define CONFIG_RII
 #define CONFIG_PWR_CD
+#define CONFIG_RII_DDR_CLL
 
 #endif
 
