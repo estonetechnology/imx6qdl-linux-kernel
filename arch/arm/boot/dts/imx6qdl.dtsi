@@ -999,6 +999,7 @@
 				compatible = "fsl,imx6q-uart", "fsl,imx21-uart";
 				reg = <0x021ec000 0x4000>;
 				interrupts = <0 28 0x04>;
+				/*fsl,uart-has-rtscts;*/
 				clocks = <&clks 160>, <&clks 161>;
 				clock-names = "ipg", "per";
 				dmas = <&sdma 29 4 0>, <&sdma 30 4 0>;
@@ -1552,6 +1553,7 @@
 				MX6QDL_PAD_EIM_D25__UART3_RX_DATA 0x1b0b1 	
 		#ifdef CONFIG_RII
 				MX6QDL_PAD_EIM_D31__UART3_RTS_B   0x1b0b1
+				/*MX6QDL_PAD_EIM_D31__GPIO3_IO31    0x80000000*/
 				MX6QDL_PAD_EIM_D30__UART3_CTS_B   0x1b0b1
 		#endif
 			>;

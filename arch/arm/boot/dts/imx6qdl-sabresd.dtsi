@@ -367,7 +367,14 @@
         ist3020-backlight = <&gpio7 11 0>;
         sata-power = <&gpio4 15 0>;
         usb-hub = <&gpio4 14 0>;
-        bt_rst = <&gpio4 6 0>;
+#ifdef CONFIG_WIFI_BT
+        bt_rst_n = <&gpio4 6 1>;
+		bt_wake = <&gpio4 7 0>;
+		bt_host_wake = <&gpio4 8 0>;
+		wl_reg_on = <&gpio7 12 1>;
+		wl_host_wake = <&gpio4 5 0>;
+		eim_d31 = <&gpio3 31 1>;
+#endif
         pwr_cd = <&gpio7 13 0>;
         pwr_hold = <&gpio4 11 0>;
         reg = <0>;
@@ -709,9 +716,9 @@
 				MX6QDL_PAD_KEY_COL4__GPIO4_IO14 0x80000000
 				MX6QDL_PAD_KEY_ROW4__GPIO4_IO15 0x80000000
 				MX6QDL_PAD_KEY_ROW2__GPIO4_IO11 0x80000000
-				MX6QDL_PAD_KEY_COL0__GPIO4_IO06 0x80000000
-				MX6QDL_PAD_KEY_ROW0__GPIO4_IO07 0x80000000
-				MX6QDL_PAD_KEY_COL1__GPIO4_IO08 0x80000000
+				/*MX6QDL_PAD_KEY_COL0__GPIO4_IO06 0x80000000*/
+				/*MX6QDL_PAD_KEY_ROW0__GPIO4_IO07 0x80000000*/
+				/*MX6QDL_PAD_KEY_COL1__GPIO4_IO08 0x80000000*/
 				MX6QDL_PAD_KEY_ROW1__GPIO4_IO09 0x80000000
 				MX6QDL_PAD_GPIO_16__GPIO7_IO11 0x80000000
 				MX6QDL_PAD_NANDF_D6__GPIO2_IO06 0x80000000
@@ -793,6 +800,7 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_usdhc1_1>;
 #ifdef CONFIG_RII
+	non-removable;
 #else
 	cd-gpios = <&gpio1 7 0>;
 #endif

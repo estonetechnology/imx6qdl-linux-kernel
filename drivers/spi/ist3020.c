@@ -72,6 +72,20 @@ static int PWR_OFF = 0;
 static unsigned int pwr_hold;
 #endif
 
+#ifdef CONFIG_WIFI_BT
+unsigned int BT_RST_N;
+unsigned int BT_WAKE;
+unsigned int BT_HOST_WAKE;
+unsigned int WL_REG_ON;
+unsigned int WL_HOST_WAKE;
+EXPORT_SYMBOL(BT_RST_N);
+EXPORT_SYMBOL(BT_WAKE);
+EXPORT_SYMBOL(BT_HOST_WAKE);
+EXPORT_SYMBOL(WL_HOST_WAKE);
+EXPORT_SYMBOL(WL_REG_ON);
+unsigned int EIM_D31;
+#endif
+
 static unsigned int IST3020_backlight;
 static unsigned int key7;
 static unsigned int key1;
@@ -514,6 +528,14 @@ static int ist3020lcd_init()
 }
 
 #ifdef CONFIG_RII_USBHUB_STAT_PWR
+static ssize_t bt_rst(struct device* dev, struct device_attribute* attr, const char* buf, size_t count)
+{
+    unsigned long long value;
+    value = simple_strtoul(buf, NULL, 0);
+    gpio_direction_output(BT_RST_N, value ? 1:0);
+    
+    return count;
+}
 static ssize_t sata_pwr_rst(struct device* dev, struct device_attribute* attr, const char* buf, size_t count)
 {
     unsigned long long value;
@@ -526,6 +548,7 @@ static ssize_t sata_pwr_rst(struct device* dev, struct device_attribute* attr, c
     return count;
 }
 static DEVICE_ATTR(sata_rst, 0222, NULL, sata_pwr_rst);
+static DEVICE_ATTR(bt_rst_ctl, 0666, NULL, bt_rst);
 #endif
 
 #ifdef CONFIG_PWR_CD
@@ -697,6 +720,11 @@ static int ist3020lcd_probe(struct spi_device *spi)
     ret = sysfs_create_file(&spi->dev.kobj, &dev_attr_sata_rst.attr);
     if(ret)
         printk("------------sysfs_create_file failed---------\n");
+    
+     ret = sysfs_create_file(&spi->dev.kobj, &dev_attr_bt_rst_ctl.attr);
+    if(ret)
+        printk("------------sysfs_create_file failed---------\n");
+    
 #endif
 
     ret = gpio_request(IST3020_CTL_A0, "ist3020_a0");
@@ -722,7 +750,79 @@ static int ist3020lcd_probe(struct spi_device *spi)
     
 
     ist3020lcd_init();
-   
+
+#ifdef CONFIG_WIFI_BT
+    
+    BT_RST_N = of_get_named_gpio(np, "bt_rst_n", 0);
+    if (!gpio_is_valid(BT_RST_N)){
+         printk("can not find BT_RST_N gpio pins\n");
+    }
+    
+    BT_WAKE = of_get_named_gpio(np, "bt_wake", 0);
+    if (!gpio_is_valid(BT_WAKE)){
+         printk("can not find BT_WAKE gpio pins\n");
+    }
+    BT_HOST_WAKE = of_get_named_gpio(np, "bt_host_wake", 0);
+    if (!gpio_is_valid(BT_HOST_WAKE)){
+         printk("can not find BT_HOST_WAKE gpio pins\n");
+    }
+    WL_HOST_WAKE =of_get_named_gpio(np, "wl_host_wake", 0);
+    if(!gpio_is_valid(WL_HOST_WAKE)){
+        printk("can not find WL_HOST_WAKE gpio pins\n");
+    }
+    WL_REG_ON =of_get_named_gpio(np, "wl_reg_on", 0);
+    if(!gpio_is_valid(WL_REG_ON)){
+        printk("can not find WL_REG_ON gpio pins\n");
+    }  
+
+    /*
+    EIM_D31 = of_get_named_gpio(np, "eim_d31", 0);
+    if(!gpio_is_valid(EIM_D31)){
+        printk("can not find EIM_D31 gpio pins\n");
+    }
+    */
+    
+    ret = gpio_request(BT_RST_N, "BT_RST_N");
+    if(ret){
+        printk("request gpio BT_RST_N failed\n");
+    }
+    
+    /*
+    ret = gpio_request(EIM_D31, "EIM_D31");
+    if(ret){
+        printk("request gpio EIM_D31 failed\n");
+    }
+    */
+    
+    gpio_direction_output(BT_RST_N, 0);
+    //gpio_direction_output(EIM_D31, 0);
+    msleep(50);
+    gpio_direction_output(BT_RST_N, 1);
+    //msleep(5);
+    
+    //gpio_direction_output(EIM_D31, 1);
+    ret = gpio_request(BT_WAKE, "BT_WAKE");
+    if(ret){
+        printk("request gpio BT_WAKE failed\n");
+    }
+    
+    gpio_direction_output(BT_WAKE, 1);
+    ret = gpio_request(BT_HOST_WAKE, "BT_HOST_WAKE");
+    if(ret){
+        printk("request gpio BT_HOST_WAKE failed\n");
+    }
+    ret = gpio_request(WL_HOST_WAKE, "WL_HOST_WAKE");
+    if(ret){
+        printk("request gpio WL_HOST_WAKE failed\n");
+    }
+    /*
+    ret = gpio_request(WL_REG_ON, "WL_REG_ON");
+    if(ret){
+        printk("request gpio WL_REG_ON failed\n");
+    }
+    gpio_direction_output(WL_REG_ON, 1);
+    */
+#endif   
     ret = alloc_chrdev_region(&dev_id, 0, IST3020_COUNT, IST3020_NAME);
     if(ret){
         printk(KERN_ERR IST3020_NAME ": alloc_chrdev_region failed\n");
@@ -756,12 +856,12 @@ static int ist3020lcd_probe(struct spi_device *spi)
     //printk("KEY_ROW2 = 0x%x\n", __raw_readl(ioremap(0x20e0260, 4)));
 
     while(0){
-        gpio_set_value(IST3020_CTL_A0, 1);
-        gpio_set_value(IST3020_nRST, 1);
+        gpio_set_value(WL_REG_ON, 1);
+        gpio_set_value(BT_RST_N, 1);
         //ist3020_write_reg(this_spi, 0x40);
         msleep(50);
-        gpio_set_value(IST3020_CTL_A0, 0);
-        gpio_set_value(IST3020_nRST, 0);
+        gpio_set_value(WL_REG_ON, 0);
+        gpio_set_value(BT_RST_N, 0);
         msleep(50);
     }
 

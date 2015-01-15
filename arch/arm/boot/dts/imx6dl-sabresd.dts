@@ -105,6 +105,18 @@
         ds28e10_io = <&gpio1 2 0>;
     };
 //+++MQ
+
+//+++WWJ
+#ifdef CONFIG_RII
+	ap6210 {
+		compatible = "ap6210";
+		status = "okay";
+		bt_rst_n = <&gpio4 6 0>;
+		bt_wake = <&gpio4 7 0>;
+		bt_host_wake = <&gpio4 8 0>;
+	};
+#endif
+//+++WWJ
 };
 
 &audmux {
@@ -183,10 +195,12 @@
 		  clocks = <&clks 201>;
 	};
 #ifdef CONFIG_RII
+	/*
 	ac24xx@54{
 		compatible = "ac24cxx";
 		reg = <0x54>;
 	};
+	*/
 #endif
 	/*
 	codec: sgtl5000@0a {
@@ -264,6 +278,13 @@
 				/*MX6QDL_PAD_EIM_D24__UART3_TX_DATA 0x80000000 */
 				/*MX6QDL_PAD_EIM_D25__UART3_RX_DATA 0x80000000 */
 				/*MX6QDL_PAD_EIM_D28__GPIO3_IO28 0x170b0*/
+		#ifdef CONFIG_WIFI_BT
+				MX6QDL_PAD_KEY_COL0__GPIO4_IO06 0x80000000
+				MX6QDL_PAD_KEY_ROW0__GPIO4_IO07 0x80000000
+				MX6QDL_PAD_KEY_COL1__GPIO4_IO08 0x80000000
+				MX6QDL_PAD_GPIO_17__GPIO7_IO12 0x80000000
+				MX6QDL_PAD_GPIO_19__GPIO4_IO05 0x80000000
+		#endif
 			>;
 		};
 	};
@@ -294,8 +315,10 @@
 
 &uart3 {
 	status = "okay";
+	fsl,uart-has-rtscts;
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart3_1>;
+	bt_rst_n = <&gpio4 6 1>;
 };
 
 &usbh1 {
