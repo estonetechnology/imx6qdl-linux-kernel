@@ -60,3 +60,7 @@ obj-$(CONFIG_MWIFIEX)	+= mwifiex/
 
 obj-$(CONFIG_BRCMFMAC)	+= brcm80211/
 obj-$(CONFIG_BRCMSMAC)	+= brcm80211/
+
+#+++wwj begin
+obj-$(CONFIG_RTL8723AU) += rtl8723au/
+#+++wwj end

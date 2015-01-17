@@ -284,4 +284,7 @@ source "drivers/net/wireless/mwifiex/Kconfig"
 source "drivers/net/wireless/rtl8188EUS/Kconfig"
 #+++MQ
 
+#+++wwj
+source "drivers/net/wireless/rtl8723au/Kconfig"
+#+++wwj
 endif # WLAN

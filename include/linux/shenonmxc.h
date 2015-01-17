@@ -14,6 +14,9 @@
 #define CONFIG_PWR_CD
 #define CONFIG_RII_DDR_CLL
 
+//+++wwj
+#define CONFIG_WIFI_BT
+
 #endif
 
 
