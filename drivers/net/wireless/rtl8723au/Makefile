@@ -870,6 +870,7 @@ $(MODULE_NAME)-$(CONFIG_MP_INCLUDED)+= core/rtw_bt_mp.o
 endif
 
 obj-$(CONFIG_RTL8723AS-VAU) := $(MODULE_NAME).o
+obj-$(CONFIG_RTL8723AU) := $(MODULE_NAME).o 
 
 else
 
