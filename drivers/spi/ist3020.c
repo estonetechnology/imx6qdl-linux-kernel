@@ -47,6 +47,14 @@
 #define IST3020_COUNT 1
 #define IST3020_NAME "ist3020lcd_ctrl"
 
+#ifdef CONFIG_WIFI_IC
+#ifdef CONFIG_RTL8188EU
+#define WIFI_NAME "RTL8188EU"
+#elif defined(CONFIG_RTL8723AU)
+#define WIFI_NAME "RTL8723AU"
+#endif 
+#endif
+
 static int major;
 static dev_t dev_id;
 static struct cdev* ist3020_cdev;
@@ -386,6 +394,25 @@ static const struct file_operations pwr_status_fops={
 };
 #endif
 
+#ifdef CONFIG_WIFI_IC
+static int show_name(struct seq_file* seq, void* data)
+{
+    char wifi_name[20] = {0};
+    sprintf(wifi_name, "%s\n", WIFI_NAME);
+    seq_puts(seq, wifi_name);
+}
+static int ic_open(struct inode* inode, struct file* file)
+{
+    return single_open(file, show_name, inode->i_private);
+}
+static const struct file_operations wifi_ic_fops={
+    .owner = THIS_MODULE,
+    .open = ic_open,
+    .read = seq_read,
+    .write = NULL,
+};
+#endif
+
 static void clearRam()
 {
     printk("WWJ==========%s start\n", __func__);
@@ -589,6 +616,11 @@ static int ist3020lcd_probe(struct spi_device *spi)
     pwr_root_dir = proc_mkdir("power", NULL);
     //struct proc_dir_entry* power_off;
 #endif
+
+#ifdef CONFIG_WIFI_IC
+    struct proc_dir_entry *wifi_ic = proc_mkdir("wifi_ic", NULL);
+#endif
+
     unsigned long str[] = {0x0c, 0x0d, 0x06, 0x07, 0x08, 0x09, 0xa, 0x0b, 0x00};
 
     this_spi = spi;
@@ -669,6 +701,9 @@ static int ist3020lcd_probe(struct spi_device *spi)
         irq_registered = 1;
 
     proc_create("power_off", 0440, pwr_root_dir, &pwr_status_fops);
+#ifdef CONFIG_WIFI_IC
+    proc_create("name", 0440, wifi_ic, &wifi_ic_fops);
+#endif
     /*
     if(!power_off){
         printk("%s:proc_create power_off failed\n", __func__);
