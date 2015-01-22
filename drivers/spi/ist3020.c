@@ -229,7 +229,7 @@ static int ist3020_write_reg(struct spi_device *spi, uint8_t dat)
     gpio_set_value(IST3020_CTL_A0, 0);
     spi_message_add_tail(&index_xfer, &msg);
     status = spi_sync(spi, &msg);
-    udelay(500);
+    udelay(50);
 
     if(status){
         printk("spi_sync failed status = %d\n", status);
@@ -264,7 +264,7 @@ static int ist3020_write_data(struct spi_device *spi, uint8_t dat)
     gpio_set_value(IST3020_CTL_A0, 1);
     spi_message_add_tail(&index_xfer, &msg);
     status = spi_sync(spi, &msg);
-    udelay(500);
+    udelay(50);
 
     if(status){
         printk("spi_sync failed status = %d\n", status);
