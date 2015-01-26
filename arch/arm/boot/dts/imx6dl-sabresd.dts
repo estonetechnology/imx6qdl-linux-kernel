@@ -105,18 +105,6 @@
         ds28e10_io = <&gpio1 2 0>;
     };
 //+++MQ
-
-//+++WWJ
-#ifdef CONFIG_RII
-	ap6210 {
-		compatible = "ap6210";
-		status = "okay";
-		bt_rst_n = <&gpio4 6 0>;
-		bt_wake = <&gpio4 7 0>;
-		bt_host_wake = <&gpio4 8 0>;
-	};
-#endif
-//+++WWJ
 };
 
 &audmux {

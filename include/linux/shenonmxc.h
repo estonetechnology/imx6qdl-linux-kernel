@@ -16,7 +16,7 @@
 #define CONFIG_WIFI_IC
 
 //+++wwj
-#define CONFIG_WIFI_BT
+//#define CONFIG_WIFI_BT
 
 #endif
 

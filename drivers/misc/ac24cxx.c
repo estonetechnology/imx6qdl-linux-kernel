@@ -137,8 +137,9 @@ static int ac24cxx_probe(struct i2c_client *client,
 				       const struct i2c_device_id *id)
 {
 	int ret;
-	int value;
-	int i;
+	//int value;
+	//int i;
+	int retry;
 	ac24cxx_client = client;
 	//printk("WWJ=========%s start, i2c addr = 0x%x\n", __func__, client->addr);
 
@@ -146,6 +147,15 @@ static int ac24cxx_probe(struct i2c_client *client,
 		dev_err(&client->dev, "i2c bus does not support the powermcu\n");
 		return -ENODEV;
 	}
+
+	//check the eeprom existing
+	retry = 3;
+	while(retry--){
+		if(i2c_smbus_read_byte_data(client, 0x00) >= 0)
+			break;
+	}
+	if(retry <= 0)
+		return -1;
 
 #ifdef CONFIG_RII_DDR_CLL
 	calibration_mmc();
