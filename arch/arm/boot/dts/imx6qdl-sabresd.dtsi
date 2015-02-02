@@ -135,37 +135,37 @@
 		compatible = "gpio-keys";
  			key_up {
 				label = "key_up";
-				gpios = <&gpio1 1 0>;
+				gpios = <&gpio1 1 1>;
 				linux,code = <103>;
 				gpio-key,wakeup;
 			};
 			key_left {
 				label = "key_left";
-				gpios = <&gpio1 3 0>;
+				gpios = <&gpio1 3 1>;
 				linux,code = <105>;
 				gpio-key,wakeup;
 			};
 			key_enter {
 				label = "key_enter";
-				gpios = <&gpio1 4 0>;
+				gpios = <&gpio1 4 1>;
 				linux,code = <28>;
 				gpio-key,wakeup;
 			};
 			key_right {
 				label = "key_right";
-				gpios = <&gpio1 5 0>;
+				gpios = <&gpio1 5 1>;
 				linux,code = <106>;
 				gpio-key,wakeup;
 			};
 			key_cancle {
 				label = "key_cancle";
-				gpios = <&gpio1 6 0>;
+				gpios = <&gpio1 6 1>;
 				linux,code = <223>;
 				gpio-key,wakeup;
 			};
 			key_down {
 				label = "key_down";
-				gpios = <&gpio1 7 0>;
+				gpios = <&gpio1 7 1>;
 				linux,code = <108>;
 				gpio-key,wakeup;
 			};
