@@ -170,12 +170,15 @@
 		compatible = "fsl,imx6-hdmi-i2c";
 		reg = <0x50>;
 	};
-
+//+++wwj
+#ifdef CONFIG_RII
+#else
 	mega48@60 {
 		compatible = "fsl,mega48-i2c";
 		reg = <0x60>;
 	};
-
+#endif
+//+++wwj
 	codec: rt5631@1a {
 		  compatible = "realtek,rt5631";
 		  //compatible = "realtek,alc5631";

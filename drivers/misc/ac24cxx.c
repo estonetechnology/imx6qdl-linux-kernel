@@ -153,12 +153,13 @@ static int ac24cxx_probe(struct i2c_client *client,
 	while(retry--){
 		if(i2c_smbus_read_byte_data(client, 0x00) >= 0)
 			break;
+		msleep(50);
 	}
 	if(retry <= 0)
 		return -1;
 
 #ifdef CONFIG_RII_DDR_CLL
-	calibration_mmc();
+	//calibration_mmc();
 #endif
 
 	ret = sysfs_create_file(&client->dev.kobj, &dev_attr_MAC_ADDR.attr);
