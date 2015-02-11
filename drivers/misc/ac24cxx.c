@@ -12,7 +12,7 @@
 #include <linux/memory.h>
 #include <linux/shenonmxc.h>
 
-#define MAC_ID_ADDR_START 0x00
+#define MAC_ID_ADDR_START 0x01
 #define MAC_ID_SIZE		6
 
 static struct i2c_client* ac24cxx_client;
@@ -91,22 +91,25 @@ static ssize_t set_macid(struct device* dev, struct device_attribute* attr, cons
     char tmp[5];
 
     memset(macid, 0, 18);
-    strncpy(macid, buf, 17);
+    strncpy(macid, buf, 18);
     macid[17] = '\0';
 
+    i = 0;
+    printk("macid = %s\n", p);
     while(mac = strsep(&p, ":")){
     	//printk("WWJ======mac = %s\n", mac);
     	mac_addr[i] = simple_strtoul(mac, NULL, 16);
     	i++;
     }
+    printk("i = %d, i2c_addr = 0x%x\n", i, ac24cxx_client->addr);
 
     i = 0;
     for(addr = MAC_ID_ADDR_START; addr < (MAC_ID_ADDR_START + MAC_ID_SIZE); addr++){
-    	//printk("WWJ======== set MAC[%d]:0x%x\n", i, mac_addr[i]);
+    	printk("WWJ======== set MAC[%d]:0x%x; addr = 0x%x\n", i, mac_addr[i], addr);
     	ret = i2c_smbus_write_byte_data(ac24cxx_client, addr, mac_addr[i]);
     	if(ret < 0)
     		printk("i2c_smbus_write_byte_data failed ret = %d dev addr = 0x%x\n", ret, ac24cxx_client->addr);
-    	msleep(10);
+    	msleep(100);
     	i++;
     }
 
@@ -115,9 +118,12 @@ static ssize_t set_macid(struct device* dev, struct device_attribute* attr, cons
 
 static ssize_t show_macid(struct device *dev, struct device_attribute *attr, char *buf)
 {
-		read_macid(ac24cxx_client);
-        return sprintf(buf, "%02x:%02x:%02x:%02x:%02x:%02x", mac_addr[0], mac_addr[1],
+	int ret;
+	read_macid(ac24cxx_client);
+		
+        ret = sprintf(buf, "%02x:%02x:%02x:%02x:%02x:%02x", mac_addr[0], mac_addr[1],
         	mac_addr[2], mac_addr[3], mac_addr[4], mac_addr[5]);
+	return ret;
 }
 
 static DEVICE_ATTR(MAC_ADDR, 0600, show_macid, set_macid);
@@ -125,11 +131,17 @@ static DEVICE_ATTR(MAC_ADDR, 0600, show_macid, set_macid);
 static int read_macid(struct i2c_client* client)
 {
 	u32 index = 0, i;
+	int dat;
 	for(i = MAC_ID_ADDR_START; i < (MAC_ID_ADDR_START+MAC_ID_SIZE); i++){
-			mac_addr[index] = i2c_smbus_read_byte_data(client, i);
-			msleep(10);
-			//printk("WWJ=======addr 0x%x = 0x%x\n", i, mac_addr[index]);
-			index++;
+		//mac_addr[index] = i2c_smbus_read_byte_data(client, i);
+		dat = i2c_smbus_read_byte_data(client, i);
+		if(dat < 0)
+			printk("error read dat = %d\n", dat);
+		else
+			mac_addr[index] = dat;
+		msleep(100);
+		printk("WWJ=======addr 0x%x = 0x%x\n", i, dat);
+		index++;
 	}
 }
 
