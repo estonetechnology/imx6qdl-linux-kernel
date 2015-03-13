@@ -13,7 +13,9 @@ obj-$(CONFIG_BT_HCIBLUECARD)	+= bluecard_cs.o
 obj-$(CONFIG_BT_HCIBTUART)	+= btuart_cs.o
 
 #+++wwj begin
-#obj-$(CONFIG_BT_HCIBTUSB)	+= btusb.o
+#this is for CSR8510
+obj-$(CONFIG_BT_HCIBTUSB)	+= btusb.o
+#this if for RTL8723's BT
 obj-$(CONFIG_BT_RTKBTUSB)   += rtk_btusb.o
 #+++wwj end
 
