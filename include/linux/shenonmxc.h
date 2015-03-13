@@ -18,6 +18,11 @@
 //+++wwj
 //#define CONFIG_WIFI_BT
 
+//+++wwj begin 20150313@add HIO compile
+#elif ((CUR_SHEN_TYPE) == (TYPE_HIO)) 
+
+//+++wwj end 20150313
+
 #endif
 
 

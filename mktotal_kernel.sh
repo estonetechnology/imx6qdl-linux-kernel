@@ -13,12 +13,21 @@ elif [ "$1" == "RRI_WIFI_BT" ]
 then
 	echo "Use $1"
 	configed=1
+#+++wwj begin 20150313@add HIO compile
+elif [ "$1" == "HIO" ]
+then
+	echo "Use $1"
+	configed=1
+#++++wwj end 20150313@add HIO compile
 else
 	echo "----------------------------------------------------------------"
 	echo "Please choose below type:"
     	echo "VKI"
 	echo "RRI_WIFI"
 	echo "RRI_WIFI_BT"
+#+++wwj 20150313@add HIO compile
+        echo "HIO"
+
 	echo "Example:"
 	echo "        ./mktotal.sh VKI"
     configed=0
@@ -42,6 +51,11 @@ then
 	elif [ "$1" == "RRI_WIFI_BT" ]
 	then
 		make ARCH=arm CROSS_COMPILE=arm-eabi- imx_v7_bt_defconfig
+#++++wwj end 20150313@add HIO compile
+	elif [ "$1" == "HIO" ]
+	then
+		make ARCH=arm CROSS_COMPILE=arm-eabi- imx_v7_hio_defconfig
+#++++wwj end 20150313@add HIO compile
 	fi
 	echo "Start compile $1 ......"
 	if [ -f arch/arm/boot/uImage ]
