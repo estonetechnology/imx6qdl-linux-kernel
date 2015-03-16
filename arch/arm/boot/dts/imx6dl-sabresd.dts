@@ -284,8 +284,8 @@
 	status = "okay";
 };
 
-#ifdef CONFIG_RII
-#else
+#if (defined CONFIG_RII)  || (defined CONFIG_NO_FLEXCAN1)     //+++wwj 20150316@del the flexcan1 dev
+#else 
 &flexcan1 {
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_flexcan1_1>;
