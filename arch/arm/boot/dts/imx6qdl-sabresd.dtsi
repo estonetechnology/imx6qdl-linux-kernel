@@ -725,6 +725,11 @@
 				MX6QDL_PAD_GPIO_18__GPIO7_IO13 0x80000000
 				/*MX6QDL_PAD_KEY_COL0__ECSPI1_SCLK 0x100b1*/
 #endif
+		/*+++wwj begin 20150316@enable the thin_box usb-3 and usb-4 ports*/
+		#ifdef CONFIG_THIN_BOX
+			MX6QDL_PAD_KEY_ROW2__GPIO4_IO11 0x80000000
+		#endif
+		/*+++wwj end*/
 			>;
 		};
 	};

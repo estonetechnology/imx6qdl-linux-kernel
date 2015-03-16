@@ -28,6 +28,9 @@
 #include "ci.h"
 #include "ci_hdrc_imx.h"
 
+ //+++wwj 20150316@enable the usb-3 and usb-4
+ #include <linux/shenonmxc.h>
+
 #define CI_HDRC_IMX_IMX28_WRITE_FIX		BIT(0)
 #define CI_HDRC_IMX_SUPPORT_RUNTIME_PM		BIT(1)
 #define CI_HDRC_IMX_HOST_QUIRK			BIT(2)
@@ -211,6 +214,9 @@ static int ci_hdrc_imx_probe(struct platform_device *pdev)
 		.notify_event = ci_hdrc_imx_notify_event,
 	};
 	int ret;
+//+++wwj begin 20150316@enable the usb-3 and usb-4
+	int usb_enable;
+//+++wwj end
 	const struct of_device_id *of_id =
 			of_match_device(ci_hdrc_imx_dt_ids, &pdev->dev);
 	const struct ci_hdrc_imx_platform_flag *imx_platform_flag = of_id->data;
@@ -329,6 +335,22 @@ static int ci_hdrc_imx_probe(struct platform_device *pdev)
 		}
 	}
 
+//+++wwj begin 20150316@enable the usb-3 and usb-4
+#ifdef CONFIG_THIN_BOX
+	usb_enable = of_get_named_gpio(np, "usb_enable", 0);
+	if (!gpio_is_valid(usb_enable)){
+		printk("can not find usb_enable gpio pins\n");
+	}else{
+		ret = gpio_request(usb_enable, "usb_enable");
+		if(ret){
+			printk("request gpio usb_enable failed\n");
+		}else{
+			gpio_direction_output(usb_enable, 1);
+			printk("%s: usb_enable ok\n", __func__);
+		}
+	}
+#endif
+//+++wwj end
 	if (data->usbmisc_data) {
 		ret = imx_usbmisc_init(data->usbmisc_data);
 		if (ret) {
