@@ -22,6 +22,12 @@
 #elif ((CUR_SHEN_TYPE) == (TYPE_HIO)) 
 
 //+++wwj end 20150313
+//+++wwj begin 20150316@add THIN_BOX compile
+#elif ((CUR_SHEN_TYPE) == (TYPE_THIN_BOX)) 
+
+//+++wwj end 20150316
+#define CONFIG_NO_FLEXCAN1
+#define CONFIG_THIN_BOX
 
 #endif
 

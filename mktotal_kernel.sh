@@ -19,6 +19,13 @@ then
 	echo "Use $1"
 	configed=1
 #++++wwj end 20150313@add HIO compile
+#+++wwj begin 20150316@add THIN_BOX compile
+elif [ "$1" == "THIN_BOX" ]
+then
+	echo "Use $1"
+	configed=1
+#++++wwj end 20150316@add THIN_BOX compile
+
 else
 	echo "----------------------------------------------------------------"
 	echo "Please choose below type:"
@@ -27,6 +34,8 @@ else
 	echo "RRI_WIFI_BT"
 #+++wwj 20150313@add HIO compile
         echo "HIO"
+#+++wwj 20150316@add THIN_BOX compile
+        echo "THIN_BOX"
 
 	echo "Example:"
 	echo "        ./mktotal.sh VKI"
@@ -56,6 +65,12 @@ then
 	then
 		make ARCH=arm CROSS_COMPILE=arm-eabi- imx_v7_hio_defconfig
 #++++wwj end 20150313@add HIO compile
+#++++wwj end 20150316@add THIN_BOX compile
+	elif [ "$1" == "THIN_BOX" ]
+	then
+		make ARCH=arm CROSS_COMPILE=arm-eabi- imx_v7_hio_defconfig
+#++++wwj end 20150316@add THIN_BOX compile
+
 	fi
 	echo "Start compile $1 ......"
 	if [ -f arch/arm/boot/uImage ]

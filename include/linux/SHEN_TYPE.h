@@ -7,8 +7,10 @@
 #define TYPE_RRI_WIFI_BT       3
 //+++wwj 20150313@add HIO compile
 #define TYPE_HIO		4
+//+++wwj 20150316@add THIN_BOX compile
+#define TYPE_THIN_BOX		5
 
-#define CUR_SHEN_TYPE TYPE_RRI_WIFI_BT
+#define CUR_SHEN_TYPE TYPE_THIN_BOX
 
 #endif
 
