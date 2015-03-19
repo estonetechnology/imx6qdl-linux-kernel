@@ -29,6 +29,9 @@
 #define CONFIG_NO_FLEXCAN1
 #define CONFIG_THIN_BOX
 
+//+++wwj 20150317@add the mic detect
+#define CONFIG_MIC_DEC
+
 #endif
 
 

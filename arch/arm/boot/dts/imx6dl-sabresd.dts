@@ -70,6 +70,11 @@
 		mux-int-port = <1>;
 		mux-ext-port = <4>;
 		//hp-det-gpios = <&gpio7 8 1>;
+		/*+++wwj begin 20150317@add mic detect*/
+		#ifdef CONFIG_MIC_DEC
+	              mic-det-gpios = <&gpio7 11 1>;
+		#endif
+		/*+++wwj end 20150317@add mic detect*/
 	};
 	/*
 	sound {
@@ -274,6 +279,11 @@
 				MX6QDL_PAD_GPIO_17__GPIO7_IO12 0x80000000
 				MX6QDL_PAD_GPIO_19__GPIO4_IO05 0x80000000
 		#endif
+		/*+++wwj begin 20150317@add mic detect*/
+		#ifdef CONFIG_MIC_DEC
+		MX6QDL_PAD_GPIO_16__GPIO7_IO11 0x80000000
+		#endif
+		/*+++wwj end*/
 			>;
 		};
 	};
