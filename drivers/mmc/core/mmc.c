@@ -293,7 +293,10 @@ static int mmc_read_ext_csd(struct mmc_card *card, u8 *ext_csd)
 	}
 
 	card->ext_csd.rev = ext_csd[EXT_CSD_REV];
-	if (card->ext_csd.rev > 6) {
+	//+++wwj begin 20150323@increase the eMMC version which the driver support
+	//if (card->ext_csd.rev > 6) {
+	if (card->ext_csd.rev > 8) {
+	//+++wwj end 20150323@increase the eMMC version which the driver support
 		pr_err("%s: unrecognised EXT_CSD revision %d\n",
 			mmc_hostname(card->host), card->ext_csd.rev);
 		err = -EINVAL;
