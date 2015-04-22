@@ -25,6 +25,12 @@ then
 	echo "Use $1"
 	configed=1
 #++++wwj end 20150316@add THIN_BOX compile
+#+++wwj begin 20150422@add POE compile
+elif [ "$1" == "POE" ]
+then
+	echo "Use $1"
+	configed=1
+#++++wwj end 20150422@add POE compile
 
 else
 	echo "----------------------------------------------------------------"
@@ -36,6 +42,9 @@ else
         echo "HIO"
 #+++wwj 20150316@add THIN_BOX compile
         echo "THIN_BOX"
+#+++wwj 20150433@add POE compile
+        echo "POE"
+#+++wwj 20150422@add POE compile
 
 	echo "Example:"
 	echo "        ./mktotal.sh VKI"
@@ -60,16 +69,21 @@ then
 	elif [ "$1" == "RRI_WIFI_BT" ]
 	then
 		make ARCH=arm CROSS_COMPILE=arm-eabi- imx_v7_bt_defconfig
-#++++wwj end 20150313@add HIO compile
+#++++wwj begin 20150313@add HIO compile
 	elif [ "$1" == "HIO" ]
 	then
 		make ARCH=arm CROSS_COMPILE=arm-eabi- imx_v7_hio_defconfig
 #++++wwj end 20150313@add HIO compile
-#++++wwj end 20150316@add THIN_BOX compile
+#++++wwj begin 20150316@add THIN_BOX compile
 	elif [ "$1" == "THIN_BOX" ]
 	then
 		make ARCH=arm CROSS_COMPILE=arm-eabi- imx_v7_hio_defconfig
 #++++wwj end 20150316@add THIN_BOX compile
+#++++wwj begin 20150422@add POE compile
+	elif [ "$1" == "POE" ]
+	then
+		make ARCH=arm CROSS_COMPILE=arm-eabi- imx_v7_vki_defconfig
+#++++wwj end 20150422@add POE compile
 
 	fi
 	echo "Start compile $1 ......"

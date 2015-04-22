@@ -314,11 +314,31 @@
 
 &uart3 {
 	status = "okay";
+#ifdef CONFIG_POE_UART3
+#else
 	fsl,uart-has-rtscts;
+#endif
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart3_1>;
 	bt_rst_n = <&gpio4 6 1>;
 };
+
+#ifdef CONFIG_POE_UART4
+&uart4 {
+       status = "okay";
+       pinctrl-names = "default";
+       pinctrl-0 = <&pinctrl_uart4_1>;
+};
+#endif
+
+#ifdef CONFIG_POE_UART5
+&uart5 {
+       status = "okay";
+       pinctrl-names = "default";
+       pinctrl-0 = <&pinctrl_uart5_1>;
+ };
+#endif
+
 
 &usbh1 {
 /*+++wwj begin 20150316@enable the usb-3 and usb-4*/

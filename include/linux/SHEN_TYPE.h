@@ -9,8 +9,10 @@
 #define TYPE_HIO		4
 //+++wwj 20150316@add THIN_BOX compile
 #define TYPE_THIN_BOX		5
+//+++wwj 20150422@add POE compile
+#define TYPE_POE		6
 
-#define CUR_SHEN_TYPE TYPE_THIN_BOX
+#define CUR_SHEN_TYPE TYPE_POE
 
 #endif
 

@@ -32,7 +32,11 @@
 //+++wwj 20150317@add the mic detect
 #define CONFIG_MIC_DEC
 
+//+++wwj begin 20150422@add POE compile
+#elif ((CUR_SHEN_TYPE) == (TYPE_POE)) 
+#define CONFIG_POE_UART3
+#define CONFIG_POE_UART4
+#define CONFIG_POE_UART5
+
 #endif
-
-
 #endif

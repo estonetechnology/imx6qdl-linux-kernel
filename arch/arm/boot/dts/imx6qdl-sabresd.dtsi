@@ -338,6 +338,7 @@
 //+++WWJ
 #ifdef CONFIG_RII
 	pinctrl-0 = <&pinctrl_ecspi1_1>;
+#elif define CONFIG_POE_UART5
 #else
 	pinctrl-0 = <&pinctrl_ecspi1_2>;
 #endif

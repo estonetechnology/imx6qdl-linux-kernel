@@ -1095,6 +1095,8 @@
 			>;
 		};
 #ifdef CONFIG_RII
+
+#elif defined CONFIG_POE_UART5
 #else
 		pinctrl_ecspi1_2: ecspi1grp-2 {
 			fsl,pins = <
@@ -1144,6 +1146,7 @@
 			>;
 		};
 #ifdef CONFIG_RII
+
 #else
 		pinctrl_enet_2: enetgrp-2 {
 			fsl,pins = <
@@ -1569,6 +1572,17 @@
 			fsl,pins = <
 				MX6QDL_PAD_KEY_COL0__UART4_TX_DATA 0x1b0b1
 				MX6QDL_PAD_KEY_ROW0__UART4_RX_DATA 0x1b0b1
+			>;
+		};
+	};
+#endif
+
+#ifdef CONFIG_POE_UART5
+	uart5{
+		pinctrl_uart5_1: uart5grp-1 {
+			fsl,pins = <
+				MX6QDL_PAD_KEY_COL1__UART5_TX_DATA 0x1b0b1
+				MX6QDL_PAD_KEY_ROW1__UART5_RX_DATA 0x1b0b1
 			>;
 		};
 	};
