@@ -1093,6 +1093,18 @@
 				MX6QDL_PAD_EIM_D16__ECSPI1_SCLK 0x100b1
 			>;
 		};
+#ifdef CONFIG_RII
+
+#elif defined CONFIG_POE_UART5
+#else
+		pinctrl_ecspi1_2: ecspi1grp-2 {
+			fsl,pins = <
+				MX6QDL_PAD_KEY_COL1__ECSPI1_MISO 0x100b1
+				MX6QDL_PAD_KEY_ROW0__ECSPI1_MOSI 0x100b1
+				MX6QDL_PAD_KEY_COL0__ECSPI1_SCLK 0x100b1
+			>;
+		};
+#endif
 	};
 
 	ecspi3 {
@@ -1454,6 +1466,8 @@
 	};
 
 	mlb {
+#ifdef CONFIG_RII
+#else
 		pinctrl_mlb_1: mlbgrp-1 {
 			fsl,pins = <
 				MX6QDL_PAD_GPIO_3__MLB_CLK  0x71
@@ -1461,6 +1475,7 @@
 				MX6QDL_PAD_GPIO_2__MLB_DATA 0x71
 			>;
 		};
+#endif
 
 		pinctrl_mlb_2: mlbgrp-2 {
 			fsl,pins = <
@@ -1549,6 +1564,8 @@
 			>;
 		};
 	};
+#ifdef CONFIG_RII
+#else
 	uart4 {
 		pinctrl_uart4_1: uart4grp-1 {
 			fsl,pins = <
@@ -1557,7 +1574,9 @@
 			>;
 		};
 	};
+#endif
 
+#ifdef CONFIG_POE_UART5
 	uart5{
 		pinctrl_uart5_1: uart5grp-1 {
 			fsl,pins = <
@@ -1566,6 +1585,7 @@
 			>;
 		};
 	};
+#endif
 
 	usbotg {
 #ifdef CONFIG_RII

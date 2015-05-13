@@ -101,7 +101,8 @@ dtb-$(CONFIG_ARCH_MVEBU) += armada-370-db.dtb \
 dtb-$(CONFIG_ARCH_MXC) += \
 	imx6q-sabrelite.dtb \
 	imx6dl-sabresd.dtb \
-	hio-poe-dl.dtb 
+	hio-poe-dl.dtb	\
+	hio-board-dl.dtb 
 dtb-$(CONFIG_ARCH_NOMADIK) += ste-nomadik-s8815.dtb
 dtb-$(CONFIG_ARCH_OMAP2PLUS) += omap2420-h4.dtb \
 	omap3430-sdp.dtb \
