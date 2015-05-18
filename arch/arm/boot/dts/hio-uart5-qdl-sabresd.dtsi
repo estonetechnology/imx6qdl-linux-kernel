@@ -78,13 +78,14 @@
 			gpio = <&gpio1 29 0>;
 			enable-active-high;
 		};
-
+		/*---wangwenjing
 		reg_audio: wm8962_supply {
 			compatible = "regulator-fixed";
 			regulator-name = "wm8962-supply";
 			gpio = <&gpio4 10 0>;
 			enable-active-high;
 		};
+		*/
 
 		reg_mipi_dsi_pwr_on: mipi_dsi_pwr_on {
 			compatible = "regulator-fixed";
@@ -127,49 +128,6 @@
 		};
 	};
 	*/
-	//+++WWJ begin
-#ifdef CONFIG_RII
-	gpio-keys {
-		compatible = "gpio-keys";
- 			key_up {
-				label = "key_up";
-				gpios = <&gpio1 1 1>;
-				linux,code = <103>;
-				gpio-key,wakeup;
-			};
-			key_left {
-				label = "key_left";
-				gpios = <&gpio1 3 1>;
-				linux,code = <105>;
-				gpio-key,wakeup;
-			};
-			key_enter {
-				label = "key_enter";
-				gpios = <&gpio1 4 1>;
-				linux,code = <28>;
-				gpio-key,wakeup;
-			};
-			key_right {
-				label = "key_right";
-				gpios = <&gpio1 5 1>;
-				linux,code = <106>;
-				gpio-key,wakeup;
-			};
-			key_cancle {
-				label = "key_cancle";
-				gpios = <&gpio1 6 1>;
-				linux,code = <223>;
-				gpio-key,wakeup;
-			};
-			key_down {
-				label = "key_down";
-				gpios = <&gpio1 7 1>;
-				linux,code = <108>;
-				gpio-key,wakeup;
-			};
-	};
-#endif
-	//+++WWJ end
 
 	/*MQ remove
 	sound {
@@ -261,7 +219,7 @@
 		late_init = <0>;
 		status = "disabled";
 	};
-
+	/*---wangwenjing
 	lcd@0 {
 		compatible = "fsl,lcd";
 		ipu_id = <0>;
@@ -271,6 +229,7 @@
 		pinctrl-0 = <&pinctrl_ipu1_1>;
 		status = "okay";
 	};
+	*/
 
 	backlight {
 		compatible = "pwm-backlight";
@@ -322,31 +281,14 @@
 	pu-supply = <&pu_dummy>; /* use pu_dummy if VDDSOC share with VDDPU */
 };
 
+#if 0
 &ecspi1 {
 	fsl,spi-num-chipselects = <1>;
-//+++WWJ
-#ifdef CONFIG_RII
-	cs-gpios = <&gpio3 19 0>;
-#else
 	cs-gpios = <&gpio4 9 0>;
-#endif
-	
-	
 	pinctrl-names = "default";
-
-//+++WWJ
-#ifdef CONFIG_RII
-	pinctrl-0 = <&pinctrl_ecspi1_1>;
-#elif defined CONFIG_POE_UART5
-#else
 	pinctrl-0 = <&pinctrl_ecspi1_2>;
-#endif
-//+++WWJ
-	
 	status = "okay";
 
-#ifdef CONFIG_RII
-#else
 	flash: m25p80@0 {
 		#address-cells = <1>;
 		#size-cells = <1>;
@@ -354,31 +296,23 @@
 		spi-max-frequency = <20000000>;
 		reg = <0>;
 	};
+};
 #endif
-//+++WWJ
-#ifdef CONFIG_RII
-	ist3020: ist3020lcd@0{
-        #address-cells = <1>;
-        #size-cells = <1>;
-        compatible = "topway,ist3020lcd_ctrl";
-        spi-max-frequency = <8000000>;
-        ist3020-nRst = <&gpio1 8 0>;
-        ist3020-A0 = <&gpio1 9 0>;
-        ist3020-backlight = <&gpio7 11 0>;
-        sata-power = <&gpio4 15 0>;
-        usb-hub = <&gpio4 14 0>;
-#ifdef CONFIG_WIFI_BT
-        bt_rst_n = <&gpio4 6 1>;
-		bt_wake = <&gpio4 7 0>;
-		bt_host_wake = <&gpio4 8 0>;
-		wl_reg_on = <&gpio7 12 1>;
-		wl_host_wake = <&gpio4 5 0>;
-		eim_d31 = <&gpio3 31 1>;
-#endif
-        pwr_cd = <&gpio7 13 0>;
-        pwr_hold = <&gpio4 11 0>;
-        reg = <0>;
-    };
+
+//+++wangwenjing
+&ecspi2 {
+	fsl,spi-num-chipselects = <2>;
+	cs-gpios = <&gpio5 12 0>,
+		    <&gpio5 9 0>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_ecspi2_1>;
+	status = "okay";
+#if 1
+	spidev@0{
+		compatible = "spidev";
+		spi-max-frequency = <8000000>;
+		reg = <0>;
+	};
 #endif
 };
 
@@ -610,8 +544,7 @@
         };
 };
 
-#ifdef CONFIG_RII
-#else
+/*---wangwenjing
 &i2c3 {
         clock-frequency = <100000>;
         pinctrl-names = "default";
@@ -656,7 +589,7 @@
 		interrupts = <9 2>;
 	};
 };
-#endif
+*/
 
 &iomuxc {
 	pinctrl-names = "default";
@@ -666,7 +599,6 @@
 		pinctrl_hog_1: hoggrp-1 {
 			fsl,pins = <
 				MX6QDL_PAD_GPIO_4__GPIO1_IO04   0x80000000
-				/*MX6QDL_PAD_GPIO_5__GPIO1_IO05   0x80000000*/
 				MX6QDL_PAD_NANDF_D0__GPIO2_IO00 0x80000000
 				MX6QDL_PAD_NANDF_D1__GPIO2_IO01 0x80000000
 				MX6QDL_PAD_NANDF_D2__GPIO2_IO02 0x80000000
@@ -686,50 +618,30 @@
 				MX6QDL_PAD_NANDF_CS0__GPIO6_IO11 0x80000000
 				MX6QDL_PAD_NANDF_CS1__GPIO6_IO14 0x80000000
 				MX6QDL_PAD_EIM_EB3__GPIO2_IO31 0x80000000
-		#ifdef CONFIG_RII
-		#else
 				MX6QDL_PAD_EIM_D16__GPIO3_IO16 0x80000000
-		#endif
 				MX6QDL_PAD_EIM_DA9__GPIO3_IO09 0x80000000
-				MX6QDL_PAD_GPIO_4__GPIO1_IO04 0x80000000
-				/*MX6QDL_PAD_GPIO_5__GPIO1_IO05 0x80000000 */
 				MX6QDL_PAD_EIM_D29__GPIO3_IO29 0x80000000
 				MX6QDL_PAD_SD3_RST__GPIO7_IO08 0x80000000
-				MX6QDL_PAD_GPIO_9__GPIO1_IO09 0x80000000
-		/*+++WWJ begin*/
-		#ifdef CONFIG_RII
-				MX6QDL_PAD_GPIO_8__GPIO1_IO08 0x80000000
-				MX6QDL_PAD_GPIO_1__GPIO1_IO01 0x80008000
-				MX6QDL_PAD_GPIO_3__GPIO1_IO03 0x80008000
-				MX6QDL_PAD_GPIO_4__GPIO1_IO04 0x80008000
-				MX6QDL_PAD_GPIO_5__GPIO1_IO05 0x80008000
-				MX6QDL_PAD_GPIO_6__GPIO1_IO06 0x80008000
-				MX6QDL_PAD_GPIO_7__GPIO1_IO07 0x80008000
-		#endif
-		/*+++WWJ end*/
+				/*MX6QDL_PAD_GPIO_9__GPIO1_IO09 0x80000000*/
 				/*MX6QDL_PAD_GPIO_1__WDOG2_B 0x80000000*/			
 				MX6QDL_PAD_GPIO_2__GPIO1_IO02 0x80000000
 				/*MX6QDL_PAD_EIM_D24__UART3_TX_DATA 0x80000000*/
 				/*MX6QDL_PAD_EIM_D25__UART3_RX_DATA 0x80000000 */
-//+++WWJ
-#ifdef CONFIG_RII
-				MX6QDL_PAD_KEY_COL4__GPIO4_IO14 0x80000000
-				MX6QDL_PAD_KEY_ROW4__GPIO4_IO15 0x80000000
-				MX6QDL_PAD_KEY_ROW2__GPIO4_IO11 0x80000000
-				/*MX6QDL_PAD_KEY_COL0__GPIO4_IO06 0x80000000*/
-				/*MX6QDL_PAD_KEY_ROW0__GPIO4_IO07 0x80000000*/
-				/*MX6QDL_PAD_KEY_COL1__GPIO4_IO08 0x80000000*/
-				MX6QDL_PAD_KEY_ROW1__GPIO4_IO09 0x80000000
-				MX6QDL_PAD_GPIO_16__GPIO7_IO11 0x80000000
-				MX6QDL_PAD_NANDF_D6__GPIO2_IO06 0x80000000
-				MX6QDL_PAD_GPIO_18__GPIO7_IO13 0x80000000
-				/*MX6QDL_PAD_KEY_COL0__ECSPI1_SCLK 0x100b1*/
-#endif
-		/*+++wwj begin 20150316@enable the thin_box usb-3 and usb-4 ports*/
-		#ifdef CONFIG_THIN_BOX
-			MX6QDL_PAD_KEY_ROW2__GPIO4_IO11 0x80000000
-		#endif
-		/*+++wwj end*/
+				/*+++wangwenjing*/
+				MX6QDL_PAD_KEY_COL2__GPIO4_IO10   0x80000000
+				MX6QDL_PAD_GPIO_5__GPIO1_IO05        0x80000000 
+				MX6QDL_PAD_GPIO_6__GPIO1_IO06        0x80000000
+				MX6QDL_PAD_GPIO_7__GPIO1_IO07        0x80000000
+				MX6QDL_PAD_DISP0_DAT8__GPIO4_IO29  0x80000000
+				MX6QDL_PAD_DISP0_DAT9__GPIO4_IO30  0x80000000
+				MX6QDL_PAD_DISP0_DAT10__GPIO4_IO31  0x80000000
+				MX6QDL_PAD_DISP0_DAT11__GPIO5_IO05  0x80000000
+				MX6QDL_PAD_DISP0_DAT12__GPIO5_IO06   0x80000000
+				MX6QDL_PAD_DISP0_DAT13__GPIO5_IO07   0x80000000
+				MX6QDL_PAD_DISP0_DAT14__GPIO5_IO08   0x80000000
+				MX6QDL_PAD_DISP0_DAT15__GPIO5_IO09   0x80000000
+				MX6QDL_PAD_DISP0_DAT18__GPIO5_IO12   0x80000000
+				MX6QDL_PAD_DISP0_DAT20__GPIO5_IO14   0x80000000
 			>;
 		};
 	};
@@ -768,14 +680,19 @@
 	status = "okay";
 };
 
-#ifdef CONFIG_RII
-#else
 &pwm1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_pwm1_1>;
 	status = "okay";
 };
-#endif
+
+//+++ wangwenjing
+&pwm2 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_pwm2_1>;
+	status = "okay";
+};
+
 &ssi2 {
 	fsl,mode = "i2s-slave";
 	status = "okay";
@@ -804,11 +721,7 @@
 &usdhc1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_usdhc1_1>;
-#ifdef CONFIG_RII
-	non-removable;
-#else
-	cd-gpios = <&gpio1 7 0>;
-#endif
+	/*cd-gpios = <&gpio1 7 0>;*/
 	bus-width = <4>;
 /*
 	no-1-8-v;
