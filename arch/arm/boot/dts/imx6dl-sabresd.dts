@@ -104,11 +104,13 @@
 	};
 
 //+++MQ
+#if 0
     ds28e10 {
         compatible = "fsl,imx_ds28e10";
         status = "okay";
         ds28e10_io = <&gpio1 2 0>;
     };
+#endif
 //+++MQ
 };
 

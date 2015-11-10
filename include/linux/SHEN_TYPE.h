@@ -12,7 +12,7 @@
 //+++wwj 20150422@add POE compile
 #define TYPE_POE		6
 
-#define CUR_SHEN_TYPE TYPE_POE
+#define CUR_SHEN_TYPE TYPE_RRI_WIFI_BT
 
 #endif
 
