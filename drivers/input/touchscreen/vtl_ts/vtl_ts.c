@@ -635,7 +635,7 @@ ERR_PROC_ENTRY:
 		ts->driver->input_dev = NULL;
 	}
 ERR_INIT_INPUT:
-ERR_CHIP_INIT:	
+ERR_CHIP_INIT:
 	gpio_free(ts->config_info.rst_gpio_number);
 ERR_TS_CONFIG:
 	ts->config_info.ctp_used =0;

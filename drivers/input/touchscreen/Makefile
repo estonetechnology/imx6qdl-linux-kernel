@@ -75,5 +75,5 @@ obj-$(CONFIG_TOUCHSCREEN_W90X900)	+= w90p910_ts.o
 obj-$(CONFIG_TOUCHSCREEN_TPS6507X)	+= tps6507x-ts.o
 obj-$(CONFIG_TOUCHSCREEN_GT82x) 		+= gt82x.o
 obj-$(CONFIG_TOUCHSCREEN_GT801) 		+= gt800_801.o
-#obj-$(CONFIG_TOUCHSCREEN_VTL_CT36X) 		+= vtl_ts/
 obj-$(CONFIG_TOUCHSCREEN_VTL_CT36X)             += GT9xx/ 
+obj-$(CONFIG_TOUCHSCREEN_VTL_CT36X)             += vtl_ts/

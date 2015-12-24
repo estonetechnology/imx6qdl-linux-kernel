@@ -1746,6 +1746,21 @@ static s8 gtp_request_io_port(struct goodix_ts_data *ts)
 
 /*******************************************************
 Function:
+    Request gpio(INT & RST) ports.
+Input:
+    ts: private data.
+Output:
+    Executive outcomes.
+        >= 0: succeed, < 0: failed
+*******************************************************/
+static s8 gtp_free_io_port(void)
+{
+    GTP_GPIO_FREE(gtp_rst_gpio);
+    GTP_GPIO_FREE(gtp_int_gpio);
+}
+
+/*******************************************************
+Function:
     Request interrupt.
 Input:
     ts: private data.
@@ -2490,6 +2505,8 @@ static int goodix_ts_probe(struct i2c_client *client, const struct i2c_device_id
     if (ret < 0)
     {
         GTP_ERROR("I2C communication ERROR!");
+		gtp_free_io_port();
+		return 0;
     }
 
     ret = gtp_read_version(client, &version_info);
