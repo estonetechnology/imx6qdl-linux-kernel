@@ -135,10 +135,11 @@ struct ldb_data {
 static int g_ldb_mode;
 
 static struct fb_videomode ldb_modedb[] = {
-	{"AUOG101", 60, 1280, 800, 14507,
-	 40, 40,
-	 4,4,
-	 88, 8,
+	//65M
+	{"AUOG101", 60, 1280, 800, 15384,
+	 68, 100,
+	 8,8,
+	 4, 4,
 	 0, 
           FB_VMODE_NONINTERLACED,
           FB_MODE_IS_DETAILED,}, 	  
