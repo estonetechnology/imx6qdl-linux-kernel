@@ -112,7 +112,6 @@ struct ldb_data {
 	uint32_t *reg;
 	uint32_t *control_reg;
 	uint32_t *gpr3_reg;
-	uint32_t control_reg_data;
 	struct regulator *lvds_bg_reg;
 	int mode;
 	bool inited;
@@ -123,13 +122,11 @@ struct ldb_data {
 		struct clk *div_7_clk;
 		struct clk *div_sel_clk;
 		bool active;
-		bool clk_en;
 		int ipu;
 		int di;
 		uint32_t ch_mask;
 		uint32_t ch_val;
 	} setting[2];
-	struct notifier_block nb;
 };
 
 static int g_ldb_mode;
@@ -376,7 +373,7 @@ static int find_ldb_setting(struct ldb_data *ldb, struct fb_info *fbi)
 
 static int ldb_disp_setup(struct mxc_dispdrv_handle *disp, struct fb_info *fbi)
 {
-	uint32_t reg, val;
+	uint32_t reg;
 	uint32_t pixel_clk, rounded_pixel_clk;
 	struct clk *ldb_clk_parent;
 	struct ldb_data *ldb = mxc_dispdrv_getdata(disp);
@@ -389,15 +386,10 @@ static int ldb_disp_setup(struct mxc_dispdrv_handle *disp, struct fb_info *fbi)
 
 	di = ldb->setting[setting_idx].di;
 
-	/* restore channel mode setting */
-	val = readl(ldb->control_reg);
-	val |= ldb->setting[setting_idx].ch_val;
-	writel(val, ldb->control_reg);
-	dev_dbg(&ldb->pdev->dev, "LDB setup, control reg:0x%x\n",
-			readl(ldb->control_reg));
-
-	/* vsync setup */
 	reg = readl(ldb->control_reg);
+    /* clear channel mode */
+    reg &= ~ldb->setting[setting_idx].ch_mask;
+    /* vsync setup */
 	if (fbi->var.sync & FB_SYNC_VERT_HIGH_ACT) {
 		if (di == 0)
 			reg = (reg & ~LDB_DI0_VS_POL_MASK)
@@ -416,8 +408,6 @@ static int ldb_disp_setup(struct mxc_dispdrv_handle *disp, struct fb_info *fbi)
 	writel(reg, ldb->control_reg);
 
 	/* clk setup */
-	if (ldb->setting[setting_idx].clk_en)
-		 clk_disable_unprepare(ldb->setting[setting_idx].ldb_di_clk);
 	pixel_clk = (PICOS2KHZ(fbi->var.pixclock)) * 1000UL;
 	ldb_clk_parent = clk_get_parent(ldb->setting[setting_idx].ldb_di_clk);
 	if (IS_ERR(ldb_clk_parent)) {
@@ -442,79 +432,50 @@ static int ldb_disp_setup(struct mxc_dispdrv_handle *disp, struct fb_info *fbi)
 		dev_err(&ldb->pdev->dev, "set ldb di clk fail:%d\n", ret);
 		return ret;
 	}
-	ret = clk_prepare_enable(ldb->setting[setting_idx].ldb_di_clk);
-	if (ret < 0) {
-		dev_err(&ldb->pdev->dev, "enable ldb di clk fail:%d\n", ret);
-		return ret;
-	}
+	//ret = clk_prepare_enable(ldb->setting[setting_idx].ldb_di_clk);
+	//if (ret < 0) {
+	//	dev_err(&ldb->pdev->dev, "enable ldb di clk fail:%d\n", ret);
+	//	return ret;
+	//}
 
-	if (!ldb->setting[setting_idx].clk_en)
-		ldb->setting[setting_idx].clk_en = true;
+	//if (!ldb->setting[setting_idx].clk_en)
+	//	ldb->setting[setting_idx].clk_en = true;
 
 	return 0;
 }
 
-int ldb_fb_event(struct notifier_block *nb, unsigned long val, void *v)
+static int ldb_disp_enable(struct mxc_dispdrv_handle *disp,
+               struct fb_info *fbi)
 {
-	struct ldb_data *ldb = container_of(nb, struct ldb_data, nb);
-	struct fb_event *event = v;
-	struct fb_info *fbi = event->info;
+	struct ldb_data *ldb = mxc_dispdrv_getdata(disp);
 	int index;
-	uint32_t data;
+	uint32_t reg;
 
 	index = find_ldb_setting(ldb, fbi);
 	if (index < 0)
-		return 0;
+		return index;
 
-	fbi->mode = (struct fb_videomode *)fb_match_mode(&fbi->var,
-			&fbi->modelist);
+    reg = readl(ldb->control_reg);
+    reg |= ldb->setting[index].ch_val;
+    writel(reg, ldb->control_reg);
 
-	if (!fbi->mode) {
-		dev_warn(&ldb->pdev->dev,
-				"LDB: can not find mode for xres=%d, yres=%d\n",
-				fbi->var.xres, fbi->var.yres);
-		if (ldb->setting[index].clk_en) {
-			clk_disable(ldb->setting[index].ldb_di_clk);
-			ldb->setting[index].clk_en = false;
-			data = readl(ldb->control_reg);
-			data &= ~ldb->setting[index].ch_mask;
-			writel(data, ldb->control_reg);
-		}
-		return 0;
-	}
-
-	switch (val) {
-	case FB_EVENT_BLANK:
-	{
-		if (*((int *)event->data) == FB_BLANK_UNBLANK) {
-			if (!ldb->setting[index].clk_en) {
-				clk_enable(ldb->setting[index].ldb_di_clk);
-				ldb->setting[index].clk_en = true;
-			}
-		} else {
-			if (ldb->setting[index].clk_en) {
-				clk_disable(ldb->setting[index].ldb_di_clk);
-				ldb->setting[index].clk_en = false;
-				data = readl(ldb->control_reg);
-				data &= ~ldb->setting[index].ch_mask;
-				writel(data, ldb->control_reg);
-				dev_dbg(&ldb->pdev->dev,
-					"LDB blank, control reg:0x%x\n",
-						readl(ldb->control_reg));
-			}
-		}
-		break;
-	}
-	case FB_EVENT_SUSPEND:
-		if (ldb->setting[index].clk_en) {
-			clk_disable(ldb->setting[index].ldb_di_clk);
-			ldb->setting[index].clk_en = false;
-		}
-		break;
-	default:
-		break;
-	}
 	return 0;
+}
+
+static void ldb_disp_disable(struct mxc_dispdrv_handle *disp,
+                 struct fb_info *fbi)
+{
+    struct ldb_data *ldb = mxc_dispdrv_getdata(disp);
+    int index;
+    uint32_t reg;
+
+    index = find_ldb_setting(ldb, fbi);
+    if (index < 0)
+        return;
+
+    reg = readl(ldb->control_reg);
+    reg &= ~ldb->setting[index].ch_mask;
+    writel(reg, ldb->control_reg);
 }
 
 #define LVDS_MUX_CTL_WIDTH	2
@@ -898,10 +859,10 @@ static int ldb_post_disp_init(struct mxc_dispdrv_handle *disp,
 	int setting_idx = ldb->inited ? 1 : 0;
 	int ret = 0;
 
-	if (!ldb->inited) {
-		ldb->nb.notifier_call = ldb_fb_event;
-		fb_register_client(&ldb->nb);
-	}
+	//if (!ldb->inited) {
+	//	ldb->nb.notifier_call = ldb_fb_event;
+	//	fb_register_client(&ldb->nb);
+	//}
 
 	ret = clk_set_parent(ldb->setting[setting_idx].di_clk,
 			ldb->setting[setting_idx].ldb_di_clk);
@@ -951,7 +912,6 @@ static void ldb_disp_deinit(struct mxc_dispdrv_handle *disp)
 		clk_put(ldb->setting[i].div_sel_clk);
 	}
 
-	fb_unregister_client(&ldb->nb);
 }
 
 static struct mxc_dispdrv_driver ldb_drv = {
@@ -960,33 +920,9 @@ static struct mxc_dispdrv_driver ldb_drv = {
 	.post_init = ldb_post_disp_init,
 	.deinit	= ldb_disp_deinit,
 	.setup = ldb_disp_setup,
+    .enable = ldb_disp_enable,
+    .disable = ldb_disp_disable,
 };
-
-static int ldb_suspend(struct platform_device *pdev, pm_message_t state)
-{
-	struct ldb_data *ldb = dev_get_drvdata(&pdev->dev);
-	uint32_t	data;
-
-	if (!ldb->inited)
-		return 0;
-	data = readl(ldb->control_reg);
-	ldb->control_reg_data = data;
-	data &= ~(LDB_CH0_MODE_MASK | LDB_CH1_MODE_MASK);
-	writel(data, ldb->control_reg);
-
-	return 0;
-}
-
-static int ldb_resume(struct platform_device *pdev)
-{
-	struct ldb_data *ldb = dev_get_drvdata(&pdev->dev);
-
-	if (!ldb->inited)
-		return 0;
-	writel(ldb->control_reg_data, ldb->control_reg);
-
-	return 0;
-}
 
 static struct platform_device_id imx_ldb_devtype[] = {
 	{
@@ -1068,8 +1004,6 @@ static struct platform_driver mxcldb_driver = {
 	},
 	.probe = ldb_probe,
 	.remove = ldb_remove,
-	.suspend = ldb_suspend,
-	.resume = ldb_resume,
 };
 
 static int __init ldb_init(void)
