@@ -401,13 +401,13 @@ static void gtp_touch_down(struct goodix_ts_data* ts,s32 id,s32 x,s32 y,s32 w)
     input_mt_sync(ts->input_dev);
 #endif
 #endif
- 			input_report_key(ts->input_dev,BTN_TOUCH,1);
+ 			
 			
-			input_report_abs(ts->input_dev, ABS_MT_TOUCH_MAJOR, 10);
-			input_report_abs(ts->input_dev, ABS_PRESSURE, 10);
-			
+			//input_report_abs(ts->input_dev, ABS_MT_TOUCH_MAJOR, 10);
+			input_report_key(ts->input_dev,BTN_TOUCH,1);
 			input_report_abs(ts->input_dev, ABS_X,  x);
 			input_report_abs(ts->input_dev, ABS_Y,  y);
+			input_report_abs(ts->input_dev, ABS_PRESSURE, 1);
 			input_sync(ts->input_dev);
 			
     GTP_DEBUG("ID:%d, X:%d, Y:%d, W:%d", id, x, y, w);
@@ -432,8 +432,10 @@ static void gtp_touch_up(struct goodix_ts_data* ts, s32 id)
     input_report_key(ts->input_dev, BTN_TOUCH, 0);
 #endif
 #endif
+
 	input_report_key(ts->input_dev,BTN_TOUCH,0);
-	
+	input_report_abs(ts->input_dev, ABS_PRESSURE, 0);
+	input_sync(ts->input_dev);
 }
 
 #if GTP_WITH_PEN
@@ -574,6 +576,10 @@ static void goodix_ts_work_func(struct work_struct *work)
     {
         return;
     }
+	
+	//add ben
+	//gtp_irq_disable(ts);
+	
 #if GTP_GESTURE_WAKEUP
     if (DOZE_ENABLED == doze_status)
     {               
@@ -895,7 +901,7 @@ static void goodix_ts_work_func(struct work_struct *work)
                 input_x  = coor_data[pos + 1] | (coor_data[pos + 2] << 8);
                 input_y  = coor_data[pos + 3] | (coor_data[pos + 4] << 8);
                 input_w  = coor_data[pos + 5] | (coor_data[pos + 6] << 8);
-
+				//no run 
                 gtp_touch_down(ts, id, input_x, input_y, input_w);
                 pre_touch |= 0x01 << i;
                 
@@ -918,6 +924,8 @@ static void goodix_ts_work_func(struct work_struct *work)
 
     if (touch_num)
     {
+		touch_num = 1;
+		GTP_DEBUG("gtp_touch_down--1!!!");
         for (i = 0; i < touch_num; i++)
         {
             coor_data = &point_data[i * 8 + 3];
@@ -940,6 +948,7 @@ static void goodix_ts_work_func(struct work_struct *work)
             else
         #endif
             {
+				GTP_DEBUG("gtp_touch_down!!!");
                 gtp_touch_down(ts, id, input_x, input_y, input_w);
             }
         }
@@ -974,7 +983,7 @@ static void goodix_ts_work_func(struct work_struct *work)
     else
 #endif
     {
-        input_sync(ts->input_dev);
+        //input_sync(ts->input_dev);
     }
 
 exit_work_func:
