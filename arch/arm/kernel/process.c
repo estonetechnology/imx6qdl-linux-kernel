@@ -219,8 +219,13 @@ void machine_halt(void)
  * achieves this. When the system power is turned off, it will take all CPUs
  * with it.
  */
+extern int hio_board_poweroff(void);
+
 void machine_power_off(void)
 {
+ 	//add ben
+ 	hio_board_poweroff();
+
 	smp_send_stop();
 
 	if (pm_power_off)

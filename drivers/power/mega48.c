@@ -171,24 +171,26 @@ static int read_wifi_mac_addr(void)
 	return 0;
 }
 
-static int board_poweroff(void)
+int hio_board_poweroff(void)
 {
 	DEBUG("MQ===================%s==============================\n", __FUNCTION__);
 	//ret = i2c_smbus_wirte_byte_data(client, 0x00, 0xaa);
 	int ret=0;
 	int i=0;
 	mcu_cmd[0]=MCU_CMD_POWEROFF;
+
 	for (i=0;i<3;i++)
 	{
 		ret = i2c_master_send(&m_client, (unsigned char *)mcu_cmd, 1);
 		if (ret>0)
 		{
-			DEBUG("********i2c(2) send data:%0x**************\n",mcu_cmd[0]);
+			printk("********i2c(2) send data:%0x**************\n",mcu_cmd[0]);
 			break;
 		}
 		else
-			DEBUG("********i2c(2) send data failed***********\n");
+			printk("********i2c(2) send data failed***********\n");
 	}
+
 	return ret;
 
 }
@@ -239,8 +241,9 @@ static int mega48_probe(struct i2c_client *client,
 			DEBUG("%s   no mcu!!!!\n", __FUNCTION__);
 			return rc;
 		}
-		calibration_mmc(); //not use first
-		pm_power_off = board_poweroff;
+		//calibration_mmc(); //not use first
+		//pm_power_off = board_poweroff;
+		rc = 0;
 	}
 
 	return rc;
