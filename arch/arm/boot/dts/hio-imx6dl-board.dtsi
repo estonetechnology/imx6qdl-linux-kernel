@@ -139,29 +139,27 @@
 	};
 
 	sound {
-		compatible = "fsl,imx6q-sabresd-wm8962",
-			   "fsl,imx-audio-wm8962";
-		model = "wm8962-audio";
-		cpu-dai = <&ssi2>;
+		compatible = "fsl,imx-audio-rt5631";
+		model = "imx6dl-rt5631";
+		ssi-controller = <&ssi1>;
 		audio-codec = <&codec>;
-		asrc-controller = <&asrc>;
 		audio-routing =
-			"Headphone Jack", "HPOUTL",
-			"Headphone Jack", "HPOUTR",
-			"Ext Spk", "SPKOUTL",
-			"Ext Spk", "SPKOUTR",
-			"MICBIAS", "AMIC",
-			"IN3R", "MICBIAS",
-			"DMIC", "MICBIAS",
-			"DMICDAT", "DMIC",
-			"CPU-Playback", "ASRC-Playback",
-			"Playback", "CPU-Playback",
-			"ASRC-Capture", "CPU-Capture",
-			"CPU-Capture", "Capture";
-		mux-int-port = <2>;
-		mux-ext-port = <3>;
-		hp-det-gpios = <&gpio7 8 1>;
-		mic-det-gpios = <&gpio1 9 1>;
+			"Headphone Jack", "HPOL",
+			"Headphone Jack", "HPOR",
+			"Ext Spk", "SPOL",
+			"Ext Spk", "SPOR";
+			//"MICBIAS", "AMIC",
+			//"IN3R", "MICBIAS",
+			//"DMIC", "MICBIAS",
+			//"DMICDAT", "DMIC";
+		mux-int-port = <1>;
+		mux-ext-port = <4>;
+		//hp-det-gpios = <&gpio7 8 1>;
+		/*+++wwj begin 20150317@add mic detect*/
+		#ifdef CONFIG_MIC_DEC
+	              mic-det-gpios = <&gpio7 11 1>;
+		#endif
+		/*+++wwj end 20150317@add mic detect*/
 	};
 
 	sound-hdmi {
@@ -306,29 +304,6 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_i2c1>;
 	status = "okay";
-
-	codec: wm8962@1a {
-		compatible = "wlf,wm8962";
-		reg = <0x1a>;
-		clocks = <&clks 201>;
-		DCVDD-supply = <&reg_audio>;
-		DBVDD-supply = <&reg_audio>;
-		AVDD-supply = <&reg_audio>;
-		CPVDD-supply = <&reg_audio>;
-		MICVDD-supply = <&reg_audio>;
-		PLLVDD-supply = <&reg_audio>;
-		SPKVDD1-supply = <&reg_audio>;
-		SPKVDD2-supply = <&reg_audio>;
-		amic-mono;
-		gpio-cfg = <
-			0x0000 /* 0:Default */
-			0x0000 /* 1:Default */
-			0x0013 /* 2:FN_DMICCLK */
-			0x0000 /* 3:Default */
-			0x8014 /* 4:FN_DMICCDAT */
-			0x0000 /* 5:Default */
-		>;
-       };
 
 	mma8451@1c {
 		compatible = "fsl,mma8451";
@@ -494,7 +469,13 @@
 		interrupts = <8 2>;
 		wakeup-gpios = <&gpio6 8 0>;
 	};
-
+	
+	codec: rt5631@1a {
+		  compatible = "realtek,rt5631";
+		  //compatible = "realtek,alc5631";
+		  reg = <0x1a>;
+		  clocks = <&clks 201>;
+	};	
 };
 
 &i2c3 {
@@ -568,10 +549,12 @@
 
 		pinctrl_audmux: audmuxgrp {
 			fsl,pins = <
-				MX6QDL_PAD_CSI0_DAT7__AUD3_RXD		0x130b0
-				MX6QDL_PAD_CSI0_DAT4__AUD3_TXC		0x130b0
-				MX6QDL_PAD_CSI0_DAT5__AUD3_TXD		0x110b0
-				MX6QDL_PAD_CSI0_DAT6__AUD3_TXFS		0x130b0
+				MX6QDL_PAD_SD2_DAT0__AUD4_RXD  0x130b0
+				MX6QDL_PAD_SD2_DAT3__AUD4_TXC  0x130b0
+				MX6QDL_PAD_SD2_DAT2__AUD4_TXD  0x110b0
+				MX6QDL_PAD_SD2_DAT1__AUD4_TXFS 0x130b0
+				//MX6QDL_PAD_GPIO_0__CCM_CLKO1  0x1f0b0 //MQ +++
+				//MX6QDL_PAD_GPIO_0__CCM_CLKO1  0x130b0 //ben +++
 			>;
 		};
 
@@ -641,7 +624,7 @@
 		pinctrl_i2c2: i2c2grp {
 			fsl,pins = <
 				MX6QDL_PAD_KEY_COL3__I2C2_SCL		0x4001b8b1
-				MX6QDL_PAD_KEY_ROW3__I2C2_SDA		0x4001b8b1
+				MX6QDL_PAD_KEY_ROW3__I2C2_SDA		0x4001b8b1				
 			 >;
 		};
 
@@ -909,6 +892,11 @@
 &pwm1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_pwm1>;
+	status = "okay";
+};
+
+&ssi1 {
+	fsl,mode = "i2s-slave";
 	status = "okay";
 };
 
