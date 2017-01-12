@@ -161,6 +161,7 @@ dtb-$(CONFIG_ARCH_MXC) += \
 	imx6dl-sabreauto-gpmi-weim.dtb \
 	imx6dl-sabresd.dtb \
 	hio-imx6dl-board.dtb \
+	hio-imx6dl-iob3200.dtb \
 	imx6dl-sabresd-btwifi.dtb \
 	imx6dl-sabresd-enetirq.dtb \
 	imx6dl-sabresd-ldo.dtb \
