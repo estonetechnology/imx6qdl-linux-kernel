@@ -21,6 +21,7 @@
 #include <linux/in.h>
 #include <linux/ip.h>
 #include <linux/tcp.h>
+#include <linux/init.h>
 #include <linux/interrupt.h>
 #include <linux/dma-mapping.h>
 #include <linux/pm_runtime.h>
@@ -45,7 +46,6 @@
 #define FIRMWARE_8105E_1	"rtl_nic/rtl8105e-1.fw"
 #define FIRMWARE_8402_1		"rtl_nic/rtl8402-1.fw"
 #define FIRMWARE_8411_1		"rtl_nic/rtl8411-1.fw"
-#define FIRMWARE_8411_2		"rtl_nic/rtl8411-2.fw"
 #define FIRMWARE_8106E_1	"rtl_nic/rtl8106e-1.fw"
 #define FIRMWARE_8106E_2	"rtl_nic/rtl8106e-2.fw"
 #define FIRMWARE_8168G_2	"rtl_nic/rtl8168g-2.fw"
@@ -144,7 +144,6 @@ enum mac_version {
 	RTL_GIGA_MAC_VER_41,
 	RTL_GIGA_MAC_VER_42,
 	RTL_GIGA_MAC_VER_43,
-	RTL_GIGA_MAC_VER_44,
 	RTL_GIGA_MAC_NONE   = 0xff,
 };
 
@@ -209,7 +208,7 @@ static const struct {
 	[RTL_GIGA_MAC_VER_16] =
 		_R("RTL8101e",		RTL_TD_0, NULL, JUMBO_1K, true),
 	[RTL_GIGA_MAC_VER_17] =
-		_R("RTL8168b/8111b",	RTL_TD_0, NULL, JUMBO_4K, false),
+		_R("RTL8168b/8111b",	RTL_TD_1, NULL, JUMBO_4K, false),
 	[RTL_GIGA_MAC_VER_18] =
 		_R("RTL8168cp/8111cp",	RTL_TD_1, NULL, JUMBO_6K, false),
 	[RTL_GIGA_MAC_VER_19] =
@@ -277,9 +276,6 @@ static const struct {
 	[RTL_GIGA_MAC_VER_43] =
 		_R("RTL8106e",		RTL_TD_1, FIRMWARE_8106E_2,
 							JUMBO_1K, true),
-	[RTL_GIGA_MAC_VER_44] =
-		_R("RTL8411",		RTL_TD_1, FIRMWARE_8411_2,
-							JUMBO_9K, false),
 };
 #undef _R
 
@@ -398,7 +394,6 @@ enum rtl8168_8101_registers {
 #define CSIAR_FUNC_CARD			0x00000000
 #define CSIAR_FUNC_SDIO			0x00010000
 #define CSIAR_FUNC_NIC			0x00020000
-#define CSIAR_FUNC_NIC2			0x00010000
 	PMCH			= 0x6f,
 	EPHYAR			= 0x80,
 #define	EPHYAR_FLAG			0x80000000
@@ -831,7 +826,6 @@ MODULE_FIRMWARE(FIRMWARE_8168F_1);
 MODULE_FIRMWARE(FIRMWARE_8168F_2);
 MODULE_FIRMWARE(FIRMWARE_8402_1);
 MODULE_FIRMWARE(FIRMWARE_8411_1);
-MODULE_FIRMWARE(FIRMWARE_8411_2);
 MODULE_FIRMWARE(FIRMWARE_8106E_1);
 MODULE_FIRMWARE(FIRMWARE_8106E_2);
 MODULE_FIRMWARE(FIRMWARE_8168G_2);
@@ -849,8 +843,16 @@ static void rtl_unlock_work(struct rtl8169_private *tp)
 
 static void rtl_tx_performance_tweak(struct pci_dev *pdev, u16 force)
 {
+#if 0
 	pcie_capability_clear_and_set_word(pdev, PCI_EXP_DEVCTL,
 					   PCI_EXP_DEVCTL_READRQ, force);
+#endif
+	u16 ctl;
+
+	pcie_capability_read_word(pdev, PCI_EXP_DEVCTL, &ctl);
+	dev_info(&pdev->dev, "MRRS = %d, MPS = %d\n", 
+		128 << ((ctl & PCI_EXP_DEVCTL_READRQ) >> 12),
+		128 << ((ctl & PCI_EXP_DEVCTL_PAYLOAD) >> 5));
 }
 
 struct rtl_cond {
@@ -1064,6 +1066,7 @@ static u16 r8168_mac_ocp_read(struct rtl8169_private *tp, u32 reg)
 
 	RTL_W32(OCPDR, reg << 15);
 
+	
 	return RTL_R32(OCPDR);
 }
 
@@ -1896,13 +1899,12 @@ static void rtl8169_get_regs(struct net_device *dev, struct ethtool_regs *regs,
 			     void *p)
 {
 	struct rtl8169_private *tp = netdev_priv(dev);
-	u32 __iomem *data = tp->mmio_addr;
-	u32 *dw = p;
-	int i;
+
+	if (regs->len > R8169_REGS_SIZE)
+		regs->len = R8169_REGS_SIZE;
 
 	rtl_lock_work(tp);
-	for (i = 0; i < R8169_REGS_SIZE; i += 4)
-		memcpy_fromio(dw++, data++, 4);
+	memcpy_fromio(p, tp->mmio_addr, regs->len);
 	rtl_unlock_work(tp);
 }
 
@@ -2058,7 +2060,6 @@ static void rtl8169_get_mac_version(struct rtl8169_private *tp,
 		int mac_version;
 	} mac_info[] = {
 		/* 8168G family. */
-		{ 0x7cf00000, 0x5c800000,	RTL_GIGA_MAC_VER_44 },
 		{ 0x7cf00000, 0x50900000,	RTL_GIGA_MAC_VER_42 },
 		{ 0x7cf00000, 0x4c100000,	RTL_GIGA_MAC_VER_41 },
 		{ 0x7cf00000, 0x4c000000,	RTL_GIGA_MAC_VER_40 },
@@ -3464,11 +3465,6 @@ static void rtl8168g_1_hw_phy_config(struct rtl8169_private *tp)
 	rtl_writephy(tp, 0x14, 0x9065);
 	rtl_writephy(tp, 0x14, 0x1065);
 
-	/* Check ALDPS bit, disable it if enabled */
-	rtl_writephy(tp, 0x1f, 0x0a43);
-	if (rtl_readphy(tp, 0x10) & 0x0004)
-		rtl_w1w0_phy(tp, 0x10, 0x0000, 0x0004);
-
 	rtl_writephy(tp, 0x1f, 0x0000);
 }
 
@@ -3664,7 +3660,6 @@ static void rtl_hw_phy_config(struct net_device *dev)
 		break;
 	case RTL_GIGA_MAC_VER_42:
 	case RTL_GIGA_MAC_VER_43:
-	case RTL_GIGA_MAC_VER_44:
 		rtl8168g_2_hw_phy_config(tp);
 		break;
 
@@ -3694,7 +3689,7 @@ static void rtl_phy_work(struct rtl8169_private *tp)
 	if (tp->link_ok(ioaddr))
 		return;
 
-	netif_dbg(tp, link, tp->dev, "PHY reset until link up\n");
+	netif_warn(tp, link, tp->dev, "PHY reset until link up\n");
 
 	tp->phy_reset_enable(tp);
 
@@ -3877,7 +3872,6 @@ static void rtl_init_mdio_ops(struct rtl8169_private *tp)
 	case RTL_GIGA_MAC_VER_41:
 	case RTL_GIGA_MAC_VER_42:
 	case RTL_GIGA_MAC_VER_43:
-	case RTL_GIGA_MAC_VER_44:
 		ops->write	= r8168g_mdio_write;
 		ops->read	= r8168g_mdio_read;
 		break;
@@ -3931,7 +3925,6 @@ static void rtl_wol_suspend_quirk(struct rtl8169_private *tp)
 	case RTL_GIGA_MAC_VER_41:
 	case RTL_GIGA_MAC_VER_42:
 	case RTL_GIGA_MAC_VER_43:
-	case RTL_GIGA_MAC_VER_44:
 		RTL_W32(RxConfig, RTL_R32(RxConfig) |
 			AcceptBroadcast | AcceptMulticast | AcceptMyPhys);
 		break;
@@ -4194,7 +4187,6 @@ static void rtl_init_pll_power_ops(struct rtl8169_private *tp)
 	case RTL_GIGA_MAC_VER_40:
 	case RTL_GIGA_MAC_VER_41:
 	case RTL_GIGA_MAC_VER_42:
-	case RTL_GIGA_MAC_VER_44:
 		ops->down	= r8168_pll_power_down;
 		ops->up		= r8168_pll_power_up;
 		break;
@@ -4242,7 +4234,6 @@ static void rtl_init_rxcfg(struct rtl8169_private *tp)
 	case RTL_GIGA_MAC_VER_41:
 	case RTL_GIGA_MAC_VER_42:
 	case RTL_GIGA_MAC_VER_43:
-	case RTL_GIGA_MAC_VER_44:
 		RTL_W32(RxConfig, RX128_INT_EN | RX_DMA_BURST | RX_EARLY_OFF);
 		break;
 	default:
@@ -4403,7 +4394,6 @@ static void rtl_init_jumbo_ops(struct rtl8169_private *tp)
 	case RTL_GIGA_MAC_VER_41:
 	case RTL_GIGA_MAC_VER_42:
 	case RTL_GIGA_MAC_VER_43:
-	case RTL_GIGA_MAC_VER_44:
 	default:
 		ops->disable	= NULL;
 		ops->enable	= NULL;
@@ -4513,7 +4503,6 @@ static void rtl8169_hw_reset(struct rtl8169_private *tp)
 	           tp->mac_version == RTL_GIGA_MAC_VER_41 ||
 	           tp->mac_version == RTL_GIGA_MAC_VER_42 ||
 	           tp->mac_version == RTL_GIGA_MAC_VER_43 ||
-	           tp->mac_version == RTL_GIGA_MAC_VER_44 ||
 	           tp->mac_version == RTL_GIGA_MAC_VER_38) {
 		RTL_W8(ChipCmd, RTL_R8(ChipCmd) | StopReq);
 		rtl_udelay_loop_wait_high(tp, &rtl_txcfg_empty_cond, 100, 666);
@@ -4803,29 +4792,6 @@ static u32 r8402_csi_read(struct rtl8169_private *tp, int addr)
 		RTL_R32(CSIDR) : ~0;
 }
 
-static void r8411_csi_write(struct rtl8169_private *tp, int addr, int value)
-{
-	void __iomem *ioaddr = tp->mmio_addr;
-
-	RTL_W32(CSIDR, value);
-	RTL_W32(CSIAR, CSIAR_WRITE_CMD | (addr & CSIAR_ADDR_MASK) |
-		CSIAR_BYTE_ENABLE << CSIAR_BYTE_ENABLE_SHIFT |
-		CSIAR_FUNC_NIC2);
-
-	rtl_udelay_loop_wait_low(tp, &rtl_csiar_cond, 10, 100);
-}
-
-static u32 r8411_csi_read(struct rtl8169_private *tp, int addr)
-{
-	void __iomem *ioaddr = tp->mmio_addr;
-
-	RTL_W32(CSIAR, (addr & CSIAR_ADDR_MASK) | CSIAR_FUNC_NIC2 |
-		CSIAR_BYTE_ENABLE << CSIAR_BYTE_ENABLE_SHIFT);
-
-	return rtl_udelay_loop_wait_high(tp, &rtl_csiar_cond, 10, 100) ?
-		RTL_R32(CSIDR) : ~0;
-}
-
 static void rtl_init_csi_ops(struct rtl8169_private *tp)
 {
 	struct csi_ops *ops = &tp->csi_ops;
@@ -4853,11 +4819,6 @@ static void rtl_init_csi_ops(struct rtl8169_private *tp)
 	case RTL_GIGA_MAC_VER_38:
 		ops->write	= r8402_csi_write;
 		ops->read	= r8402_csi_read;
-		break;
-
-	case RTL_GIGA_MAC_VER_44:
-		ops->write	= r8411_csi_write;
-		ops->read	= r8411_csi_read;
 		break;
 
 	default:
@@ -5304,25 +5265,6 @@ static void rtl_hw_start_8168g_2(struct rtl8169_private *tp)
 	rtl_ephy_init(tp, e_info_8168g_2, ARRAY_SIZE(e_info_8168g_2));
 }
 
-static void rtl_hw_start_8411_2(struct rtl8169_private *tp)
-{
-	void __iomem *ioaddr = tp->mmio_addr;
-	static const struct ephy_info e_info_8411_2[] = {
-		{ 0x00, 0x0000,	0x0008 },
-		{ 0x0c, 0x3df0,	0x0200 },
-		{ 0x0f, 0xffff,	0x5200 },
-		{ 0x19, 0x0020,	0x0000 },
-		{ 0x1e, 0x0000,	0x2000 }
-	};
-
-	rtl_hw_start_8168g_1(tp);
-
-	/* disable aspm and clock request before access ephy */
-	RTL_W8(Config2, RTL_R8(Config2) & ~ClkReqEn);
-	RTL_W8(Config5, RTL_R8(Config5) & ~ASPM_en);
-	rtl_ephy_init(tp, e_info_8411_2, ARRAY_SIZE(e_info_8411_2));
-}
-
 static void rtl_hw_start_8168(struct net_device *dev)
 {
 	struct rtl8169_private *tp = netdev_priv(dev);
@@ -5427,10 +5369,6 @@ static void rtl_hw_start_8168(struct net_device *dev)
 		break;
 	case RTL_GIGA_MAC_VER_42:
 		rtl_hw_start_8168g_2(tp);
-		break;
-
-	case RTL_GIGA_MAC_VER_44:
-		rtl_hw_start_8411_2(tp);
 		break;
 
 	default:
@@ -5834,7 +5772,7 @@ static void rtl8169_tx_clear_range(struct rtl8169_private *tp, u32 start,
 					     tp->TxDescArray + entry);
 			if (skb) {
 				tp->dev->stats.tx_dropped++;
-				dev_kfree_skb_any(skb);
+				dev_kfree_skb(skb);
 				tx_skb->skb = NULL;
 			}
 		}
@@ -6059,7 +5997,7 @@ static netdev_tx_t rtl8169_start_xmit(struct sk_buff *skb,
 err_dma_1:
 	rtl8169_unmap_tx_skb(d, tp->tx_skb + entry, txd);
 err_dma_0:
-	dev_kfree_skb_any(skb);
+	dev_kfree_skb(skb);
 err_update_stats:
 	dev->stats.tx_dropped++;
 	return NETDEV_TX_OK;
@@ -6142,7 +6080,7 @@ static void rtl_tx(struct net_device *dev, struct rtl8169_private *tp)
 			tp->tx_stats.packets++;
 			tp->tx_stats.bytes += tx_skb->skb->len;
 			u64_stats_update_end(&tp->tx_stats.syncp);
-			dev_kfree_skb_any(tx_skb->skb);
+			dev_kfree_skb(tx_skb->skb);
 			tx_skb->skb = NULL;
 		}
 		dirty_tx++;
@@ -6474,8 +6412,6 @@ static int rtl8169_close(struct net_device *dev)
 	rtl8169_down(dev);
 	rtl_unlock_work(tp);
 
-	cancel_work_sync(&tp->wk.work);
-
 	free_irq(pdev->irq, dev);
 
 	dma_free_coherent(&pdev->dev, R8169_RX_RING_BYTES, tp->RxDescArray,
@@ -6801,6 +6737,8 @@ static void rtl_remove_one(struct pci_dev *pdev)
 		rtl8168_driver_stop(tp);
 	}
 
+	cancel_work_sync(&tp->wk.work);
+
 	netif_napi_del(&tp->napi);
 
 	unregister_netdev(dev);
@@ -6815,6 +6753,7 @@ static void rtl_remove_one(struct pci_dev *pdev)
 
 	rtl_disable_msi(pdev, tp);
 	rtl8169_release_board(pdev, dev, tp->mmio_addr);
+	pci_set_drvdata(pdev, NULL);
 }
 
 static const struct net_device_ops rtl_netdev_ops = {
@@ -6948,7 +6887,6 @@ static void rtl_hw_initialize(struct rtl8169_private *tp)
 	case RTL_GIGA_MAC_VER_41:
 	case RTL_GIGA_MAC_VER_42:
 	case RTL_GIGA_MAC_VER_43:
-	case RTL_GIGA_MAC_VER_44:
 		rtl_hw_init_8168g(tp);
 		break;
 
@@ -7093,7 +7031,7 @@ rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 
 	RTL_W8(Cfg9346, Cfg9346_Unlock);
 	RTL_W8(Config1, RTL_R8(Config1) | PMEnable);
-	RTL_W8(Config5, RTL_R8(Config5) & (BWF | MWF | UWF | LanWake | PMEStatus));
+	RTL_W8(Config5, RTL_R8(Config5) & PMEStatus);
 	if ((RTL_R8(Config3) & (LinkUp | MagicPacket)) != 0)
 		tp->features |= RTL_FEATURE_WOL;
 	if ((RTL_R8(Config5) & (UWF | BWF | MWF)) != 0)
@@ -7118,8 +7056,6 @@ rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 	}
 
 	mutex_init(&tp->wk.mutex);
-	u64_stats_init(&tp->rx_stats.syncp);
-	u64_stats_init(&tp->tx_stats.syncp);
 
 	/* Get MAC address */
 	for (i = 0; i < ETH_ALEN; i++)
