@@ -51,6 +51,7 @@
 #define FIRMWARE_8168G_2	"rtl_nic/rtl8168g-2.fw"
 #define FIRMWARE_8168G_3	"rtl_nic/rtl8168g-3.fw"
 
+#define RTL8169_DEBUG 1
 #ifdef RTL8169_DEBUG
 #define assert(expr) \
 	if (!(expr)) {					\
@@ -4645,6 +4646,8 @@ static void rtl_hw_start_8169(struct net_device *dev)
 	void __iomem *ioaddr = tp->mmio_addr;
 	struct pci_dev *pdev = tp->pci_dev;
 
+	printk("tt-rtl_hw_start_8169 \n");
+	
 	if (tp->mac_version == RTL_GIGA_MAC_VER_05) {
 		RTL_W16(CPlusCmd, RTL_R16(CPlusCmd) | PCIMulRW);
 		pci_write_config_byte(pdev, PCI_CACHE_LINE_SIZE, 0x08);
@@ -5104,6 +5107,10 @@ static void rtl_hw_start_8168e_1(struct rtl8169_private *tp)
 	RTL_W32(MISC, RTL_R32(MISC) & ~TXPLA_RST);
 
 	RTL_W8(Config5, RTL_R8(Config5) & ~Spi_en);
+	
+	//add ben
+	//RTL_W8(Config1, (RTL_R8(Config1) & ~(LEDS1 | LEDS0)) | LEDS0);
+	printk("tt-rtl_hw_start_8168e_1 \n");
 }
 
 static void rtl_hw_start_8168e_2(struct rtl8169_private *tp)
@@ -5144,6 +5151,16 @@ static void rtl_hw_start_8168e_2(struct rtl8169_private *tp)
 	RTL_W8(DLLPR, RTL_R8(DLLPR) | PFM_EN);
 	RTL_W32(MISC, RTL_R32(MISC) | PWM_EN);
 	RTL_W8(Config5, RTL_R8(Config5) & ~Spi_en);
+	
+	//add ben
+	//RTL_W8(Config1, (RTL_R8(Config1) & ~(LEDS1 | LEDS0)) | LEDS0);
+	/* Enable customized LED function */
+	RTL_W8(Config4, RTL_R8(Config4) | 0x40);
+
+	/* Setup register 0x18 (LED0 and LED1) */
+	RTL_W8(0x18, 0x78);	
+	
+	printk("tt-rtl_hw_start_8168e_2 \n");	
 }
 
 static void rtl_hw_start_8168f(struct rtl8169_private *tp)
@@ -5270,6 +5287,7 @@ static void rtl_hw_start_8168(struct net_device *dev)
 	struct rtl8169_private *tp = netdev_priv(dev);
 	void __iomem *ioaddr = tp->mmio_addr;
 
+	printk("tt-rtl_hw_start_8168 \n");
 	RTL_W8(Cfg9346, Cfg9346_Unlock);
 
 	RTL_W8(MaxTxPacketSize, TxPacketMax);
@@ -5294,6 +5312,7 @@ static void rtl_hw_start_8168(struct net_device *dev)
 
 	RTL_R8(IntrMask);
 
+	printk("tt-rtl_hw_start_8168 --11;%d\n", tp->mac_version);
 	switch (tp->mac_version) {
 	case RTL_GIGA_MAC_VER_11:
 		rtl_hw_start_8168bb(tp);
@@ -5348,9 +5367,11 @@ static void rtl_hw_start_8168(struct net_device *dev)
 
 	case RTL_GIGA_MAC_VER_32:
 	case RTL_GIGA_MAC_VER_33:
+		printk("tt-rtl_hw_start_8168 --22\n");
 		rtl_hw_start_8168e_1(tp);
 		break;
 	case RTL_GIGA_MAC_VER_34:
+		printk("tt-rtl_hw_start_8168 --33\n");
 		rtl_hw_start_8168e_2(tp);
 		break;
 
@@ -6895,6 +6916,7 @@ static void rtl_hw_initialize(struct rtl8169_private *tp)
 	}
 }
 
+static int g_mac_addr[6] = {0x1E, 0xED, 0x19, 0x27, 0x1A, 0xB4};
 static int
 rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 {
@@ -7059,8 +7081,12 @@ rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 
 	/* Get MAC address */
 	for (i = 0; i < ETH_ALEN; i++)
-		dev->dev_addr[i] = RTL_R8(MAC0 + i);
+		//dev->dev_addr[i] = RTL_R8(MAC0 + i);
+		dev->dev_addr[i] = g_mac_addr[i];
 
+	//add
+	rtl_rar_set(tp, dev->dev_addr);
+	
 	SET_ETHTOOL_OPS(dev, &rtl8169_ethtool_ops);
 	dev->watchdog_timeo = RTL8169_TX_TIMEOUT;
 
