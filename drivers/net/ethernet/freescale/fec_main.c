@@ -1664,6 +1664,7 @@ static int fec_enet_rx_napi(struct napi_struct *napi, int budget)
 }
 
 /* ------------------------------------------------------------------------- */
+extern unsigned char g_mac_addr[6];
 static void fec_get_mac(struct net_device *ndev)
 {
 	struct fec_enet_private *fep = netdev_priv(ndev);
@@ -1677,7 +1678,13 @@ static void fec_get_mac(struct net_device *ndev)
 	 *    fec.macaddr=0x00,0x04,0x9f,0x01,0x30,0xe0
 	 */
 	iap = macaddr;
-
+	iap = g_mac_addr;
+	if ((g_mac_addr[0] == 0x00) && (g_mac_addr[1] == 0x00) && (g_mac_addr[2] == 0x00) && (g_mac_addr[3] == 0x00) && (g_mac_addr[4] == 0x00) &&
+		(g_mac_addr[5] == 0x00))
+		printk("\n fec:Get mac error!! \n");
+	else
+		iap = g_mac_addr;
+	
 	/*
 	 * 2) from device tree data
 	 */

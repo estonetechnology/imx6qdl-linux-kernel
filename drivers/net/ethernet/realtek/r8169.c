@@ -6916,7 +6916,7 @@ static void rtl_hw_initialize(struct rtl8169_private *tp)
 	}
 }
 
-static int g_mac_addr[6] = {0x1E, 0xED, 0x19, 0x27, 0x1A, 0xB4};
+extern unsigned char g_mac2_addr[6];
 static int
 rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 {
@@ -7081,8 +7081,7 @@ rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 
 	/* Get MAC address */
 	for (i = 0; i < ETH_ALEN; i++)
-		//dev->dev_addr[i] = RTL_R8(MAC0 + i);
-		dev->dev_addr[i] = g_mac_addr[i];
+		dev->dev_addr[i] = g_mac2_addr[i];
 
 	//add
 	rtl_rar_set(tp, dev->dev_addr);
