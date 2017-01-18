@@ -791,6 +791,8 @@ static int __init imx6_add_pcie_port(struct pcie_port *pp,
 	pp->root_bus_nr = -1;
 	pp->ops = &imx6_pcie_host_ops;
 
+	usleep_range(25000, 30000);
+	
 	ret = dw_pcie_host_init(pp);
 	if (ret) {
 		dev_err(&pdev->dev, "failed to initialize host\n");
