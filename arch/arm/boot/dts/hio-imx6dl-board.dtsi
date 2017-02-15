@@ -601,11 +601,11 @@
 			>;
 		};
 
-		pinctrl_hdmi_cec: hdmicecgrp {
-			fsl,pins = <
-				MX6QDL_PAD_KEY_ROW2__HDMI_TX_CEC_LINE 0x1f8b0
-			>;
-		};
+		//pinctrl_hdmi_cec: hdmicecgrp {
+		//	fsl,pins = <
+		//		MX6QDL_PAD_KEY_ROW2__HDMI_TX_CEC_LINE 0x1f8b0
+		//	>;
+		//};
 
 		pinctrl_hdmi_hdcp: hdmihdcpgrp {
 			fsl,pins = <
@@ -801,11 +801,11 @@
 	status = "okay";
 };
 
-&hdmi_cec {
-	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_hdmi_cec>;
-	status = "okay";
-};
+//&hdmi_cec {
+//	pinctrl-names = "default";
+//	pinctrl-0 = <&pinctrl_hdmi_cec>;
+//	status = "okay";
+//};
 
 &hdmi_core {
 	ipu_id = <0>;

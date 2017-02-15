@@ -90,7 +90,7 @@
 			compatible = "regulator-fixed";
 			reg = <2>;
 			regulator-name = "wm8962-supply";
-			gpio = <&gpio4 10 0>;
+			//gpio = <&gpio4 10 0>;
 			enable-active-high;
 		};
 
@@ -123,13 +123,14 @@
 			VDDLCD_PWREN = <&gpio7 12 0>;
 			
 			//tp
-			//TP_PWR_EN = <&gpio4 10 0>;
+			TP_PWR_EN = <&gpio4 10 0>;
 			
 			//usb hub
 			HUB_reset = <&gpio4 06 0>;
 		};			
 	};
 
+	#if 0
 	gpio-keys {
 		compatible = "gpio-keys";
 		pinctrl-names = "default";
@@ -149,7 +150,8 @@
 			linux,code = <KEY_VOLUMEUP>;
 		};
 	};
-
+	#endif
+	
 	sound {
 		compatible = "fsl,imx-audio-rt5631";
 		model = "imx6dl-rt5631";
@@ -329,16 +331,32 @@
 		interrupt-route = <1>;
 	};
 
+	#if 0
 	tsc2007@48 {
 	    compatible = "ti,tsc2007";
 	    reg = <0x48>;
 	    interrupt-parent = <&gpio1>;
-	    interrupts = <0x5 0x3>;
-	    gpios = <&gpio1 5 0>;
+	    //interrupts = <0x1 0x3>;
+		interrupts = <0x1 8>;
+	    gpios = <&gpio1 1 0>;
 	    ti,x-plate-ohms = <180>;
 	    //ti,x-plate-ohms = <400>;
 	};
-	
+	#endif
+
+	tsc2007@48{
+        compatible = "ti,tsc2007";
+        reg = <0x48>;
+        pinctrl-names = "default";
+        pinctrl-0 = <&mx6_tsc2007_pins>;
+        interrupt-parent = <&gpio1>;
+        /*interrupts = <31 1>; */
+        interrupts = <0x01 IRQ_TYPE_EDGE_FALLING>;
+        /*pendown-gpio = <&gpio1 1 0>; */
+        ti,x-plate-ohms = <660>;
+        status = "okay";
+        };
+		
 	ov564x: ov564x@3c {
 		compatible = "ovti,ov564x";
 		reg = <0x3c>;
@@ -579,7 +597,8 @@
 				
 				//tp
 				MX6QDL_PAD_KEY_COL2__GPIO4_IO10 0x80000000
-				MX6QDL_PAD_GPIO_5__GPIO1_IO05 0x80000000
+				//MX6QDL_PAD_GPIO_5__GPIO1_IO05 0x80000000
+				//MX6QDL_PAD_GPIO_1__GPIO1_IO01 0x80000000 //test
 				
 				//rtl8111e
 				MX6QDL_PAD_GPIO_19__GPIO4_IO05 0x80000000
@@ -604,7 +623,7 @@
 			fsl,pins = <
 				MX6QDL_PAD_KEY_COL1__ECSPI1_MISO	0x100b1
 				MX6QDL_PAD_KEY_ROW0__ECSPI1_MOSI	0x100b1
-				MX6QDL_PAD_KEY_COL0__ECSPI1_SCLK	0x100b1
+				//MX6QDL_PAD_KEY_COL0__ECSPI1_SCLK	0x100b1
 			>;
 		};
 
@@ -642,6 +661,16 @@
 			>;
 		};
 
+		mx6_tsc2007_pins: mx6-tsc2007-pins {
+            fsl,pins = <
+                MX6QDL_PAD_GPIO_1__GPIO1_IO01 0x80000000 //test /* TSC2007 IRQ */
+				//MX6QDL_PAD_GPIO_5__GPIO1_IO05 0x80000000
+             >; /*
+            fsl,drive-strength = <MXS_DRIVE_4mA>;
+            fsl,voltage = <MXS_VOLTAGE_HIGH>;
+            fsl,pull-up = <MXS_PULL_DISABLE>; */
+       }; 
+		
 		//pinctrl_hdmi_cec: hdmicecgrp {
 		//	fsl,pins = <
 		//		MX6QDL_PAD_KEY_ROW2__HDMI_TX_CEC_LINE 0x1f8b0

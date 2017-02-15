@@ -184,6 +184,8 @@ static irqreturn_t tsc2007_soft_irq(int irq, void *handle)
 
 		rt = tsc2007_calculate_pressure(ts, &tc);
 
+        if(rt >1500)
+            rt=0;
 		if (!rt && !ts->get_pendown_state) {
 			/*
 			 * If pressure reported is 0 and we don't have
@@ -193,7 +195,7 @@ static irqreturn_t tsc2007_soft_irq(int irq, void *handle)
 			break;
 		}
 
-		if (rt <= ts->max_rt) {
+		if ( 1000 < rt <= ts->max_rt-2800) {
 			dev_dbg(&ts->client->dev,
 				"DOWN point(%4d,%4d), pressure (%4u)\n",
 				tc.x, tc.y, rt);
@@ -410,7 +412,7 @@ static int tsc2007_probe(struct i2c_client *client,
 	snprintf(ts->phys, sizeof(ts->phys),
 		 "%s/input0", dev_name(&client->dev));
 
-	input_dev->name = "TSC2007 Touchscreen";
+	input_dev->name = "tsc2007";
 	input_dev->phys = ts->phys;
 	input_dev->id.bustype = BUS_I2C;
 
