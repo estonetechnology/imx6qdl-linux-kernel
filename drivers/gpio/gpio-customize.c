@@ -89,6 +89,39 @@ static int customize_gpio_probe(struct platform_device *pdev)
 
     gpio_direction_output(rst, 1);
 
+	//TP_PWR_EN
+    rst = of_get_named_gpio(np, "TP_PWR_EN", 0);
+    if (!gpio_is_valid(rst)){
+		printk("can not find TP_PWR_EN gpio pins\n");
+        return -1;
+    }
+    ret = gpio_request(rst, "TP_PWR_EN");
+    if(ret){
+        printk("request gpio TP_PWR_EN failed\n");
+        return;
+    }
+
+    gpio_direction_output(rst, 1);
+
+	
+	//HUB_reset
+    rst = of_get_named_gpio(np, "HUB_reset", 0);
+    if (!gpio_is_valid(rst)){
+		printk("can not find HUB_reset gpio pins\n");
+        return -1;
+    }
+    ret = gpio_request(rst, "HUB_reset");
+    if(ret){
+        printk("request gpio HUB_reset failed\n");
+        return;
+    }
+
+    gpio_direction_output(rst, 0);
+	mdelay(200);
+	gpio_direction_output(rst, 1);
+	
+	//
+	
 	return 0;
 }
 
