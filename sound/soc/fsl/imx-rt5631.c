@@ -37,7 +37,7 @@
 #define DAI_NAME_SIZE	32
 
 #define USE_RT5631
-
+#define MCLK_FOR_CODECS		24000000
 
 struct imx_rt5631_data {
 	struct snd_soc_dai_link dai;
@@ -199,6 +199,75 @@ extern void rt5631_reg_set(int if_play);
 extern void alc5631_reg_set(int if_play);
 #endif
 
+#if 1
+static int imx_hifi_hw_params(struct snd_pcm_substream *substream,
+				     struct snd_pcm_hw_params *params)
+{
+	struct snd_soc_pcm_runtime *rtd = substream->private_data;
+	struct snd_soc_dai *codec_dai = rtd->codec_dai;
+	struct imx_priv *priv = &card_priv;
+	struct device *dev = &priv->pdev->dev;
+	struct snd_soc_card *card = codec_dai->codec->card;
+	struct imx_rt5631_data *data = snd_soc_card_get_drvdata(card);
+	unsigned int sample_rate = params_rate(params);
+	snd_pcm_format_t sample_format = params_format(params);
+	u32 dai_format, pll_out;
+	int ret = 0;
+
+	if (!priv->first_stream) {
+		priv->first_stream = substream;
+	} else {
+		priv->second_stream = substream;
+
+		/* We suppose the two substream are using same params */
+		return 0;
+	}
+
+	dai_format = SND_SOC_DAIFMT_I2S | SND_SOC_DAIFMT_NB_NF |
+		SND_SOC_DAIFMT_CBM_CFM;
+
+	/* set codec DAI configuration */
+	ret = snd_soc_dai_set_fmt(codec_dai, dai_format);
+	if (ret) {
+		dev_err(dev, "failed to set codec dai fmt: %d\n", ret);
+		return ret;
+	}
+
+	//if (sample_format == SNDRV_PCM_FORMAT_S24_LE)
+	//	pll_out = sample_rate * 384;
+	//else
+		pll_out = sample_rate * 256;
+
+	//ret = snd_soc_dai_set_pll(codec_dai, WM8962_FLL, WM8962_FLL_MCLK,
+	//		data->clk_frequency, pll_out);
+	ret = snd_soc_dai_set_pll(codec_dai, /*WM8994_FLL1*//*ALC5631_PLL1 */ 0, /*WM8994_FLL_SRC_MCLK1*//*ALC5631_PLL_MCLK1*/0,
+				data->clk_frequency, pll_out);
+	if (ret) {
+		dev_err(dev, "failed to start FLL: %d\n", ret);
+		return ret;
+	}
+
+	//ret = snd_soc_dai_set_sysclk(codec_dai, WM8962_SYSCLK_FLL,
+	//		pll_out, SND_SOC_CLOCK_IN);
+	ret = snd_soc_dai_set_sysclk(codec_dai, /*ALC5631_SYSCLK_1*/0 , pll_out,
+		 SND_SOC_CLOCK_IN);
+	if (ret) {
+		dev_err(dev, "failed to set SYSCLK: %d\n", ret);
+		return ret;
+	}
+	//+++
+#ifdef USE_RT5631
+	rt5631_reg_set(1);
+#else
+	alc5631_reg_set(1);
+#endif
+	//+++
+
+	return 0;
+}
+#endif
+
+#if 0
 static int imx_hifi_hw_params(struct snd_pcm_substream *substream,
 				     struct snd_pcm_hw_params *params)
 {
@@ -237,19 +306,18 @@ static int imx_hifi_hw_params(struct snd_pcm_substream *substream,
 	else
 		pll_out = sample_rate * 256;
 
-	//ret = snd_soc_dai_set_pll(codec_dai, WM8962_FLL, WM8962_FLL_MCLK,
-	//		data->clk_frequency, pll_out);
-	ret = snd_soc_dai_set_pll(codec_dai, /*WM8994_FLL1*//*ALC5631_PLL1 */ 0, /*WM8994_FLL_SRC_MCLK1*//*ALC5631_PLL_MCLK1*/0,
-				data->clk_frequency, pll_out);
+	/* pll from mclk 24M */
+	ret = snd_soc_dai_set_pll(codec_dai, 0, 0, MCLK_FOR_CODECS,
+							44100 * 256);
 	if (ret) {
 		dev_err(dev, "failed to start FLL: %d\n", ret);
 		return ret;
 	}
 
-	//ret = snd_soc_dai_set_sysclk(codec_dai, WM8962_SYSCLK_FLL,
-	//		pll_out, SND_SOC_CLOCK_IN);
-	ret = snd_soc_dai_set_sysclk(codec_dai, /*ALC5631_SYSCLK_1*/0 , pll_out,
-		 SND_SOC_CLOCK_IN);
+	/* sysclk from pll */
+	ret = snd_soc_dai_set_sysclk(codec_dai, 0,
+							44100 * 256,
+							SND_SOC_CLOCK_IN);	
 	if (ret) {
 		dev_err(dev, "failed to set SYSCLK: %d\n", ret);
 		return ret;
@@ -264,6 +332,7 @@ static int imx_hifi_hw_params(struct snd_pcm_substream *substream,
 
 	return 0;
 }
+#endif
 
 static int imx_hifi_hw_free(struct snd_pcm_substream *substream)
 {
