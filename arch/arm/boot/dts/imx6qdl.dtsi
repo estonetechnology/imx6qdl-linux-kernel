@@ -82,10 +82,12 @@
 		interrupt-parent = <&intc>;
 		ranges;
 
+		#if 0
 		caam_sm: caam-sm@00100000 {
 			compatible = "fsl,imx6q-caam-sm";
 			reg = <0x00100000 0x3fff>;
 		};
+		#endif
 
 		dma_apbh: dma-apbh@00110000 {
 			compatible = "fsl,imx6q-dma-apbh", "fsl,imx28-dma-apbh";
@@ -739,10 +741,12 @@
 				clock-names = "main_clk";
 			};
 
+			#if 0
 			caam_snvs: caam-snvs@020cc000 {
 				compatible = "fsl,imx6q-caam-snvs";
 				reg = <0x020cc000 0x4000>;
 			};
+			#endif
 
 			snvs@020cc000 {
 				compatible = "fsl,sec-v4.0-mon", "simple-bus";
@@ -858,6 +862,7 @@
 			reg = <0x02100000 0x100000>;
 			ranges;
 
+			#if 0
 			crypto: caam@2100000 {
 				compatible = "fsl,sec-v4.0";
 				#address-cells = <1>;
@@ -882,6 +887,8 @@
 					interrupts = <0 106 0x4>;
 				};
 			};
+			#endif
+
 
 			aipstz@0217c000 { /* AIPSTZ2 */
 				reg = <0x0217c000 0x4000>;

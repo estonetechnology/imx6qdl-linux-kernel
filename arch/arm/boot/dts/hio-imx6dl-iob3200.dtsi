@@ -769,7 +769,6 @@
 			>;
 		};
 
-		
 		pinctrl_uart2: uart2grp {
 			fsl,pins = <
 				MX6QDL_PAD_EIM_D27__UART2_RX_DATA 0x1b0b1
@@ -777,12 +776,19 @@
 			>;
 		};
 		
+		pinctrl_uart3: uart3grp {
+			fsl,pins = <
+				MX6QDL_PAD_EIM_D25__UART3_RX_DATA 0x1b0b1
+                MX6QDL_PAD_EIM_D24__UART3_TX_DATA 0x1b0b1
+			>;
+		};
+		
 		pinctrl_uart5_1: uart5grp-1 {
 			fsl,pins = <
 				MX6QDL_PAD_KEY_COL1__UART5_TX_DATA	0x1b0b1
 				MX6QDL_PAD_KEY_ROW1__UART5_RX_DATA	0x1b0b1
-				MX6QDL_PAD_KEY_COL4__UART5_RTS_B	0x1b0b1
-				MX6QDL_PAD_KEY_ROW4__UART5_CTS_B	0x1b0b1
+				//MX6QDL_PAD_KEY_COL4__UART5_RTS_B	0x1b0b1
+				//MX6QDL_PAD_KEY_ROW4__UART5_CTS_B	0x1b0b1
 			>;
 		};
 
@@ -792,6 +798,13 @@
 				MX6QDL_PAD_KEY_COL1__UART5_RX_DATA	0x1b0b1
 				MX6QDL_PAD_KEY_ROW4__UART5_RTS_B	0x1b0b1
 				MX6QDL_PAD_KEY_COL4__UART5_CTS_B	0x1b0b1
+			>;
+		};
+
+		pinctrl_can1: can1grp {
+			fsl,pins = <
+				MX6QDL_PAD_GPIO_7__FLEXCAN1_TX		0x1b0b0
+				MX6QDL_PAD_GPIO_8__FLEXCAN1_RX		0x1b0b0	
 			>;
 		};
 
@@ -977,6 +990,7 @@
 	status = "okay";
 };
 
+//ttymxc0
 &uart1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart1>;
@@ -989,6 +1003,24 @@
     pinctrl-0 = <&pinctrl_uart2>;
 };
 
+&uart3 {
+    status = "okay";
+    pinctrl-names = "default";
+    pinctrl-0 = <&pinctrl_uart3>;
+};
+
+&uart5 {
+    status = "okay";
+    pinctrl-names = "default";
+	//fsl,uart-has-rtscts;
+    pinctrl-0 = <&pinctrl_uart5_1>;
+};
+
+&flexcan1 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_can1>;
+	status = "okay";
+};
 
 &usbh1 {
 	vbus-supply = <&reg_usb_h1_vbus>;
