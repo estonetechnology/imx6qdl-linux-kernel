@@ -1,0 +1,13 @@
+
+1.arm-linux-gcc 
+source /opt/poky/2.0.2/environment-setup-cortexa9hf-vfp-neon-poky-linux-gnueabi
+export ARCH=arm
+export CROSS_COMPILE=arm-poky-linux-gnueabi-
+
+2.ppc-4510 compile
+make hio-imx6q-ppc4510_defconfig
+make -j16;
+make hio-imx6dl-ppc4510.dtb;
+
+
+
