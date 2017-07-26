@@ -161,7 +161,7 @@ static int read_ethnet2_mac_addr(void)
 	g_mac2_addr[3]=mac_addr[3];
 	g_mac2_addr[4]=mac_addr[4];
 	g_mac2_addr[5]=mac_addr[5];
-        printk("ethnet2 address mac address:%02x:%02x:%02x:%02x:%02x:%02x\n",g_mac_addr[0],g_mac_addr[1],g_mac_addr[2],g_mac_addr[3],g_mac_addr[4],g_mac_addr[5]);	
+        printk("ethnet2 address mac address:%02x:%02x:%02x:%02x:%02x:%02x\n",g_mac2_addr[0],g_mac2_addr[1],g_mac2_addr[2],g_mac2_addr[3],g_mac2_addr[4],g_mac2_addr[5]);	
 	return ret;
 no_mcu:
 	DEBUG("%s   no mcu!!!!\n", __FUNCTION__);
@@ -266,7 +266,7 @@ unsigned char buffer[32];
 static ssize_t get_mac_id(struct device *dev,
 	struct device_attribute *attr, const char *buf, size_t count)
 {
-	return sprintf(buf, "%02x:%02x:%02x:%02x:%02x:%02x",mac_addr[0],mac_addr[1],mac_addr[2],mac_addr[3],mac_addr[4],mac_addr[5]);
+	return sprintf(buf, "%02x:%02x:%02x:%02x:%02x:%02x",g_mac_addr[0],g_mac_addr[1],g_mac_addr[2],g_mac_addr[3],g_mac_addr[4],g_mac_addr[5]);
 }
 
 static DEVICE_ATTR(mac_id, S_IRUGO, get_mac_id, NULL);

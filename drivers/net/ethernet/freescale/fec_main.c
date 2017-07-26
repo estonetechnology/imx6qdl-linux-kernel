@@ -1670,7 +1670,8 @@ static void fec_get_mac(struct net_device *ndev)
 	struct fec_enet_private *fep = netdev_priv(ndev);
 	struct fec_platform_data *pdata = dev_get_platdata(&fep->pdev->dev);
 	unsigned char *iap, tmpaddr[ETH_ALEN];
-
+	unsigned char tmp_addr[6];
+	
 	/*
 	 * try to get mac address in following order:
 	 *
@@ -1679,11 +1680,20 @@ static void fec_get_mac(struct net_device *ndev)
 	 */
 	iap = macaddr;
 	iap = g_mac_addr;
+	
+	tmp_addr[5] = g_mac_addr[0];
+	tmp_addr[4] = g_mac_addr[1];
+	tmp_addr[3] = g_mac_addr[2];
+	tmp_addr[2] = g_mac_addr[3];
+	tmp_addr[1] = g_mac_addr[4];
+	tmp_addr[0] = g_mac_addr[5];
+	
+	printk("fec_get_mac ethnet address mac address:%02x:%02x:%02x:%02x:%02x:%02x\n",g_mac_addr[0],g_mac_addr[1],g_mac_addr[2],g_mac_addr[3],g_mac_addr[4],g_mac_addr[5]);
 	if ((g_mac_addr[0] == 0x00) && (g_mac_addr[1] == 0x00) && (g_mac_addr[2] == 0x00) && (g_mac_addr[3] == 0x00) && (g_mac_addr[4] == 0x00) &&
 		(g_mac_addr[5] == 0x00))
 		printk("\n fec:Get mac error!! \n");
 	else
-		iap = g_mac_addr;
+		iap = tmp_addr;
 	
 	/*
 	 * 2) from device tree data
