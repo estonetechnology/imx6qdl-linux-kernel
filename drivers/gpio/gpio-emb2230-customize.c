@@ -31,6 +31,9 @@
 #include <linux/unistd.h>
 #include <linux/interrupt.h>
 
+int g_WL_HOST_WAKE;
+int g_WL_PWREN;
+
 static int customize_gpio_probe(struct platform_device *pdev)
 {
 	int rst,ret;
@@ -38,7 +41,7 @@ static int customize_gpio_probe(struct platform_device *pdev)
 	int RTP_RST;
 	struct device_node* np = pdev->dev.of_node;
 	
-	printk("ben: customize_gpio_probe \n");
+	printk("emb2230: customize_gpio_probe \n");
 	
 	//LCD
 	#if 0
@@ -89,7 +92,8 @@ static int customize_gpio_probe(struct platform_device *pdev)
     }
 
     gpio_direction_output(rst, 1);
-
+	gpio_free(rst);
+	
 	//TP_PWR_EN
     rst = of_get_named_gpio(np, "TP_PWR_EN", 0);
     if (!gpio_is_valid(rst)){
@@ -103,7 +107,7 @@ static int customize_gpio_probe(struct platform_device *pdev)
     }
 
     gpio_direction_output(rst, 1);
-
+	gpio_free(rst);
 	
 	//HUB_reset
     rst = of_get_named_gpio(np, "HUB_reset", 0);
@@ -120,8 +124,35 @@ static int customize_gpio_probe(struct platform_device *pdev)
     gpio_direction_output(rst, 0);
 	mdelay(200);
 	gpio_direction_output(rst, 1);
+	gpio_free(rst);
 	
-	//
+	//AUD_MUTE
+    rst = of_get_named_gpio(np, "AUD_MUTE", 0);
+    if (!gpio_is_valid(rst)){
+		printk("can not find AUD_MUTE gpio pins\n");
+        return -1;
+    }
+    ret = gpio_request(rst, "AUD_MUTE");
+    if(ret){
+        printk("request gpio AUD_MUTE failed\n");
+        return;
+    }
+
+    gpio_direction_output(rst, 1);
+	gpio_free(rst);
+
+	//emb3200 wifi
+    g_WL_PWREN = of_get_named_gpio(np, "WL_PWREN", 0);
+    if (!gpio_is_valid(g_WL_PWREN)){
+		printk("can not find WL_PWREN gpio pins\n");
+        return -1;
+    }
+	
+	g_WL_HOST_WAKE = of_get_named_gpio(np, "WL_HOST_WAKE", 0);
+    if (!gpio_is_valid(g_WL_HOST_WAKE)){
+		printk("can not find g_WL_HOST_WAKE gpio pins\n");
+        return -1;
+    }	
 	
 	return 0;
 }

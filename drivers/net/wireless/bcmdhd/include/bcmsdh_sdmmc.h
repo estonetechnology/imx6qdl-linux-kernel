@@ -21,18 +21,18 @@
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
- * $Id: bcmsdh_sdmmc.h 444019 2013-12-18 08:36:54Z $
+ * $Id: bcmsdh_sdmmc.h 496576 2014-08-13 15:04:56Z $
  */
 
 #ifndef __BCMSDH_SDMMC_H__
 #define __BCMSDH_SDMMC_H__
 
-#define sd_err(x)
-#define sd_trace(x)
-#define sd_info(x)
-#define sd_debug(x)
-#define sd_data(x)
-#define sd_ctrl(x)
+#define sd_err(x)	do { if (sd_msglevel & SDH_ERROR_VAL) printf x; } while (0)
+#define sd_trace(x)	do { if (sd_msglevel & SDH_TRACE_VAL) printf x; } while (0)
+#define sd_info(x)	do { if (sd_msglevel & SDH_INFO_VAL) printf x; } while (0)
+#define sd_debug(x)	do { if (sd_msglevel & SDH_DEBUG_VAL) printf x; } while (0)
+#define sd_data(x)	do { if (sd_msglevel & SDH_DATA_VAL) printf x; } while (0)
+#define sd_ctrl(x)	do { if (sd_msglevel & SDH_CTRL_VAL) printf x; } while (0)
 
 
 #define sd_sync_dma(sd, read, nbytes)
@@ -114,4 +114,12 @@ extern void sdioh_sdmmc_free_irq(uint irq, sdioh_info_t *sd);
 
 extern sdioh_info_t *sdioh_attach(osl_t *osh, struct sdio_func *func);
 extern SDIOH_API_RC sdioh_detach(osl_t *osh, sdioh_info_t *sd);
+
+#ifdef GLOBAL_SDMMC_INSTANCE
+typedef struct _BCMSDH_SDMMC_INSTANCE {
+	sdioh_info_t	*sd;
+	struct sdio_func *func[SDIOD_MAX_IOFUNCS];
+} BCMSDH_SDMMC_INSTANCE, *PBCMSDH_SDMMC_INSTANCE;
+#endif
+
 #endif /* __BCMSDH_SDMMC_H__ */

@@ -21,7 +21,7 @@
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
- * $Id: bcmsdh_sdmmc.c 457662 2014-02-24 15:07:28Z $
+ * $Id: bcmsdh_sdmmc.c 459285 2014-03-03 02:54:39Z $
  */
 #include <typedefs.h>
 
@@ -59,7 +59,17 @@ static void IRQHandler(struct sdio_func *func);
 static void IRQHandlerF2(struct sdio_func *func);
 #endif /* !defined(OOB_INTR_ONLY) */
 static int sdioh_sdmmc_get_cisaddr(sdioh_info_t *sd, uint32 regaddr);
-static int sdio_reset_comm(struct mmc_card *card);
+//#if defined(ENABLE_INSMOD_NO_FW_LOAD)
+//extern int sdio_reset_comm(struct mmc_card *card);
+//#else
+int sdio_reset_comm(struct mmc_card *card)
+{
+	return 0;
+}
+//#endif
+#ifdef GLOBAL_SDMMC_INSTANCE
+extern PBCMSDH_SDMMC_INSTANCE gInstance;
+#endif
 
 #define DEFAULT_SDIO_F2_BLKSIZE		512
 #ifndef CUSTOM_SDIO_F2_BLKSIZE
@@ -91,12 +101,6 @@ DHD_PM_RESUME_WAIT_INIT(sdioh_request_buffer_wait);
 #define MMC_SDIO_ABORT_RETRY_LIMIT 5
 
 int sdioh_sdmmc_card_regread(sdioh_info_t *sd, int func, uint32 regaddr, int regsize, uint32 *data);
-
-/* workaround to simply return 0 as suggested by Broadcom */
-static int sdio_reset_comm(struct mmc_card *card)
-{
-	return 0;
-}
 
 static int
 sdioh_sdmmc_card_enablefuncs(sdioh_info_t *sd)
@@ -159,8 +163,16 @@ sdioh_attach(osl_t *osh, struct sdio_func *func)
 	sd->fake_func0.num = 0;
 	sd->fake_func0.card = func->card;
 	sd->func[0] = &sd->fake_func0;
+#ifdef GLOBAL_SDMMC_INSTANCE
+	if (func->num == 2)
+		sd->func[1] = gInstance->func[1];
+#else
 	sd->func[1] = func->card->sdio_func[0];
+#endif
 	sd->func[2] = func->card->sdio_func[1];
+#ifdef GLOBAL_SDMMC_INSTANCE
+	sd->func[func->num] = func;
+#endif
 	sd->num_funcs = 2;
 	sd->sd_blockmode = TRUE;
 	sd->use_client_ints = TRUE;
@@ -357,7 +369,8 @@ sdioh_interrupt_deregister(sdioh_info_t *sd)
 	sd->intr_handler = NULL;
 	sd->intr_handler_arg = NULL;
 #elif defined(HW_OOB)
-	sdioh_disable_func_intr(sd);
+	if (dhd_download_fw_on_driverload)
+		sdioh_disable_func_intr(sd);
 #endif /* !defined(OOB_INTR_ONLY) */
 	return SDIOH_API_RC_SUCCESS;
 }
@@ -690,7 +703,7 @@ exit:
 	return bcmerror;
 }
 
-#if defined(OOB_INTR_ONLY) && defined(HW_OOB)
+#if (defined(OOB_INTR_ONLY) && defined(HW_OOB)) || defined(FORCE_WOWLAN)
 
 SDIOH_API_RC
 sdioh_enable_hw_oob_intr(sdioh_info_t *sd, bool enable)
@@ -699,7 +712,11 @@ sdioh_enable_hw_oob_intr(sdioh_info_t *sd, bool enable)
 	uint8 data;
 
 	if (enable)
+#ifdef HW_OOB_LOW_LEVEL
+		data = SDIO_SEPINT_MASK | SDIO_SEPINT_OE;
+#else
 		data = SDIO_SEPINT_MASK | SDIO_SEPINT_OE | SDIO_SEPINT_ACT_HI;
+#endif
 	else
 		data = SDIO_SEPINT_ACT_HI;	/* disable hw oob interrupt */
 
@@ -763,7 +780,7 @@ sdioh_cis_read(sdioh_info_t *sd, uint func, uint8 *cisd, uint32 length)
 		return SDIOH_API_RC_FAIL;
 	}
 
-	sd_err(("%s: func_cis_ptr[%d]=0x%04x\n", __FUNCTION__, func, sd->func_cis_ptr[func]));
+	sd_trace(("%s: func_cis_ptr[%d]=0x%04x\n", __FUNCTION__, func, sd->func_cis_ptr[func]));
 
 	for (count = 0; count < length; count++) {
 		offset =  sd->func_cis_ptr[func] + count;
@@ -803,14 +820,14 @@ sdioh_request_byte(sdioh_info_t *sd, uint rw, uint func, uint regaddr, uint8 *by
 						/* Enable Function 2 */
 						err_ret = sdio_enable_func(sd->func[2]);
 						if (err_ret) {
-							sd_err(("bcmsdh_sdmmc: enable F2 failed:%d",
+							sd_err(("bcmsdh_sdmmc: enable F2 failed:%d\n",
 								err_ret));
 						}
 					} else {
 						/* Disable Function 2 */
 						err_ret = sdio_disable_func(sd->func[2]);
 						if (err_ret) {
-							sd_err(("bcmsdh_sdmmc: Disab F2 failed:%d",
+							sd_err(("bcmsdh_sdmmc: Disab F2 failed:%d\n",
 								err_ret));
 						}
 					}
@@ -885,6 +902,7 @@ sdioh_request_word(sdioh_info_t *sd, uint cmd_type, uint rw, uint func, uint add
                                    uint32 *word, uint nbytes)
 {
 	int err_ret = SDIOH_API_RC_FAIL;
+	int err_ret2 = SDIOH_API_RC_SUCCESS; // terence 20130621: prevent dhd_dpc in dead lock
 #if defined(MMC_SDIO_ABORT)
 	int sdio_abort_retry = MMC_SDIO_ABORT_RETRY_LIMIT;
 #endif
@@ -935,21 +953,21 @@ sdioh_request_word(sdioh_info_t *sd, uint cmd_type, uint rw, uint func, uint add
 				 * As of this time, this is temporaray one
 				 */
 				sdio_writeb(sd->func[0],
-					func, SDIOD_CCCR_IOABORT, &err_ret);
+					func, SDIOD_CCCR_IOABORT, &err_ret2);
 				sdio_release_host(sd->func[0]);
 			}
-			if (!err_ret)
+			if (!err_ret2)
 				break;
 		}
 		if (err_ret)
 #endif /* MMC_SDIO_ABORT */
 		{
-			sd_err(("bcmsdh_sdmmc: Failed to %s word, Err: 0x%08x",
+			sd_err(("bcmsdh_sdmmc: Failed to %s word, Err: 0x%08x\n",
 				rw ? "Write" : "Read", err_ret));
 		}
 	}
 
-	return ((err_ret == 0) ? SDIOH_API_RC_SUCCESS : SDIOH_API_RC_FAIL);
+	return (((err_ret == 0)&&(err_ret2 == 0)) ? SDIOH_API_RC_SUCCESS : SDIOH_API_RC_FAIL);
 }
 
 static SDIOH_API_RC
@@ -1161,7 +1179,7 @@ sdioh_request_buffer(sdioh_info_t *sd, uint pio_dma, uint fix_inc, uint write, u
 	if (((ulong)buffer & DMA_ALIGN_MASK) == 0 && (buf_len & DMA_ALIGN_MASK) == 0)
 		return sdioh_buffer_tofrom_bus(sd, fix_inc, write, func, addr, buffer, buf_len);
 
-	sd_err(("%s: [%d] doing memory copy buf=%p, len=%d\n",
+	sd_trace(("%s: [%d] doing memory copy buf=%p, len=%d\n",
 		__FUNCTION__, write, buffer, buf_len));
 
 	/* otherwise, a memory copy is needed as the input buffer is not aligned */

@@ -1,29 +1,14 @@
 /*
-* Copyright (C) 1999-2014, Broadcom Corporation
-* 
-*      Unless you and Broadcom execute a separate written software license
-* agreement governing use of this software, this software is licensed to you
-* under the terms of the GNU General Public License version 2 (the "GPL"),
-* available at http://www.broadcom.com/licenses/GPLv2.php, with the
-* following added to such license:
-* 
-*      As a special exception, the copyright holders of this software give you
-* permission to link this software with independent modules, and to copy and
-* distribute the resulting executable under terms of your choice, provided that
-* you also meet, for each linked independent module, the terms and conditions of
-* the license of that module.  An independent module is a module which is not
-* derived from this software.  The special exception does not apply to any
-* modifications of the software.
-* 
-*      Notwithstanding the above, under no circumstances may you combine this
-* software in any way with any other Broadcom software provided under a license
-* other than the GPL, without Broadcom's express prior written consent.
-* $Id: dhd_wlfc.h 485659 2014-06-16 21:33:12Z $
+* $Copyright Open 2009 Broadcom Corporation$
+* $Id: dhd_wlfc.h 501046 2014-09-06 01:25:16Z $
 *
 */
 #ifndef __wlfc_host_driver_definitions_h__
 #define __wlfc_host_driver_definitions_h__
 
+#ifdef QMONITOR
+#include <dhd_qmon.h>
+#endif
 
 /* #define OOO_DEBUG */
 
@@ -40,10 +25,10 @@
 #define WLFC_HANGER_ITEM_STATE_FREE			1
 #define WLFC_HANGER_ITEM_STATE_INUSE			2
 #define WLFC_HANGER_ITEM_STATE_INUSE_SUPPRESSED		3
-#define WLFC_HANGER_ITEM_STATE_WAIT_CLEAN		4
 
-#define WLFC_HANGER_ITEM_WAIT_EVENT_COUNT		2
-#define WLFC_HANGER_ITEM_WAIT_EVENT_INVALID		255
+#define WLFC_HANGER_PKT_STATE_TXSTATUS			1
+#define WLFC_HANGER_PKT_STATE_TXCOMPLETE		2
+#define WLFC_HANGER_PKT_STATE_CLEANUP			4
 
 typedef enum {
 	Q_TYPE_PSQ,
@@ -67,8 +52,8 @@ typedef enum ewlfc_mac_entry_action {
 typedef struct wlfc_hanger_item {
 	uint8	state;
 	uint8   gen;
-	uint8	waitevent;	/* wait txstatus_update and txcomplete before free a packet */
-	uint8	pad;
+	uint8	pkt_state;
+	uint8	pkt_txstatus;
 	uint32	identifier;
 	void*	pkt;
 #ifdef PROP_TXSTATUS_DEBUG
@@ -130,12 +115,15 @@ typedef struct wlfc_mac_descriptor {
 	uint8 send_tim_signal;
 	uint8 mac_handle;
 	/* Number of packets at dongle for this entry. */
-	uint transit_count;
+	int transit_count;
 	/* Numbe of suppression to wait before evict from delayQ */
-	uint suppr_transit_count;
+	int suppr_transit_count;
 	/* flag. TRUE when in suppress state */
 	uint8 suppressed;
 
+#ifdef QMONITOR
+	dhd_qmon_t qmon;
+#endif /* QMONITOR */
 
 #ifdef PROP_TXSTATUS_DEBUG
 	uint32 dstncredit_sent_packets;
@@ -232,6 +220,9 @@ typedef struct athost_wl_stat_counters {
 #define WLFC_FCMODE_EXPLICIT_CREDIT		2
 #define WLFC_ONLY_AMPDU_HOSTREORDER		3
 
+/* Reserved credits ratio when borrowed by hihger priority */
+#define WLFC_BORROW_LIMIT_RATIO		4
+
 /* How long to defer borrowing in milliseconds */
 #define WLFC_BORROW_DEFER_PERIOD_MS 100
 
@@ -284,6 +275,7 @@ typedef struct athost_wl_status_info {
 	/* pkt counts for each interface and ac */
 	int	pkt_cnt_in_q[WLFC_MAX_IFNUM][AC_COUNT+1];
 	int	pkt_cnt_per_ac[AC_COUNT+1];
+	int	pkt_cnt_in_drv[WLFC_MAX_IFNUM][AC_COUNT+1];
 	uint8	allow_fc;
 	uint32  fc_defer_timestamp;
 	uint32	rx_timestamp[AC_COUNT+1];
@@ -479,11 +471,11 @@ int dhd_wlfc_commit_packets(dhd_pub_t *dhdp, f_commitpkt_t fcommit,
 	void* commit_ctx, void *pktbuf, bool need_toggle_host_if);
 int dhd_wlfc_txcomplete(dhd_pub_t *dhd, void *txp, bool success);
 int dhd_wlfc_init(dhd_pub_t *dhd);
-int dhd_wlfc_hostreorder_init(dhd_pub_t *dhd);
 #ifdef SUPPORT_P2P_GO_PS
 int dhd_wlfc_suspend(dhd_pub_t *dhd);
 int dhd_wlfc_resume(dhd_pub_t *dhd);
 #endif /* SUPPORT_P2P_GO_PS */
+int dhd_wlfc_hostreorder_init(dhd_pub_t *dhd);
 int dhd_wlfc_cleanup_txq(dhd_pub_t *dhd, f_processpkt_t fn, void *arg);
 int dhd_wlfc_cleanup(dhd_pub_t *dhd, f_processpkt_t fn, void* arg);
 int dhd_wlfc_deinit(dhd_pub_t *dhd);

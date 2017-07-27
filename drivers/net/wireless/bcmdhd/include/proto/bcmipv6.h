@@ -1,27 +1,9 @@
 /*
- * Copyright (C) 1999-2014, Broadcom Corporation
- * 
- *      Unless you and Broadcom execute a separate written software license
- * agreement governing use of this software, this software is licensed to you
- * under the terms of the GNU General Public License version 2 (the "GPL"),
- * available at http://www.broadcom.com/licenses/GPLv2.php, with the
- * following added to such license:
- * 
- *      As a special exception, the copyright holders of this software give you
- * permission to link this software with independent modules, and to copy and
- * distribute the resulting executable under terms of your choice, provided that
- * you also meet, for each linked independent module, the terms and conditions of
- * the license of that module.  An independent module is a module which is not
- * derived from this software.  The special exception does not apply to any
- * modifications of the software.
- * 
- *      Notwithstanding the above, under no circumstances may you combine this
- * software in any way with any other Broadcom software provided under a license
- * other than the GPL, without Broadcom's express prior written consent.
+ * $Copyright Open Broadcom Corporation$
  *
  * Fundamental constants relating to Neighbor Discovery Protocol
  *
- * $Id: bcmipv6.h 399482 2013-04-30 09:24:37Z $
+ * $Id: bcmipv6.h 439574 2013-11-27 06:37:37Z $
  */
 
 #ifndef _bcmipv6_h_
@@ -56,7 +38,8 @@
 #define IPV6_FRAG_OFFS_SHIFT	3
 
 /* For icmpv6 */
-#define ICMPV6_HEADER_TYPE 	0x3A
+#define ICMPV6_HEADER_TYPE	0x3A
+#define ICMPV6_PKT_TYPE_RA	134
 #define ICMPV6_PKT_TYPE_NS	135
 #define ICMPV6_PKT_TYPE_NA	136
 

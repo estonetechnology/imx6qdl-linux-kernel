@@ -1,27 +1,9 @@
 /*
  * Common function shared by Linux WEXT, cfg80211 and p2p drivers
  *
- * Copyright (C) 1999-2014, Broadcom Corporation
- * 
- *      Unless you and Broadcom execute a separate written software license
- * agreement governing use of this software, this software is licensed to you
- * under the terms of the GNU General Public License version 2 (the "GPL"),
- * available at http://www.broadcom.com/licenses/GPLv2.php, with the
- * following added to such license:
- * 
- *      As a special exception, the copyright holders of this software give you
- * permission to link this software with independent modules, and to copy and
- * distribute the resulting executable under terms of your choice, provided that
- * you also meet, for each linked independent module, the terms and conditions of
- * the license of that module.  An independent module is a module which is not
- * derived from this software.  The special exception does not apply to any
- * modifications of the software.
- * 
- *      Notwithstanding the above, under no circumstances may you combine this
- * software in any way with any other Broadcom software provided under a license
- * other than the GPL, without Broadcom's express prior written consent.
+ * $Copyright Open Broadcom Corporation$
  *
- * $Id: wldev_common.h 513422 2014-11-06 11:06:57Z $
+ * $Id: wldev_common.h 504503 2014-09-24 11:28:56Z $
  */
 #ifndef __WLDEV_COMMON_H__
 #define __WLDEV_COMMON_H__
@@ -107,15 +89,18 @@ extern int wl_iw_parse_ssid_list_tlv(char** list_str, wlc_ssid_t* ssid,
 /* Get the link speed from dongle, speed is in kpbs */
 int wldev_get_link_speed(struct net_device *dev, int *plink_speed);
 
-int wldev_get_rssi(struct net_device *dev, scb_val_t *prssi);
+int wldev_get_rssi(struct net_device *dev, int *prssi);
 
 int wldev_get_ssid(struct net_device *dev, wlc_ssid_t *pssid);
 
 int wldev_get_band(struct net_device *dev, uint *pband);
-int wldev_get_mode(struct net_device *dev, uint8 *pband);
-int wldev_get_chanspec(struct net_device *dev, uint16 *pband);
-int wldev_get_datarate(struct net_device *dev, int *datarate);
-int wldev_get_assoclist(struct net_device *dev, struct maclist *maclist, uint length);
+
 int wldev_set_band(struct net_device *dev, uint band);
+
+#if defined(CUSTOM_PLATFORM_NV_TEGRA)
+int wldev_miracast_tuning(struct net_device *dev, char *command, int total_len);
+int wldev_get_assoc_resp_ie(struct net_device *dev, char *command, int total_len);
+int wldev_get_rx_rate_stats(struct net_device *dev, char *command, int total_len);
+#endif /* defined(CUSTOM_PLATFORM_NV_TEGRA) */
 
 #endif /* __WLDEV_COMMON_H__ */
