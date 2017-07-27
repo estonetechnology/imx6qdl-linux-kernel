@@ -9,5 +9,14 @@ make hio-imx6q-ppc4510_defconfig
 make -j16;
 make hio-imx6dl-ppc4510.dtb;
 
+3.ppc-4215 compile
+make hio-imx6dl-ppc4215_defconfig
+make -j16;
+make hio-imx6dl-ppc4215.dtb;
+
+4.emb2230
+make hio-imx6dl-emb2230_defconfig
+make -j16
+make hio-imx6dl-emb2230.dtb
 
 
