@@ -20,3 +20,8 @@ make -j16
 make hio-imx6dl-emb2230.dtb
 
 
+
+5.iob3200(7" lcd display)
+make hio-imx6dl-iob3200_defconfig
+make -j16
+make hio-imx6dl-iob3200.dtb

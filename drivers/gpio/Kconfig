@@ -232,6 +232,13 @@ config GPIO_EMB2230
     help
       Say yes here to support the emb-2230 GPIO device
 
+config GPIO_IOB3200
+    bool "iob-3200 GPIO support"
+    depends on ARCH_MXC
+    select GENERIC_IRQ_CHIP
+    help
+      Say yes here to support the iob-3200 GPIO device
+	  
 config GPIO_MXS
 	def_bool y
 	depends on ARCH_MXS

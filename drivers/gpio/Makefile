@@ -58,6 +58,7 @@ obj-$(CONFIG_GPIO_MXC)		+= gpio-mxc.o
 obj-$(CONFIG_GPIO_PPC_4510) += gpio-ppc4510-customize.o
 obj-$(CONFIG_GPIO_PPC_4515) += gpio-ppc4515-customize.o
 obj-$(CONFIG_GPIO_EMB2230) += gpio-emb2230-customize.o 
+obj-$(CONFIG_GPIO_IOB3200) += gpio-iob3200-customize.o 
 obj-$(CONFIG_GPIO_MXS)		+= gpio-mxs.o
 obj-$(CONFIG_GPIO_OCTEON)	+= gpio-octeon.o
 obj-$(CONFIG_ARCH_OMAP)		+= gpio-omap.o
