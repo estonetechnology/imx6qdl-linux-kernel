@@ -7081,7 +7081,7 @@ rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 
 	/* Get MAC address */
 	for (i = 0; i < ETH_ALEN; i++)
-		dev->dev_addr[i] = g_mac2_addr[i];
+		dev->dev_addr[i] = g_mac2_addr[ETH_ALEN - 1 - i];
 
 	//add
 	rtl_rar_set(tp, dev->dev_addr);
