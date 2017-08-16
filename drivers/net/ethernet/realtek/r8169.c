@@ -6916,6 +6916,7 @@ static void rtl_hw_initialize(struct rtl8169_private *tp)
 	}
 }
 
+extern unsigned char g_mac_addr[6];
 extern unsigned char g_mac2_addr[6];
 static int
 rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
@@ -7080,9 +7081,18 @@ rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 	mutex_init(&tp->wk.mutex);
 
 	/* Get MAC address */
+	//for (i = 0; i < ETH_ALEN; i++)
+	//	dev->dev_addr[i] = g_mac2_addr[ETH_ALEN - 1 - i];
+	//debug ppc-4215/ppc-4217
+    g_mac2_addr[5] = g_mac_addr[1];
+    g_mac2_addr[4] = g_mac_addr[0];
+    g_mac2_addr[3] = g_mac_addr[2];
+    g_mac2_addr[2] = g_mac_addr[3];
+    g_mac2_addr[1] = g_mac_addr[4];
+    g_mac2_addr[0] = g_mac_addr[5];	
 	for (i = 0; i < ETH_ALEN; i++)
-		dev->dev_addr[i] = g_mac2_addr[ETH_ALEN - 1 - i];
-
+		dev->dev_addr[i] = g_mac2_addr[i];	
+	
 	//add
 	rtl_rar_set(tp, dev->dev_addr);
 	
