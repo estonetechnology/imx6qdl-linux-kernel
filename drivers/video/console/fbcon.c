@@ -135,7 +135,7 @@ static char fontname[40];
 static int info_idx = -1;
 
 /* console rotation */
-static int initial_rotation = 3;
+static int initial_rotation;
 static int fbcon_has_sysfs;
 
 static const struct consw fb_con;
