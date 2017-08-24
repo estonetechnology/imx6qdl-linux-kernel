@@ -187,8 +187,8 @@
 		compatible = "fsl,mxc_sdc_fb";
 		disp_dev = "ldb";
 		interface_pix_fmt = "RGB24";
-		mode_str ="G156HTN02";
-		//mode_str ="G173HW01";
+		//mode_str ="G156HTN02";
+		mode_str ="G173HW01";
 		
 		default_bpp = <24>;
 		int_clk = <0>;
@@ -1002,7 +1002,7 @@
 			};
 			#endif
 			
-			#if 1
+			#if 0
 			//15" lcd
 			timing0: G156HTN02 {
 				clock-frequency = <141860000>;
@@ -1017,7 +1017,7 @@
 			};	
 			#endif
 			
-			#if 0
+			#if 1
 			//17" lcd
 			timing0: G173HW01 {
 				clock-frequency = <149800000>;
