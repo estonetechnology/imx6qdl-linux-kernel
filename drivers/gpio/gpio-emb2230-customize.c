@@ -33,6 +33,9 @@
 
 int g_WL_HOST_WAKE;
 int g_WL_PWREN;
+int g_BT_HOST_WAKE;
+int g_BT_PWREN;
+int g_BT_RESET;
 
 static int customize_gpio_probe(struct platform_device *pdev)
 {
@@ -153,6 +156,91 @@ static int customize_gpio_probe(struct platform_device *pdev)
 		printk("can not find g_WL_HOST_WAKE gpio pins\n");
         return -1;
     }	
+
+	g_BT_RESET = of_get_named_gpio(np, "BT_RESET", 0);
+	if (!gpio_is_valid(g_BT_RESET)){
+		printk("can not find BT_RESET gpio pins\n");
+		return -1;
+	}
+	ret = gpio_request(g_BT_RESET, "BT_RESET");
+	if(ret){
+		printk("request gpio BT_RESET failed\n");
+		return;
+	}
+	gpio_direction_output(g_BT_RESET, 0);
+	mdelay(500);
+	gpio_direction_output(g_BT_RESET, 1);
+
+	g_BT_PWREN = of_get_named_gpio(np, "BT_PWREN", 0);
+	if (!gpio_is_valid(g_BT_PWREN)){
+		printk("can not find BT_PWREN gpio pins\n");
+		return -1;
+	}
+	ret = gpio_request(g_BT_PWREN, "BT_PWREN");
+	if(ret){
+		printk("request gpio BT_PWREN failed\n");
+		return;
+	}
+	gpio_direction_output(g_BT_PWREN, 1);
+
+	g_BT_HOST_WAKE = of_get_named_gpio(np, "BT_HOST_WAKE", 0);
+	if (!gpio_is_valid(g_BT_HOST_WAKE)){
+		printk("can not find g_BT_HOST_WAKE gpio pins\n");
+		return -1;
+	}
+	ret = gpio_request(g_BT_HOST_WAKE, "BT_HOST_WAKE");
+	if(ret){
+		printk("request gpio BT_HOST_WAKE failed\n");
+		return;
+	}
+	gpio_direction_input(g_BT_HOST_WAKE);
+	
+	
+	//bt cts/rts
+    rst = of_get_named_gpio(np, "BT_CTS", 0);
+    if (!gpio_is_valid(rst)){
+		printk("can not find BT_CTS gpio pins\n");
+        return -1;
+    }
+    ret = gpio_request(rst, "BT_CTS");
+    if(ret){
+        printk("request gpio BT_CTS failed\n");
+        return -1;
+    }
+
+    gpio_direction_output(rst, 0);
+	//gpio_free(rst);
+
+    rst = of_get_named_gpio(np, "BT_RTS", 0);
+    if (!gpio_is_valid(rst)){
+		printk("can not find BT_RTS gpio pins\n");
+        return -1;
+    }
+    ret = gpio_request(rst, "BT_RTS");
+    if(ret){
+        printk("request gpio BT_RTS failed\n");
+        return -1;
+    }
+
+    gpio_direction_output(rst, 0);
+	//gpio_free(rst);
+	
+	//PHY_RESET
+	rst = of_get_named_gpio(np, "PHY_RESET", 0);
+    if (!gpio_is_valid(rst)){
+		printk("can not find PHY_RESET gpio pins\n");
+        return -1;
+    }
+    ret = gpio_request(rst, "PHY_RESET");
+    if(ret){
+        printk("request gpio PHY_RESET failed\n");
+        return;
+    }
+
+    gpio_direction_output(rst, 0);
+	mdelay(200);
+	gpio_direction_output(rst, 1);
+	gpio_free(rst);
 	
 	return 0;
 }
