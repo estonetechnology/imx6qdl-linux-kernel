@@ -7081,8 +7081,10 @@ rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 	mutex_init(&tp->wk.mutex);
 
 	/* Get MAC address */
-	//for (i = 0; i < ETH_ALEN; i++)
-	//	dev->dev_addr[i] = g_mac2_addr[ETH_ALEN - 1 - i];
+	for (i = 0; i < ETH_ALEN; i++)
+		dev->dev_addr[i] = g_mac2_addr[ETH_ALEN - 1 - i];
+
+	#if 0
 	//debug ppc-4215/ppc-4217
     g_mac2_addr[5] = g_mac_addr[1];
     g_mac2_addr[4] = g_mac_addr[0];
@@ -7092,7 +7094,8 @@ rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
     g_mac2_addr[0] = g_mac_addr[5];	
 	for (i = 0; i < ETH_ALEN; i++)
 		dev->dev_addr[i] = g_mac2_addr[i];	
-	
+	#endif
+
 	//add
 	rtl_rar_set(tp, dev->dev_addr);
 	
