@@ -32,6 +32,7 @@
  *  snd_soc_dapm_disable_pin(codec, "MONO_LOUT"), etc.
  */
 
+#define DEBUG 1 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
 #include <linux/init.h>
@@ -1501,7 +1502,7 @@ static int aic3x_i2c_probe(struct i2c_client *i2c,
 		dev_err(&i2c->dev, "failed to create private data\n");
 		return -ENOMEM;
 	}
-
+	
 	aic3x->regmap = devm_regmap_init_i2c(i2c, &aic3x_regmap);
 	if (IS_ERR(aic3x->regmap)) {
 		ret = PTR_ERR(aic3x->regmap);
