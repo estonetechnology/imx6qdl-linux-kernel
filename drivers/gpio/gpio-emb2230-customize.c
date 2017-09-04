@@ -242,6 +242,20 @@ static int customize_gpio_probe(struct platform_device *pdev)
 	gpio_direction_output(rst, 1);
 	gpio_free(rst);
 	
+	//CAN1_STB
+	rst = of_get_named_gpio(np, "CAN1_STB", 0);
+    if (!gpio_is_valid(rst)){
+		printk("can not find CAN1_STB gpio pins\n");
+        return -1;
+    }
+    ret = gpio_request(rst, "CAN1_STB");
+    if(ret){
+        printk("request gpio CAN1_STB failed\n");
+        return;
+    }
+
+    gpio_direction_output(rst, 0);
+	
 	return 0;
 }
 

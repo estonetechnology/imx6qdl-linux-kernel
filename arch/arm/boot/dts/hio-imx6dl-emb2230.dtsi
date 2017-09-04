@@ -50,11 +50,12 @@
 	leds {
 		compatible = "gpio-leds";
 
-		charger-led {
-			gpios = <&gpio1 2 0>;
-			linux,default-trigger = "max8903-charger-charging";
-			retain-state-suspended;
-		};
+		led0: heartbeat {
+             label = "heartbeat";
+             gpios = <&gpio5 18 GPIO_ACTIVE_HIGH>;
+             default-state = "off";
+             linux,default-trigger = "heartbeat";
+         };
 	};
 
 	memory: memory {
@@ -152,6 +153,9 @@
 			
 			//ar8035 phy reset
 			PHY_RESET = <&gpio1 29 0>;
+			
+			//can1_stb 
+			CAN1_STB = <&gpio4 9 0>;
 		};			
 	};
 
@@ -379,6 +383,7 @@
 	fsl,ldb-di1-parent = <&clks IMX6QDL_CLK_PLL2_PFD0_352M>;
 };
 
+#if 0
 &ecspi1 {
 	fsl,spi-num-chipselects = <1>;
 	cs-gpios = <&gpio4 9 0>;
@@ -394,6 +399,7 @@
 		reg = <0>;
 	};
 };
+#endif
 
 &fec {
 	pinctrl-names = "default";
@@ -798,6 +804,12 @@
 				
 				//ar8035 phy reset
 				MX6QDL_PAD_ENET_TXD1__GPIO1_IO29 		0x80000000
+				
+				//can1_stb 
+				MX6QDL_PAD_KEY_ROW1__GPIO4_IO09 		0x80000000	
+
+				//run-led
+				MX6QDL_PAD_CSI0_PIXCLK__GPIO5_IO18		0x80000000
 			>;
 		};
 
@@ -944,7 +956,7 @@
 				//MX6QDL_PAD_CSI0_DAT18__IPU1_CSI0_DATA18    0x80000000
 				//MX6QDL_PAD_CSI0_DAT19__IPU1_CSI0_DATA19    0x80000000
 				MX6QDL_PAD_CSI0_DATA_EN__IPU1_CSI0_DATA_EN 0x80000000
-				MX6QDL_PAD_CSI0_PIXCLK__IPU1_CSI0_PIXCLK   0x80000000
+				//MX6QDL_PAD_CSI0_PIXCLK__IPU1_CSI0_PIXCLK   0x80000000
 				MX6QDL_PAD_CSI0_MCLK__IPU1_CSI0_HSYNC      0x80000000
 				MX6QDL_PAD_CSI0_VSYNC__IPU1_CSI0_VSYNC     0x80000000
 			>;
@@ -996,7 +1008,7 @@
 
 		pinctrl_uart5dte_1: uart5dtegrp-1 {
 			fsl,pins = <
-				MX6QDL_PAD_KEY_ROW1__UART5_TX_DATA	0x1b0b1
+				//MX6QDL_PAD_KEY_ROW1__UART5_TX_DATA	0x1b0b1
 				MX6QDL_PAD_KEY_COL1__UART5_RX_DATA	0x1b0b1
 				MX6QDL_PAD_KEY_ROW4__UART5_RTS_B	0x1b0b1
 				//MX6QDL_PAD_KEY_COL4__UART5_CTS_B	0x1b0b1
@@ -1218,6 +1230,7 @@
 
 &uart3 {
     status = "okay";
+	fsl,uart-has-rtscts;
 	linux,rs485-enabled-at-boot-time;
 	
     pinctrl-names = "default";

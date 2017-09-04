@@ -200,6 +200,9 @@ struct uart_port {
 	unsigned char		irq_wake;
 	unsigned char		unused[2];
 	void			*private_data;		/* generic platform data pointer */
+	struct serial_rs485 rs485;
+    int         (*rs485_config)(struct uart_port *,                             
+                    struct serial_rs485 *rs485);	
 };
 
 static inline int serial_port_in(struct uart_port *up, int offset)
