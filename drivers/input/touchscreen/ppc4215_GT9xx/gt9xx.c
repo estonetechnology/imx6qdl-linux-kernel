@@ -1861,8 +1861,8 @@ static s8 gtp_request_input_dev(struct goodix_ts_data *ts)
 	set_bit(ABS_X, ts->input_dev->absbit);
     	set_bit(ABS_Y, ts->input_dev->absbit);
 	set_bit(ABS_PRESSURE, ts->input_dev->absbit);
-	input_set_abs_params(ts->input_dev, ABS_X, 0, 1280/*ts->config_info.screen_max_x*/, 0, 0);
-	input_set_abs_params(ts->input_dev, ABS_Y, 0, 800/*ts->config_info.screen_max_y*/, 0, 0);
+	input_set_abs_params(ts->input_dev, ABS_X, 0, 1920/*ts->config_info.screen_max_x*/, 0, 0);
+	input_set_abs_params(ts->input_dev, ABS_Y, 0, 1080/*ts->config_info.screen_max_y*/, 0, 0);
     ts->input_dev->name = goodix_ts_name;
     ts->input_dev->phys = goodix_input_phys;
     ts->input_dev->id.bustype = BUS_I2C;
