@@ -81,6 +81,7 @@ obj-$(CONFIG_TOUCHSCREEN_TPS6507X)	+= tps6507x-ts.o
 obj-$(CONFIG_TOUCHSCREEN_ZFORCE)	+= zforce_ts.o
 obj-$(CONFIG_TOUCHSCREEN_VTL_CT36X)             += GT9xx/
 obj-$(CONFIG_TOUCHSCREEN_GT9xx)             	+= emb2230_GT9xx/
+obj-$(CONFIG_TOUCHSCREEN_PPC4207_GT9xx)         += ppc4207_GT9xx/ 
 obj-$(CONFIG_TOUCHSCREEN_VTL_CT36X)             += vtl_ts/
 #obj-$(CONFIG_TOUCHSCREEN_PPC4215_ILI2511)		+= ILI2511/
 obj-$(CONFIG_TOUCHSCREEN_PPC4215_GT9xx)			+= ppc4215_GT9xx/

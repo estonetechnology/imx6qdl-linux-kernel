@@ -418,6 +418,13 @@ config TOUCHSCREEN_GT9xx
     help
     tristate emb2230_touchscreen
 
+config TOUCHSCREEN_PPC4207_GT9xx
+    tristate "PPC4207_GT9xx linux"
+    depends on I2C
+    default n
+    help
+    tristate ppc4207_touchscreen
+
 config TOUCHSCREEN_VTL_CT36X
     tristate "CT36X for yocto"
     depends on I2C
