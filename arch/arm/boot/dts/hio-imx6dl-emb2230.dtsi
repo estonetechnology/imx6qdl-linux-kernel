@@ -285,7 +285,7 @@
 		late_init = <0>;
 		status = "disabled";
 	};
-
+	
 	mxcfb2: fb@1 {
 		compatible = "fsl,mxc_sdc_fb";
 		disp_dev = "hdmi";
@@ -1151,7 +1151,7 @@
 			};
 		};
 	};
-
+		
 	lvds-channel@1 {
 		fsl,data-mapping = "spwg";
 		fsl,data-width = <18>;
