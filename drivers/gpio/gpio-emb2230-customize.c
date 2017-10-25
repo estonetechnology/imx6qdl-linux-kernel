@@ -256,6 +256,20 @@ static int customize_gpio_probe(struct platform_device *pdev)
 
     gpio_direction_output(rst, 0);
 	
+	//wifi-pwr
+	rst = of_get_named_gpio(np, "WIFI_PWR", 0);
+    if (!gpio_is_valid(rst)){
+		printk("can not find WIFI_PWR gpio pins\n");
+        return -1;
+    }
+    ret = gpio_request(rst, "WIFI_PWR");
+    if(ret){
+        printk("request gpio WIFI_PWR failed\n");
+        return;
+    }
+
+    gpio_direction_output(rst, 0);
+	
 	return 0;
 }
 
