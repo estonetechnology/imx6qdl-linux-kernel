@@ -156,6 +156,9 @@
 			
 			//can1_stb 
 			CAN1_STB = <&gpio4 9 0>;
+			
+			//wifi-pwr
+			WIFI_PWR = <&gpio2 0 0>;
 		};			
 	};
 
@@ -739,7 +742,7 @@
 	imx6qdl-sabresd {
 		pinctrl_hog: hoggrp {
 			fsl,pins = <
-				MX6QDL_PAD_NANDF_D0__GPIO2_IO00 0x80000000
+				//MX6QDL_PAD_NANDF_D0__GPIO2_IO00 0x80000000
 				MX6QDL_PAD_NANDF_D1__GPIO2_IO01 0x80000000
 				MX6QDL_PAD_NANDF_D2__GPIO2_IO02 0x80000000
 				MX6QDL_PAD_NANDF_D3__GPIO2_IO03 0x80000000
@@ -810,6 +813,9 @@
 
 				//run-led
 				MX6QDL_PAD_CSI0_PIXCLK__GPIO5_IO18		0x80000000
+				
+				//wifi-gpio
+				MX6QDL_PAD_NANDF_D0__GPIO2_IO00			0x80000000
 			>;
 		};
 
