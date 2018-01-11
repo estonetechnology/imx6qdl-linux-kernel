@@ -379,6 +379,22 @@
 		mclk_source = <0>;
 	};
 	
+	//ppc4218 ilitek tp
+	ilitek@41 {
+		compatible = "tchip,ilitek";
+		reg = <0x41>;
+		interrupt-parent = <&gpio1>;
+		interrupts = <01 3>;
+		//vdd-supply = <&pm8916_l17>;
+		//vcc_i2c-supply = <&pm8916_l6>;
+		ilitek,irq-gpio = <&gpio1 01 0>;
+		ilitek,reset-gpio = <&gpio1 04 0>;
+		ilitek,vbus = "vcc_i2c";
+		ilitek,vdd = "vdd";
+		ilitek,name = "ilitek_i2c";
+	};	
+	
+	#if 0
 	//ppc4215 tp
 	goodix_ts@14 {
 		compatible = "goodix,gt9xx";
@@ -426,7 +442,8 @@
 			18 16 14 13 12 10 0F 0C 0A 08 06 
 			04 02 00 00 00 00 00 00 00 00 00 
 			00 00 00 00 00 00 00 00 3C 01];
-	};		
+	};	
+	#endif	
 };
 
 &i2c2 {
