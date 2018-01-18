@@ -642,7 +642,7 @@ int ilitek_free_gpio(void) {
 	return 0;
 }
 
-
+#if 0
 static int ilitek_set_input_param(void)
 {
 	int ret = 0;
@@ -656,10 +656,15 @@ static int ilitek_set_input_param(void)
 		}
 	}
 #else
+	
+	#if 0
 	__set_bit(INPUT_PROP_DIRECT, input->propbit);
 	input->evbit[0] = BIT_MASK(EV_KEY) | BIT_MASK(EV_ABS);
 	input->keybit[BIT_WORD(BTN_TOUCH)] = BIT_MASK(BTN_TOUCH);
+	#endif
+		
 	
+	#if 0
 #if !ILITEK_ROTATE_FLAG
 	#ifdef ILITEK_USE_LCM_RESOLUTION
 	input_set_abs_params(input, ABS_MT_POSITION_X, 0, TOUCH_SCREEN_X_MAX, 0, 0);
@@ -679,8 +684,14 @@ static int ilitek_set_input_param(void)
 #endif
 	input_set_abs_params(input, ABS_MT_TOUCH_MAJOR, 0, 255, 0, 0);
 	input_set_abs_params(input, ABS_MT_WIDTH_MAJOR, 0, 255, 0, 0);
-
-
+	#endif
+	
+	//ben
+	input_set_abs_params(input, ABS_X, 0, TOUCH_SCREEN_X_MAX, 0, 0);
+	input_set_abs_params(input, ABS_Y, 0, TOUCH_SCREEN_Y_MAX, 0, 0);
+	input_set_abs_params(input, ABS_MT_TOUCH_MAJOR, 0, 255, 0, 0);
+	input_set_abs_params(input, ABS_MT_WIDTH_MAJOR, 0, 255, 0, 0);	
+	
 	input->name = ILITEK_TS_NAME;
 	input->id.bustype = BUS_I2C;
 	input->dev.parent = &(ilitek_data->client)->dev;
@@ -719,7 +730,68 @@ static int ilitek_set_input_param(void)
 #endif
 	return ret;
 }
+#endif
+static int ilitek_set_input_param(void)
+{
+	int ret = 0;
+	int i = 0;
+	struct input_dev *input = ilitek_data->input_dev;
+	tp_log_debug("ilitek_set_input_param\n");
+#ifdef ILITEK_USE_MTK_INPUT_DEV
+	if (tpd_dts_data.use_tpd_button) {
+		for (i = 0; i < tpd_dts_data.tpd_key_num; i ++) {
+			input_set_capability(input, EV_KEY, tpd_dts_data.tpd_key_local[i]);
+		}
+	}
+#else
+	
+	#if 0
+	__set_bit(INPUT_PROP_DIRECT, input->propbit);
+	input->evbit[0] = BIT_MASK(EV_KEY) | BIT_MASK(EV_ABS);
+	input->keybit[BIT_WORD(BTN_TOUCH)] = BIT_MASK(BTN_TOUCH);
+	#endif
+	__set_bit(EV_SYN, input->evbit);
+	__set_bit(EV_KEY, input->evbit);
+	__set_bit(EV_ABS, input->evbit);
+	set_bit(BTN_TOUCH, input->keybit);
+	set_bit(ABS_X, input->absbit);
+    set_bit(ABS_Y, input->absbit);
+	set_bit(ABS_PRESSURE, input->absbit);		
+	
+	//ben
+	input_set_abs_params(input, ABS_X, 0, TOUCH_SCREEN_X_MAX, 0, 0);
+	input_set_abs_params(input, ABS_Y, 0, TOUCH_SCREEN_Y_MAX, 0, 0);
+	input_set_abs_params(input, ABS_MT_TOUCH_MAJOR, 0, 255, 0, 0);
+	input_set_abs_params(input, ABS_MT_WIDTH_MAJOR, 0, 255, 0, 0);	
+	
+	input->name = ILITEK_TS_NAME;
+	input->id.bustype = BUS_I2C;
+	input->dev.parent = &(ilitek_data->client)->dev;
+#endif
 
+	for(i = 0; i < ilitek_data->keycount; i++) {
+		set_bit(ilitek_data->keyinfo[i].id & KEY_MAX, input->keybit);
+	}
+	
+#ifdef ILITEK_GESTURE
+	input_set_capability(input, EV_KEY, KEY_POWER);
+	input_set_capability(input, EV_KEY, KEY_W);
+	input_set_capability(input, EV_KEY, KEY_O);
+	input_set_capability(input, EV_KEY, KEY_C);
+	input_set_capability(input, EV_KEY, KEY_E);
+	input_set_capability(input, EV_KEY, KEY_M);
+#endif
+
+#ifndef ILITEK_USE_MTK_INPUT_DEV
+	ret = input_register_device(ilitek_data->input_dev);
+	if (ret) {
+		tp_log_err("register input device, error\n");
+	}
+#endif
+	return ret;
+}
+
+#if 0
 static int ilitek_touch_down(int id, int x, int y, int pressure) {
 	struct input_dev *input = ilitek_data->input_dev;
 #if defined(ILITEK_USE_MTK_INPUT_DEV) || defined(ILITEK_USE_LCM_RESOLUTION)
@@ -731,6 +803,8 @@ static int ilitek_touch_down(int id, int x, int y, int pressure) {
 	input_mt_slot(input, id);
 	input_mt_report_slot_state(input, MT_TOOL_FINGER, true);
 #endif
+
+#if 0
 #if !ILITEK_ROTATE_FLAG
 	input_event(input, EV_ABS, ABS_MT_POSITION_X, x);
 	input_event(input, EV_ABS, ABS_MT_POSITION_Y, y);
@@ -738,6 +812,8 @@ static int ilitek_touch_down(int id, int x, int y, int pressure) {
 	input_event(input, EV_ABS, ABS_MT_POSITION_X, y);
 	input_event(input, EV_ABS, ABS_MT_POSITION_Y, x);
 #endif
+#endif
+
 	input_event(input, EV_ABS, ABS_MT_TOUCH_MAJOR, 128);
 #ifdef ILITEK_REPORT_PRESSURE
 	input_event(input, EV_ABS, ABS_MT_PRESSURE, pressure);
@@ -760,9 +836,31 @@ static int ilitek_touch_down(int id, int x, int y, int pressure) {
 #endif
 	return 0;
 }
+#endif
 
+//add ben
+static int ilitek_touch_down(int id, int x, int y, int pressure) {
+	struct input_dev *input = ilitek_data->input_dev;
+#if defined(ILITEK_USE_MTK_INPUT_DEV) || defined(ILITEK_USE_LCM_RESOLUTION)
+	x = (x - ilitek_data->screen_min_x) * TOUCH_SCREEN_X_MAX / (ilitek_data->screen_max_x - ilitek_data->screen_min_x);
+	y = (y - ilitek_data->screen_min_y) * TOUCH_SCREEN_Y_MAX / (ilitek_data->screen_max_y - ilitek_data->screen_min_y);
+#endif
 
+	printk("ilitek_touch_down:%d,%d \n", x, y);
+	input_report_key(input,BTN_TOUCH,1);
+			
+	input_report_abs(input, ABS_MT_TOUCH_MAJOR, 128);
+	input_report_abs(input, ABS_PRESSURE, pressure);
+			
+	input_report_abs(input, ABS_X, x);
+	input_report_abs(input, ABS_Y, y);
 
+	input_sync(input);
+	
+	return 0;
+}
+
+#if 0
 static int ilitek_touch_release(int id) {
 	struct input_dev *input = ilitek_data->input_dev;
 #ifdef ILITEK_TOUCH_PROTOCOL_B
@@ -790,7 +888,18 @@ static int ilitek_touch_release(int id) {
 
 	return 0;
 }
+#endif
+static int ilitek_touch_release(int id) {
+	struct input_dev *input = ilitek_data->input_dev;
 
+	input_report_key(input, BTN_TOUCH, 0);
+	input_report_abs(input, ABS_PRESSURE, 0);
+	input_sync(input);
+
+	ilitek_data->touch_flag[id] = 0;
+
+	return 0;
+}
 
 
 static int ilitek_touch_release_all_point(void) {
@@ -1037,6 +1146,10 @@ static int ilitek_read_data_and_report_3XX(void) {
 		}
 		report_max_point = 10;
 	}
+	
+	//ben
+	report_max_point = 1;
+	
 #ifdef ILITEK_TUNING_MESSAGE
 	if (ilitek_debug_flag) {
 		ilitek_udp_reply(ilitek_pid, ilitek_seq, buf, sizeof(buf));

@@ -78,9 +78,10 @@
 
 //#define ILITEK_ESD_PROTECTION
 
-#define ILITEK_TOUCH_PROTOCOL_B
+//#define ILITEK_TOUCH_PROTOCOL_B
+#define ILITEK_REPORT_PRESSURE
 
-//#define ILITEK_USE_LCM_RESOLUTION
+#define ILITEK_USE_LCM_RESOLUTION
 
 //#define ILITEK_REPORT_KEY_WITH_COORDINATE
 #define ILITEK_ROTATE_FLAG												0
@@ -282,6 +283,8 @@ extern struct ctp_config_info config_info;
 #define ILITEK_INFO_LOG_LEVEL 											(3)   
 #define ILITEK_DEBUG_LOG_LEVEL 											(4)  
 #define ILITEK_DEFAULT_LOG_LEVEL										(3)   
+/*debug*/
+//#define ILITEK_DEFAULT_LOG_LEVEL										(4) 
 
 #define debug_level(level, fmt, arg...) do {\
 	if (level <= ilitek_log_level_value) {\
