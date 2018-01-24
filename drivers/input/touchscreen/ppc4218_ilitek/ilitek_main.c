@@ -846,7 +846,7 @@ static int ilitek_touch_down(int id, int x, int y, int pressure) {
 	y = (y - ilitek_data->screen_min_y) * TOUCH_SCREEN_Y_MAX / (ilitek_data->screen_max_y - ilitek_data->screen_min_y);
 #endif
 
-	printk("ilitek_touch_down:%d,%d \n", x, y);
+	//printk("ilitek_touch_down:%d,%d \n", x, y);
 	input_report_key(input,BTN_TOUCH,1);
 			
 	input_report_abs(input, ABS_MT_TOUCH_MAJOR, 128);
