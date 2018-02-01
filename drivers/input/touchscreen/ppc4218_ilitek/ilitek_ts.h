@@ -87,8 +87,8 @@
 #define ILITEK_ROTATE_FLAG												0
 #define ILITEK_REVERT_X													0
 #define ILITEK_REVERT_Y													0
-#define TOUCH_SCREEN_X_MAX   											(1080)  //LCD_WIDTH
-#define TOUCH_SCREEN_Y_MAX   											(1920) //LCD_HEIGHT
+#define TOUCH_SCREEN_X_MAX   											(1920)  //LCD_WIDTH
+#define TOUCH_SCREEN_Y_MAX   											(1080) //LCD_HEIGHT
 
 #define ILITEK_ENABLE_REGULATOR_POWER_ON
 #define ILITEK_GET_GPIO_NUM
