@@ -886,7 +886,7 @@ static int ilitek_touch_down(int id, int x, int y, int pressure) {
 	input_report_key(input,BTN_TOUCH,1);
 				
 	//input_report_abs(input, ABS_MT_TOUCH_MAJOR, 128);
-	printk("ilitek_touch_down:%d,%d,%d,%d\n", x,y,tmp_x,tmp_y);	
+	//printk("ilitek_touch_down:%d,%d,%d,%d\n", x,y,tmp_x,tmp_y);	
 	input_report_abs(input, ABS_X, x);
 	input_report_abs(input, ABS_Y, y);
 	input_report_abs(input, ABS_PRESSURE, 1);
