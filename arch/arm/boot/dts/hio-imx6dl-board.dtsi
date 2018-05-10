@@ -123,6 +123,7 @@
 			linux,code = <KEY_POWER>;
 		};
 
+		#if 0
 		volume-up {
 			label = "Volume Up";
 			gpios = <&gpio1 4 1>;
@@ -136,6 +137,7 @@
 			gpio-key,wakeup;
 			linux,code = <KEY_VOLUMEDOWN>;
 		};
+		#endif
 	};
 
 	sound {
@@ -346,6 +348,11 @@
 		reg = <0x50>;
 	};
 
+	mega48@60 {
+		compatible = "fsl,mega48-i2c";
+		reg = <0x60>;
+	};
+	
 	pmic: pfuze100@08 {
 		compatible = "fsl,pfuze100";
 		reg = <0x08>;
@@ -544,6 +551,11 @@
 				MX6QDL_PAD_NANDF_CS1__GPIO6_IO14 0x80000000
 				MX6QDL_PAD_NANDF_CS2__GPIO6_IO15 0x80000000
 				MX6QDL_PAD_NANDF_CS3__GPIO6_IO16 0x80000000
+				
+				//gpio_4,gpio_5,gpio_8
+				MX6QDL_PAD_GPIO_4__GPIO1_IO04	0x80000000
+				MX6QDL_PAD_GPIO_5__GPIO1_IO05	0x80000000
+				MX6QDL_PAD_GPIO_8__GPIO1_IO08	0x80000000
 			>;
 		};
 
@@ -596,8 +608,8 @@
 		pinctrl_gpio_keys: gpio_keysgrp {
 			fsl,pins = <
 				MX6QDL_PAD_EIM_D29__GPIO3_IO29 0x80000000
-				MX6QDL_PAD_GPIO_4__GPIO1_IO04  0x80000000
-				MX6QDL_PAD_GPIO_5__GPIO1_IO05  0x80000000
+				//MX6QDL_PAD_GPIO_4__GPIO1_IO04  0x80000000
+				//MX6QDL_PAD_GPIO_5__GPIO1_IO05  0x80000000
 			>;
 		};
 
