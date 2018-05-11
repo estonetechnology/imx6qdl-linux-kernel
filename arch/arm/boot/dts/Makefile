@@ -161,6 +161,7 @@ dtb-$(CONFIG_ARCH_MXC) += \
 	imx6dl-sabreauto-gpmi-weim.dtb \
 	imx6dl-sabresd.dtb \
 	hio-imx6dl-board.dtb \
+	hio-imx6dl-emb1200.dtb \
 	hio-imx6dl-iob3200.dtb \
 	hio-imx6dl-ppc4510.dtb \
 	hio-imx6dl-ppc4215.dtb \
