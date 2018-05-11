@@ -166,6 +166,7 @@ dtb-$(CONFIG_ARCH_MXC) += \
 	hio-imx6dl-ppc4215.dtb \
 	hio-imx6dl-emb2230.dtb \
 	hio-imx6dl-ppc4207.dtb \
+	hio-imx6dl-ppc4210.dtb \
 	hio-imx6q-iob3200.dtb \
 	imx6dl-sabresd-btwifi.dtb \
 	imx6dl-sabresd-enetirq.dtb \
