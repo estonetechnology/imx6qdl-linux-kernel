@@ -10,6 +10,8 @@
  * published by the Free Software Foundation.
  */
 
+#define DEBUG    1
+
 #include <linux/module.h>
 #include <linux/moduleparam.h>
 #include <linux/init.h>
@@ -164,6 +166,31 @@ static const struct reg_default rt5640_reg[RT5640_VENDOR_ID2 + 1] = {
 	{ 0xfe, 0x10ec },
 	{ 0xff, 0x6231 },
 };
+
+void rt5631_reg_set(int if_play) 
+{
+	#if 0
+//#ifdef RT5631_DEBUG
+	printk("MQ===%s===if_play:%d REG-02:%x\n", __FUNCTION__, if_play, snd_soc_read(pcodec, RT5631_SPK_OUT_VOL));
+//#endif
+	if (if_play) {	
+		rt5631_index_write(pcodec, RT5631_EQ_BW_HIP, 0x1bbc);
+		rt5631_index_write(pcodec, RT5631_EQ_PRE_VOL_CTRL, 0x8007);
+		rt5631_index_write(pcodec, RT5631_EQ_POST_VOL_CTRL, 0x000f);
+		snd_soc_write(pcodec, RT5631_EQ_CTRL, 0x4090);	
+		snd_soc_write(pcodec, RT5631_ALC_CTRL_1, 0x0a0f);	
+		snd_soc_write(pcodec, RT5631_STEREO_DAC_VOL_1, 0x0020);	
+		snd_soc_write(pcodec, RT5631_ALC_CTRL_3, 0x6000);	
+		//snd_soc_write(pcodec, RT5631_SPK_OUT_VOL, 0x4848);
+	
+	} else {	
+		snd_soc_write(pcodec, RT5631_EQ_CTRL, 0x4000);	
+		snd_soc_write(pcodec, RT5631_ALC_CTRL_3, 0x2000);	
+		//snd_soc_write(pcodec, RT5631_SPK_OUT_VOL, 0xc8c8);
+	}
+	#endif
+}
+EXPORT_SYMBOL(rt5631_reg_set);
 
 static int rt5640_reset(struct snd_soc_codec *codec)
 {
@@ -1608,12 +1635,15 @@ static int rt5640_hw_params(struct snd_pcm_substream *substream,
 	int dai_sel, pre_div, bclk_ms, frame_size;
 
 	rt5640->lrck[dai->id] = params_rate(params);
-	pre_div = get_clk_info(rt5640->sysclk, rt5640->lrck[dai->id]);
-	if (pre_div < 0) {
-		dev_err(codec->dev, "Unsupported clock setting %d for DAI %d\n",
-			rt5640->lrck[dai->id], dai->id);
-		return -EINVAL;
-	}
+	//pre_div = get_clk_info(rt5640->sysclk, rt5640->lrck[dai->id]);
+	//if (pre_div < 0) {
+	//	dev_err(codec->dev, "Unsupported clock setting %d for DAI %d\n",
+	//		rt5640->lrck[dai->id], dai->id);
+	//	return -EINVAL;
+	//}
+	pre_div = 0;
+	//pre_div = 1;
+	
 	frame_size = snd_soc_params_to_frame_size(params);
 	if (frame_size < 0) {
 		dev_err(codec->dev, "Unsupported frame size: %d\n", frame_size);
@@ -1658,6 +1688,9 @@ static int rt5640_hw_params(struct snd_pcm_substream *substream,
 		snd_soc_update_bits(codec, RT5640_I2S1_SDP,
 			RT5640_I2S_DL_MASK, val_len);
 		snd_soc_update_bits(codec, RT5640_ADDA_CLK1, mask_clk, val_clk);
+		
+		dev_dbg(dai->dev, "RT5640_U_IF1: mask_clk %d , val_clk %d \n",
+				mask_clk, val_clk);		
 	}
 	if (dai_sel & RT5640_U_IF2) {
 		mask_clk = RT5640_I2S_BCLK_MS2_MASK | RT5640_I2S_PD2_MASK;
@@ -1666,6 +1699,9 @@ static int rt5640_hw_params(struct snd_pcm_substream *substream,
 		snd_soc_update_bits(codec, RT5640_I2S2_SDP,
 			RT5640_I2S_DL_MASK, val_len);
 		snd_soc_update_bits(codec, RT5640_ADDA_CLK1, mask_clk, val_clk);
+		
+		dev_dbg(dai->dev, "RT5640_U_IF2: mask_clk %d , val_clk %d \n",
+				mask_clk, val_clk);			
 	}
 
 	return 0;
@@ -1741,7 +1777,11 @@ static int rt5640_set_dai_sysclk(struct snd_soc_dai *dai,
 	struct snd_soc_codec *codec = dai->codec;
 	struct rt5640_priv *rt5640 = snd_soc_codec_get_drvdata(codec);
 	unsigned int reg_val = 0;
-
+	int val;
+	
+	dev_dbg(dai->dev, "Sysclk1 is %dHz and clock id is %d\n", freq, clk_id);
+	dev_dbg(dai->dev, "Sysclk2 is %dHz and clock id is %d\n", rt5640->sysclk, rt5640->sysclk_src);
+	
 	if (freq == rt5640->sysclk && clk_id == rt5640->sysclk_src)
 		return 0;
 
@@ -1768,6 +1808,11 @@ static int rt5640_set_dai_sysclk(struct snd_soc_dai *dai,
 	rt5640->sysclk_src = clk_id;
 
 	dev_dbg(dai->dev, "Sysclk is %dHz and clock id is %d\n", freq, clk_id);
+	
+	//test
+	val = snd_soc_read(codec, RT5640_GLB_CLK);
+	dev_dbg(codec->dev, "RT5640_GLB_CLK:%d \n", val);
+	
 	return 0;
 }
 
@@ -1817,10 +1862,18 @@ static int rt5640_pll_calc(const unsigned int freq_in,
 	pr_debug("Only get approximation about PLL\n");
 
 code_find:
+	
 	pll_code->m_bp = bypass;
+	//pll_code->m_bp = false;
+	
 	pll_code->m_code = m;
 	pll_code->n_code = n;
+	//pll_code->m_code = 15;
+	//pll_code->n_code = 62;
 	pll_code->k_code = 2;
+	
+	pr_debug("Only bypass=%d m=%d n=%d k=2\n", pll_code->m_bp,
+		(pll_code->m_bp ? 0 : pll_code->m_code), pll_code->n_code);
 	return 0;
 }
 
@@ -1831,7 +1884,8 @@ static int rt5640_set_dai_pll(struct snd_soc_dai *dai, int pll_id, int source,
 	struct rt5640_priv *rt5640 = snd_soc_codec_get_drvdata(codec);
 	struct rt5640_pll_code *pll_code = &rt5640->pll_code;
 	int ret, dai_sel;
-
+	int val;
+	
 	if (source == rt5640->pll_src && freq_in == rt5640->pll_in &&
 	    freq_out == rt5640->pll_out)
 		return 0;
@@ -1879,6 +1933,21 @@ static int rt5640_set_dai_pll(struct snd_soc_dai *dai, int pll_id, int source,
 		return ret;
 	}
 
+	//add ben test
+	#if 0
+	pll_code->m_bp = false;
+	pll_code->m_code = 15;
+	pll_code->n_code = 38;
+	pll_code->k_code = 2;	
+	#endif
+	
+	#if 0
+	pll_code->m_bp = false;
+	pll_code->m_code = 8;
+	pll_code->n_code = 17;
+	pll_code->k_code = 2;
+	#endif
+	
 	dev_dbg(codec->dev, "bypass=%d m=%d n=%d k=2\n", pll_code->m_bp,
 		(pll_code->m_bp ? 0 : pll_code->m_code), pll_code->n_code);
 
@@ -1892,6 +1961,11 @@ static int rt5640_set_dai_pll(struct snd_soc_dai *dai, int pll_id, int source,
 	rt5640->pll_out = freq_out;
 	rt5640->pll_src = source;
 
+	
+	//test
+	val = snd_soc_read(codec, RT5640_GLB_CLK);
+	dev_dbg(codec->dev, "RT5640_GLB_CLK:%d \n", val);
+	
 	return 0;
 }
 
