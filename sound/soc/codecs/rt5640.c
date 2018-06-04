@@ -167,7 +167,7 @@ static const struct reg_default rt5640_reg[RT5640_VENDOR_ID2 + 1] = {
 	{ 0xff, 0x6231 },
 };
 
-void rt5631_reg_set(int if_play) 
+static void rt5631_reg_set(int if_play) 
 {
 	#if 0
 //#ifdef RT5631_DEBUG
@@ -190,7 +190,7 @@ void rt5631_reg_set(int if_play)
 	}
 	#endif
 }
-EXPORT_SYMBOL(rt5631_reg_set);
+//EXPORT_SYMBOL(rt5631_reg_set);
 
 static int rt5640_reset(struct snd_soc_codec *codec)
 {
@@ -2035,6 +2035,13 @@ static int rt5640_probe(struct snd_soc_codec *codec)
 	snd_soc_update_bits(codec, RT5640_MICBIAS, 0x0030, 0x0030);
 	snd_soc_update_bits(codec, RT5640_DSP_PATH2, 0xfc00, 0x0c00);
 
+	//ben 0x2a
+	/*
+	snd_soc_update_bits(codec, RT5640_STO_DAC_MIXER, RT5640_DAC_L1_STO_L_VOL_MASK, 0x01);
+	snd_soc_update_bits(codec, RT5640_STO_DAC_MIXER, RT5640_DAC_L2_STO_L_VOL_MASK, 0x01);
+	snd_soc_update_bits(codec, RT5640_STO_DAC_MIXER, RT5640_DAC_R1_STO_R_VOL_MASK, 0x01);
+	snd_soc_update_bits(codec, RT5640_STO_DAC_MIXER, RT5640_DAC_R2_STO_R_VOL_MASK, 0x01);
+	*/
 	return 0;
 }
 

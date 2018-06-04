@@ -201,17 +201,17 @@ static const struct snd_soc_dapm_widget imx_rt5631_dapm_widgets[] = {
 };
 
 #ifdef USE_RT5631
-extern void rt5631_reg_set(int if_play);
-//void rt5631_reg_set(int if_play)
-//{
-//	
-//}
+//extern void rt5631_reg_set(int if_play);
+static void rt5631_reg_set(int if_play)
+{
+	
+}
 #else
-extern void alc5631_reg_set(int if_play);
-//void alc5631_reg_set(int if_play)
-//{
-//	
-//}
+//extern void alc5631_reg_set(int if_play);
+static void alc5631_reg_set(int if_play)
+{
+	
+}
 #endif
 
 #if 1
