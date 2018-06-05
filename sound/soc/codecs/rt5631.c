@@ -89,6 +89,7 @@ struct rt5631_priv {
 	int rx_rate;
 	int bclk_rate;
 	int dmic_used_flag;
+	struct regmap *regmap;
 };
 
 static const u16 rt5631_reg[RT5631_VENDOR_ID2 + 1] = {
@@ -2230,6 +2231,18 @@ static struct snd_soc_codec_driver soc_codec_dev_rt5631 = {
 	.num_dapm_routes = ARRAY_SIZE(rt5631_dapm_routes),
 };
 
+static const struct regmap_config rt5631_regmap_config = {
+	.reg_bits = 8,
+	.val_bits = 16,
+
+	.readable_reg = rt5631_readable_register,
+	.volatile_reg = rt5631_volatile_register,
+	.max_register = RT5631_VENDOR_ID2,
+	.reg_defaults = rt5631_reg,
+	.num_reg_defaults = ARRAY_SIZE(rt5631_reg),
+	.cache_type = REGCACHE_RBTREE,
+};
+
 static const struct of_device_id rt5631_of_match[] = {
     { .compatible = "realtek,rt5631", },
     { /* sentinel */ }
@@ -2247,13 +2260,35 @@ static int rt5631_i2c_probe(struct i2c_client *i2c,
 {
 	struct rt5631_priv *rt5631;
 	int ret;
-
+	int val;
+	
 	rt5631 = kzalloc(sizeof(struct rt5631_priv), GFP_KERNEL);
 	if (NULL == rt5631)
 		return -ENOMEM;
 
 	i2c_set_clientdata(i2c, rt5631);
 
+	//device id
+	//val = rt5631_index_read(i2c, RT5631_VENDOR_ID);
+	//if ((val != 0x10ec)) {
+	//	dev_err(&i2c->dev,
+	//		"Device with ID register %x is not rt5631 \n", val);
+	//	return -ENODEV;
+	//}
+	if (!i2c_check_functionality(i2c->adapter, I2C_FUNC_SMBUS_BYTE_DATA))
+		return -EINVAL;
+	
+	rt5631->regmap = devm_regmap_init_i2c(i2c, &rt5631_regmap_config);
+	if (IS_ERR(rt5631->regmap))
+		return PTR_ERR(rt5631->regmap);
+	
+	regmap_read(rt5631->regmap, RT5631_VENDOR_ID1, &val);
+	if ((val != 0x10ec)) {
+		dev_err(&i2c->dev,
+			"Device with ID register %x is not rt5631 \n", val);
+		return -ENODEV;
+	}
+	
 	ret = snd_soc_register_codec(&i2c->dev, &soc_codec_dev_rt5631,
 			rt5631_dai, ARRAY_SIZE(rt5631_dai));
 	if (ret < 0)
