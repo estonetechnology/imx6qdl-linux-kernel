@@ -178,13 +178,14 @@
 		reg = <0x50>;
 	};
 //+++wwj
-#ifdef CONFIG_RII
-#else
+//#ifdef CONFIG_RII
+//#else
+	dddd
 	mega48@60 {
 		compatible = "fsl,mega48-i2c";
 		reg = <0x60>;
 	};
-#endif
+//#endif
 //+++wwj
 	codec: rt5631@1a {
 		  compatible = "realtek,rt5631";

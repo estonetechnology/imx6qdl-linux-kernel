@@ -53,7 +53,7 @@
 		model = "imx-audio-hdmi";
 		hdmi-controller = <&hdmi_audio>;
 	};
-	sound {
+	sound-rt5631 {
 		compatible = "fsl,imx-audio-rt5631";
 		model = "imx6dl-rt5631";
 		ssi-controller = <&ssi1>;
@@ -76,6 +76,31 @@
 		#endif
 		/*+++wwj end 20150317@add mic detect*/
 	};
+	
+	sound-rt5640 {
+		compatible = "fsl,imx-audio-rt5640";
+		model = "imx6dl-rt5640";
+		ssi-controller = <&ssi1>;
+		audio-codec = <&codec1>;
+		audio-routing =
+			"Headphone Jack", "HPOL",
+			"Headphone Jack", "HPOR",
+			"Ext Spk", "SPOL",
+			"Ext Spk", "SPOR";
+			//"MICBIAS", "AMIC",
+			//"IN3R", "MICBIAS",
+			//"DMIC", "MICBIAS",
+			//"DMICDAT", "DMIC";
+		mux-int-port = <1>;
+		mux-ext-port = <4>;
+		//hp-det-gpios = <&gpio7 8 1>;
+		/*+++wwj begin 20150317@add mic detect*/
+		#ifdef CONFIG_MIC_DEC
+	              mic-det-gpios = <&gpio7 11 1>;
+		#endif
+		/*+++wwj end 20150317@add mic detect*/
+	};	
+	
 	/*
 	sound {
 		compatible = "fsl,imx6q-sabrelite-sgtl5000",
@@ -192,6 +217,15 @@
 		  reg = <0x1a>;
 		  clocks = <&clks 201>;
 	};
+	
+	//rt5640
+	codec1: rt5640@1c {
+		  compatible = "realtek,rt5640";
+		  //compatible = "realtek,alc5640";
+		  reg = <0x1c>;
+		  clocks = <&clks 201>;
+	};	
+	
 #ifdef CONFIG_RII
 	ac24xx@54{
 		compatible = "ac24cxx";
