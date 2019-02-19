@@ -5049,9 +5049,13 @@ OnError:
                         if (!((physical - Os->device->baseAddress) & 0x80000000))
                         {
                             gctPHYS_ADDR_T gpuPhysical;
+
+                            kfree(ref);
+                            ref = gcvNULL;
+                            info->ref = gcvNULL;
+
                             kfree(pages);
                             pages = gcvNULL;
-
                             info->pages = gcvNULL;
                             info->pageTable = gcvNULL;
 
