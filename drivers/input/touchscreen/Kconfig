@@ -404,6 +404,13 @@ config TOUCHSCREEN_PPC4215_ILI2511
     help
     tristate PPC4215_ILI2511
 
+config TOUCHSCREEN_PPC4210_Ilitek
+    tristate "TOUCHSCREEN_PPC4210_Ilitek for yocto"
+    depends on I2C
+    default n
+    help
+    tristate TOUCHSCREEN_PPC4210_Ilitek
+
 config TOUCHSCREEN_PPC4215_GT9xx
     tristate "PPC4215_GT9xx for yocto"
     depends on I2C
