@@ -397,6 +397,13 @@ config TOUCHSCREEN_GT801
     If unsure, say N.To compile this driver as a module, choose M here:
     the module will be called gt801.ko.
 
+config TOUCHSCREEN_PPC4207_Ilitek
+    tristate "TOUCHSCREEN_PPC4207_Ilitek for yocto"
+    depends on I2C
+    default n
+    help
+    tristate TOUCHSCREEN_PPC4207_Ilitek
+
 config TOUCHSCREEN_PPC4215_ILI2511
     tristate "PPC4215_ILI2511 for yocto"
     depends on I2C
