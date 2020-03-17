@@ -82,6 +82,21 @@ static int customize_gpio_probe(struct platform_device *pdev)
 	//mdelay(100);
 	//gpio_set_value(rst, 1);	
 	
+	//LCD_8BIT_EN
+    rst = of_get_named_gpio(np, "LCD_8BIT_EN", 0);
+    if (!gpio_is_valid(rst)){
+        printk("can not find LCD_8BIT_EN gpio pins\n");
+        return -1;
+    }
+    ret = gpio_request(rst, "LCD_8BIT_EN");
+    if(ret){
+        printk("request gpio LCD_8BIT_EN failed\n");
+        return;
+    }
+
+    gpio_direction_output(rst, 1);
+	mdelay(100);
+	
 	//VDDLCD_PWREN
     rst = of_get_named_gpio(np, "VDDLCD_PWREN", 0);
     if (!gpio_is_valid(rst)){
@@ -95,7 +110,7 @@ static int customize_gpio_probe(struct platform_device *pdev)
     }
 
     gpio_direction_output(rst, 1);
-	gpio_free(rst);
+	//gpio_free(rst);
 	
 	//TP_PWR_EN
     rst = of_get_named_gpio(np, "TP_PWR_EN", 0);
