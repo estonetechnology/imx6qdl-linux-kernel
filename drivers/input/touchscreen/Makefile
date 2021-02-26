@@ -85,3 +85,4 @@ obj-$(CONFIG_TOUCHSCREEN_VTL_CT36X)             += vtl_ts/
 obj-$(CONFIG_TOUCHSCREEN_PPC4215_ILI2511)		+= ILI2511/
 obj-$(CONFIG_TOUCHSCREEN_PPC4215_GT9xx)			+= ppc4215_GT9xx/
 obj-$(CONFIG_TOUCHSCREEN_PPC4218_Ilitek)		+= ppc4218_ilitek/
+obj-$(CONFIG_TOUCHSCREEN_PPC4210_Ilitek)               += ppc4210_ilitek/

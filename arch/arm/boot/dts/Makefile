@@ -163,6 +163,7 @@ dtb-$(CONFIG_ARCH_MXC) += \
 	hio-imx6dl-board.dtb \
 	hio-imx6dl-iob3200.dtb \
 	hio-imx6dl-ppc4510.dtb \
+	hio-imx6dl-ppc4210.dtb \
 	hio-imx6dl-ppc4215.dtb \
 	hio-imx6dl-ppc4217.dtb \
 	hio-imx6dl-ppc4218.dtb \
