@@ -75,6 +75,14 @@ config TOUCHSCREEN_AD7879_I2C
 	  To compile this driver as a module, choose M here: the
 	  module will be called ad7879-i2c.
 
+
+config TOUCHSCREEN_PPC4107_Ilitek
+    tristate "TOUCHSCREEN_PPC4107_Ilitek for DEBIAN"
+    depends on I2C
+    default n
+    help
+    tristate TOUCHSCREEN_PPC4107_Ilitek
+
 config TOUCHSCREEN_AD7879_SPI
 	tristate "support SPI bus connection"
 	depends on TOUCHSCREEN_AD7879 && SPI_MASTER

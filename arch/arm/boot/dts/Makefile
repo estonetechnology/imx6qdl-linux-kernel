@@ -164,6 +164,7 @@ dtb-$(CONFIG_ARCH_MXC) += \
 	hio-imx6dl-emb1200.dtb \
 	hio-imx6dl-iob3200.dtb \
 	hio-imx6dl-ppc4510.dtb \
+	hio-imx6dl-ppc4107.dtb \
 	hio-imx6dl-ppc4215.dtb \
 	hio-imx6dl-emb2230.dtb \
 	hio-imx6dl-ppc4207.dtb \
